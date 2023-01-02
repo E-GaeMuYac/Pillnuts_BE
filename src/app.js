@@ -11,9 +11,9 @@ const ErrorHandler = require('./middlewares/error.handler.middleware');
 app.use(ErrorHandler);
 
 app.listen(process.env.PORT, () => {
-    console.log(process.env.PORT, '포트로 서버가 열렸습니다.');
+  console.log(process.env.PORT, '포트로 서버가 열렸습니다.');
 });
 
 app.get('/', (req, res) => {
-    res.send(`BE ${process.env.PORT}`);
+  res.send(`TEST2 ${process.env.PORT}`);
 });
