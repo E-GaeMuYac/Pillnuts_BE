@@ -2,6 +2,10 @@ const UsersService = require('../services/users.service');
 const url = require('url');
 const Joi = require('joi');
 
+const {
+  ValidationError,
+} = require('../../middlewares/exceptions/error.class.js');
+
 class UsersController {
   constructor() {
     this.usersService = new UsersService();
@@ -10,17 +14,17 @@ class UsersController {
     try {
       const schema = Joi.object().keys({
         email: Joi.string().email().required(),
-        nickname: Joi.string(),
+        nickname: Joi.string().required(),
         password: Joi.string()
+          .required()
           .pattern(new RegExp('^[a-zA-Z]+[0-9]+$'))
           .min(8)
           .max(15),
         confirm: Joi.ref('password'),
       });
       const result = await schema.validate(req.body);
-      console.log(result.error);
       if (result.error) {
-        throw new Error('데이터 형식이 잘못되었습니다.');
+        throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
       const { email, password, nickname } = result.value;
       await this.usersService.signUp(email, password, nickname);
@@ -34,11 +38,10 @@ class UsersController {
   duplicateCheck = async (req, res, next) => {
     try {
       const { email } = url.parse(req.url, true).query;
-      const schema = Joi.string().email().required();
-      const result = schema.validate(email);
+      const result = Joi.string().email().required().validate(email);
 
       if (result.error) {
-        throw new Error('데이터 형식이 잘못되었습니다.');
+        throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
 
       await this.usersService.duplicateCheck(email);
@@ -51,7 +54,7 @@ class UsersController {
 
   logout = async (req, res, next) => {
     try {
-      const userId = 19; //res.locals.user
+      const userId = 26; //res.locals.user
       await this.usersService.logout(userId);
 
       return res.status(201).json({ message: '로그아웃이 완료되었습니다.' });
@@ -60,13 +63,35 @@ class UsersController {
     }
   };
 
-  // updateUser = async (req, res, next) => {
-  //   try {
-  //     const userId = 19; //res.locals.user
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // };
+  updateUser = async (req, res, next) => {
+    try {
+      const userId = 26; //res.locals.user
+      const schema = Joi.string().required();
+      const { nickname, password } = req.body;
+      const result = schema.validate(nickname);
+      if (result.error) {
+        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+      }
+      await this.usersService.updateUser(nickname, userId, password);
+
+      return res.status(201).json({ message: '정보 수정이 완료되었습니다.' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteUser = async (req, res, next) => {
+    try {
+      const userId = 26; //res.locals.user
+      const { password } = req.body;
+
+      await this.usersService.deleteUser(userId, password);
+
+      return res.status(200).json({ message: '탈퇴가 완료되었습니다.' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = UsersController;
