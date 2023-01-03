@@ -54,7 +54,7 @@ class UsersController {
 
   logout = async (req, res, next) => {
     try {
-      const userId = 26; //res.locals.user
+      const userId = 1; //res.locals.user
       await this.usersService.logout(userId);
 
       return res.status(201).json({ message: '로그아웃이 완료되었습니다.' });
@@ -65,7 +65,7 @@ class UsersController {
 
   updateUser = async (req, res, next) => {
     try {
-      const userId = 26; //res.locals.user
+      const userId = 1; //res.locals.user
       const schema = Joi.string().required();
       const { nickname, password } = req.body;
       const result = schema.validate(nickname);
@@ -82,7 +82,7 @@ class UsersController {
 
   deleteUser = async (req, res, next) => {
     try {
-      const userId = 26; //res.locals.user
+      const userId = 1; //res.locals.user
       const { password } = req.body;
 
       await this.usersService.deleteUser(userId, password);
