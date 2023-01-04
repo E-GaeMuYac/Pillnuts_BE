@@ -25,6 +25,21 @@ class UsersRepository {
       }
     );
   };
+
+  updateUser = async (nickname, userId) => {
+    await this.usersModel.update(
+      {
+        nickname,
+      },
+      { where: { userId } }
+    );
+  };
+
+  deleteUser = async (userId) => {
+    await this.usersModel.destroy({
+      where: { userId },
+    });
+  };
 }
 
 module.exports = UsersRepository;
