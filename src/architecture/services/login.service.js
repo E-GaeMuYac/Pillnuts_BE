@@ -4,30 +4,38 @@ const {
     ValidationError,
 } = require('../../middlewares/exceptions/error.class');
 
+const bcrypt = require('bcrypt');
+const salt = Number(process.env.SALT);
+const hash = require('../../util/encryption');
 require('dotenv').config();
-const crypto = require('crypto');
-// const jwt = reqiure('jsonwebtoken');
+ const jwt = require('jsonwebtoken');
+
 
 class LoginService {
     loginRepository = new LoginRepository();
 
     existUser = async (email, password) => {
-        const secretPW = crypto
-            .createHash(process.env.PW_KEY)
-            .update(password)
-            .digest(process.env.INCOD);
+       password = await hash(password);
+    
+    const existUser = await this.loginRepository.existUser(email, password);
 
-        password = secretPW;
-
-        const existUser = await this.loginRepository.existUser(email, password);
-
-        if (!existUser || existUser.length === 0) {
+if (!existUser) {
             throw new ExistError('로그인 정보를 다시 확인해주세요.',
             412
             );
         }
         return existUser;
+
+
+    }  
     };
-}
+
+ 
+    createAccessToken = (userId) => {
+        return jwt.sign({ userId }, process.env.SALT, {
+            expiresIn: '2h',
+        });
+    };
+
 
 module.exports = LoginService;

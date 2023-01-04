@@ -2,7 +2,7 @@ const {
     ExistError, 
     InvalidParamsError,
 } = require('../../middlewares/exceptions/error.class');
-const url = require('url');
+// const url = require('url');
 require('dotenv').config({ path: '../.env' });
 
 const LoginService = require('../services/login.service');

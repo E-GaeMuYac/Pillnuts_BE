@@ -5,7 +5,7 @@ const authUser = require('../middlewares/authUser.middleware');
 const LoginController = require('../architecture/controllers/login.controller');
 const loginController = new LoginController
 
-// login 
-router.post('/login', loginController.Login);
+// Login
+router.post('/normal', loginController.Login);
 
 module.exports = router;
