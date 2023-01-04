@@ -22,14 +22,6 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: true,
       },
-      chart: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: true,
-      },
-      changeDate: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: true,
-      },
       materialName: {
         type: Sequelize.DataTypes.JSON,
         allowNull: false,
@@ -39,15 +31,15 @@ module.exports = {
         allowNull: true,
       },
       eeDocData: {
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.STRING(100000),
         allowNull: true,
       },
       udDocData: {
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.STRING(100000),
         allowNull: true,
       },
       nbDocData: {
-        type: Sequelize.DataTypes.JSON,
+        type: Sequelize.DataTypes.JSON(1000000),
         allowNull: true,
       },
       ingrName: {
