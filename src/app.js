@@ -17,3 +17,5 @@ app.listen(process.env.PORT, () => {
 app.get('/', (req, res) => {
   res.send(`TEST5 ${process.env.PORT}`);
 });
+
+module.exports = app;
