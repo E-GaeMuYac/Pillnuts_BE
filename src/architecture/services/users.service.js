@@ -2,7 +2,7 @@ const UsersRepository = require('../repositories/users.repository');
 const { Users } = require('../../models/index.js');
 
 const hash = require('../../util/encryption');
-const compare = require('../../util/decryption');
+const compare = require('../../util/compare');
 
 const {
   InvalidParamsError,
