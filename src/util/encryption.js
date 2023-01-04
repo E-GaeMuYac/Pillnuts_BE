@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const salt = Number(process.env.SALT);
 
 const hash = (password) => {
-  return bcrypt.hash(password, salt);
+  return bcrypt.hashSync(password, salt);
 };
 
 module.exports = hash;

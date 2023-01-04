@@ -6,6 +6,7 @@ const usersController = new UsersController();
 router.post('/signup', usersController.signUp);
 router.get('/signup', usersController.duplicateCheck);
 router.put('/logout', usersController.logout);
-// router.put('/update', usersController.updateUser);
+router.put('/update', usersController.updateUser);
+router.delete('/delete', usersController.deleteUser);
 
 module.exports = router;
