@@ -62,15 +62,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       eeDocData: {
-        type: DataTypes.STRING(100000),
+        type: DataTypes.STRING(10000),
         allowNull: true,
       },
       udDocData: {
-        type: DataTypes.STRING(100000),
+        type: DataTypes.STRING(10000),
         allowNull: true,
       },
       nbDocData: {
-        type: DataTypes.JSON(1000000),
+        type: DataTypes.STRING(100000),
         allowNull: true,
       },
       createdAt: {
