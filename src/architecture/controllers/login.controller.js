@@ -1,38 +1,42 @@
-const {
-    ExistError, 
-    InvalidParamsError,
-} = require('../../middlewares/exceptions/error.class');
-// const url = require('url');
+const { ValidationError } = require('../../middlewares/exceptions/error.class');
 require('dotenv').config({ path: '../.env' });
+const Joi = require('joi');
 
 const LoginService = require('../services/login.service');
 
 class LoginController {
-    loginService = new LoginService();
+  loginService = new LoginService();
 
-    Login = async (req, res, next) => {
-        try {
-            const { email, password } = req.body;
+  Login = async (req, res, next) => {
+    try {
+      const { email, password } = req.body; // 1. email, password를 바디값에 넣어준다.
 
-            if (!email || !password) {
-                throw new ExistError(
-                    '이메일 혹은 패스워드를 다시 입력해주세요',
-                    412
-                );
-            }
-            const existUser = await this.loginService.existUser(email, password);
-            const accessToken = this.loginService.createAccessToken(
-                existUser.userId
-            );
+      // 1-1. 이메일 형태가 맞지 않을 경우 -> validationError(412)를 띄운다.
+      const schema = Joi.object().keys({
+        email: Joi.string().email().required(),
+        password: Joi.string()
+          .required()
+          .pattern(new RegExp('^[a-zA-Z]+[0-9]+$'))
+          .min(8)
+          .max(15),
+      });
+      const result = schema.validate(req.body);
 
-            return res
-                .header('token', accessToken)
-                .status(201)
-                .json({ userId : existUser.userId, nickname : existUser.nickname, token: accessToken });
-        } catch (error) {
-            next(error);
-        }
-    };
+      if (result.error) {
+        throw new ValidationError('데이터 형식이 잘못되었습니다.', 412);
+      }
+
+      const { accesstoken, refreshtoken, existUser } =
+        await this.loginService.existUser(email, password); // 2. Users에 ExistUser의 email이 있는지 찾아본다.
+
+      return res.header({ accesstoken, refreshtoken }).status(201).json({
+        nickname: existUser.nickname,
+        msg: '로그인에 성공하였습니다.',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = LoginController;
