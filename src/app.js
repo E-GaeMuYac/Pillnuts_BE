@@ -1,13 +1,15 @@
 const express = require('express');
 const app = express();
 const routes = require('./routes');
+const cors = require('cors');
 const loginRouter = require('./routes/login.route');
 
 require('dotenv').config();
 
 app.use(express.json());
 app.use('/', routes);
-app.use('/login', loginRouter); // kakao로그인 요청이 서버로 온다.
+app.use(cors());
+// app.use('/login', loginRouter); // kakao로그인 요청이 서버로 온다.
 
 const ErrorHandler = require('./middlewares/error.handler.middleware');
 app.use(ErrorHandler);
