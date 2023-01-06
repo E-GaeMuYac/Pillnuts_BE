@@ -66,7 +66,7 @@ class UsersController {
 
   updateUser = async (req, res, next) => {
     try {
-      const userId = 1; //res.locals.user
+      const userId = 4; //res.locals.user
       const schema = Joi.string().required();
       const { nickname, password, filename } = req.body;
       const result = schema.validate(nickname);
@@ -90,7 +90,7 @@ class UsersController {
 
   deleteUser = async (req, res, next) => {
     try {
-      const userId = 1; //res.locals.user
+      const userId = 4; //res.locals.user
       const { password } = req.body;
 
       await this.usersService.deleteUser(userId, password);
