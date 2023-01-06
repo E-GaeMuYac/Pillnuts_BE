@@ -9,6 +9,11 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.DataTypes.INTEGER,
       },
+      itemSeq: {
+        type: Sequelize.DataTypes.INTEGER,
+        unique: true,
+        allowNull: false,
+      },
       itemName: {
         type: Sequelize.DataTypes.STRING,
         unique: true,
@@ -18,36 +23,40 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
       },
+      itemImage: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: true,
+      },
       etcOtcCode: {
         type: Sequelize.DataTypes.STRING,
         allowNull: true,
       },
+      productType: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
+      },
       materialName: {
         type: Sequelize.DataTypes.JSON,
         allowNull: false,
+      },
+      ingrName: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: true,
       },
       validTerm: {
         type: Sequelize.DataTypes.STRING,
         allowNull: true,
       },
       eeDocData: {
-        type: Sequelize.DataTypes.STRING(100000),
+        type: Sequelize.DataTypes.STRING(30000),
         allowNull: true,
       },
       udDocData: {
-        type: Sequelize.DataTypes.STRING(100000),
+        type: Sequelize.DataTypes.STRING(30000),
         allowNull: true,
       },
       nbDocData: {
-        type: Sequelize.DataTypes.JSON(1000000),
-        allowNull: true,
-      },
-      ingrName: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: true,
-      },
-      itemImage: {
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.STRING(1000000),
         allowNull: true,
       },
       createdAt: {

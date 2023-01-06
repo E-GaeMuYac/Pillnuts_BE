@@ -20,16 +20,18 @@ class UsersController {
           .pattern(new RegExp('^[a-zA-Z]+[0-9]+$'))
           .min(8)
           .max(15),
-        confirm: Joi.ref('password'),
+        confirm: Joi.string().required().valid(Joi.ref('password')),
       });
-      const result = await schema.validate(req.body);
+
+      const result = schema.validate(req.body);
+      console.log(result.error);
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
-      const { email, password, nickname } = result.value;
-      await this.usersService.signUp(email, password, nickname);
 
-      return res.status(201).json({ message: '회원가입에 성공하였습니다.' });
+      const { email, password, nickname } = req.body;
+      await this.usersService.signUp(email, password, nickname);
+      return res.status(201).json({ message: '회원가입에 성공하였습니다' });
     } catch (error) {
       next(error);
     }
@@ -54,7 +56,7 @@ class UsersController {
 
   logout = async (req, res, next) => {
     try {
-      const userId = 1; //res.locals.user
+      const { userId } = res.locals;
       await this.usersService.logout(userId);
 
       return res.status(201).json({ message: '로그아웃이 완료되었습니다.' });
@@ -65,16 +67,23 @@ class UsersController {
 
   updateUser = async (req, res, next) => {
     try {
-      const userId = 1; //res.locals.user
+      const { userId } = res.locals;
       const schema = Joi.string().required();
-      const { nickname, password } = req.body;
+      const { nickname, password, filename } = req.body;
       const result = schema.validate(nickname);
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
-      await this.usersService.updateUser(nickname, userId, password);
+      const presignedUrl = await this.usersService.updateUser(
+        nickname,
+        userId,
+        password,
+        filename
+      );
 
-      return res.status(201).json({ message: '정보 수정이 완료되었습니다.' });
+      return res
+        .status(201)
+        .json({ message: '회원정보가 수정되었습니다', presignedUrl });
     } catch (error) {
       next(error);
     }
@@ -82,7 +91,7 @@ class UsersController {
 
   deleteUser = async (req, res, next) => {
     try {
-      const userId = 1; //res.locals.user
+      const { userId } = res.locals;
       const { password } = req.body;
 
       await this.usersService.deleteUser(userId, password);
