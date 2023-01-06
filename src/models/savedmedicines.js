@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   SavedMedicines.init(
     {
-      userId: {
+      savedMedicineId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
