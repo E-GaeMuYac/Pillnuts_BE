@@ -38,8 +38,7 @@ function validateAccessToken(accessToken) {
 // Access Token의 Payload를 가져옵니다.
 function getAccessTokenPayload(accessToken) {
     try {
-        const payload = jwt.verify(accessToken, process.env.SECRET_KEY); // JWT에서 Payload를 가져옵니다.
-        return payload;
+        return jwt.verify(accessToken, process.env.SECRET_KEY); 
     } catch (error) {
         return null;
     }

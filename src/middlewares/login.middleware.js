@@ -29,7 +29,7 @@ next ();
 // Access Token을 검증한다.
 function validateAccessToken(accesstoken) {
     try{
-        jwt.verify(accesstoken, process.env.SALT);
+        jwt.verify(accesstoken, process.env.SECRET_KEY);
         return true;
     } catch (error) {
         return false;
@@ -39,7 +39,7 @@ function validateAccessToken(accesstoken) {
 // Refresh Token을 검증한다.
 function validateRefreshToken(refreshtoken) {
     try{
-        jwt.verify(refreshtoken, process.env.SALT);
+        jwt.verify(refreshtoken, process.env.SECRET_KEY);
         return true;
     } catch (error) {
         return false;
