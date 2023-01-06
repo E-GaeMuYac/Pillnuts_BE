@@ -4,21 +4,22 @@ const { Users } = require('../models');
 
 module.exports = async (req, res, next) => {
     try {
-        // 토큰이 없을 경우
-        const accessToken = req.headers.accesstoken;
-        if (!req.headers.accesstoken) {
-            throw new AuthenticationError("accessToken이 없습니다.", 404)
-        };
-
         const refreshToken = req.headers.refreshtoken;
+
+        // 토큰이 없을 경우
+        let accessToken = req.headers.accesstoken;
+        if (!refreshToken) {
+            throw new AuthenticationError("로그인이 필요합니다.",
+             401)
+        };
 
         // access token, refresh token 확인
         const isAccessTokenValidate = validateAccessToken(accessToken);
         const isRefreshTokenValidate = validateRefreshToken(refreshToken);
 
-         // RefreshToken이 만료일 경우,
+         // RefreshToken이 없을 경우,
          if (!isRefreshTokenValidate) {
-            throw new AuthenticationError("로그인이 유효하지 않습니다.",
+            throw new AuthenticationError("로그인이 필요합니다.",
             401)
         };
         
@@ -37,7 +38,7 @@ module.exports = async (req, res, next) => {
             // 새로운 Access token을 발급해준다.
             const newAccessToken = createAccessToken(user.userId);
             res.header('accesstoken', newAccessToken);
-            accesstoken = newAccessToken;
+            accessToken = newAccessToken;
         }
 
         const { userId } = getAccessTokenPayload(accessToken);
@@ -74,6 +75,6 @@ function getAccessTokenPayload(accessToken) {
     try {
         return jwt.verify(accessToken, process.env.SECRET_KEY); 
     } catch (error) {
-        return null;
+        return false;
     }
 }
