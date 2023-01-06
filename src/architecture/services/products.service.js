@@ -236,22 +236,6 @@ class ProductService {
     });
   };
 
-  // 저장(찜)한 제품 삭제하기
-  deleteDibsProduct = async (medicineId, userId) => {
-    let product = await this.productsRepository.findOneProduct(medicineId);
-    if (!product) throw new ValidationError('제품 정보가 없습니다.', 412);
-    const deletedibs = await this.productsRepository.deleteDibsProduct(
-      medicineId,
-      userId
-    );
-    if (!deletedibs)
-      throw new ValidationError(
-        '게시글이 정상적으로 삭제되지 않았습니다.',
-        500
-      );
-    return;
-  };
-
   // 제품 목록 조회 (검색) - 더 많이 수정 해야함 아직 미완성
   findMedicines = async (type, value) => {
     let medicines = [];
