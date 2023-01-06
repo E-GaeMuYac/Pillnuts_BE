@@ -27,11 +27,10 @@ class ProductController {
     try {
       if (!req.params.medicineId)
         throw new InvalidParamsError('제품 정보가 없습니다.', 412);
-      // if (!res.locals.user)
-      //   throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
+      if (!res.locals.user)
+        throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
       const { medicineId } = req.params;
-      // const userId = res.locals.user;
-      const userId = 2;
+      const userId = res.locals.user;
 
       const result = await this.productService.dibsProduct(medicineId, userId);
       return res.status(200).json({ msg: `${result}에 성공하였습니다.` });
@@ -43,10 +42,9 @@ class ProductController {
   // 저장(찜)한 제품 목록 가져오기
   getDibsProducts = async (req, res, next) => {
     try {
-      // if (!res.locals.user)
-      //   throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
-      // const userId = res.locals.user;
-      const userId = 2;
+      if (!res.locals.user)
+        throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
+      const userId = res.locals.user;
 
       const dibs = await this.productService.getDibsProducts(userId);
 
@@ -61,11 +59,10 @@ class ProductController {
     try {
       if (!req.params.medicineId)
         throw new InvalidParamsError('제품 정보가 없습니다.', 412);
-      // if (!res.locals.user)
-      //   throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
+      if (!res.locals.user)
+        throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
       const { medicineId } = req.params;
-      // const userId = res.locals.user;
-      const userId = 2;
+      const userId = res.locals.user;
 
       await this.productService.deleteDibsProduct(medicineId, userId);
       return res.status(200).json({ msg: '삭제에 성공하였습니다.' });
