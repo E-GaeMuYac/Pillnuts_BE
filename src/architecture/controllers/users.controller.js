@@ -24,6 +24,7 @@ class UsersController {
       });
 
       const result = schema.validate(req.body);
+      console.log(result.error);
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
@@ -55,7 +56,7 @@ class UsersController {
 
   logout = async (req, res, next) => {
     try {
-      const userId = 1; //res.locals.user
+      const { userId } = res.locals;
       await this.usersService.logout(userId);
 
       return res.status(201).json({ message: '로그아웃이 완료되었습니다.' });
@@ -66,7 +67,7 @@ class UsersController {
 
   updateUser = async (req, res, next) => {
     try {
-      const userId = 4; //res.locals.user
+      const { userId } = res.locals;
       const schema = Joi.string().required();
       const { nickname, password, filename } = req.body;
       const result = schema.validate(nickname);
@@ -90,7 +91,7 @@ class UsersController {
 
   deleteUser = async (req, res, next) => {
     try {
-      const userId = 4; //res.locals.user
+      const { userId } = res.locals;
       const { password } = req.body;
 
       await this.usersService.deleteUser(userId, password);
