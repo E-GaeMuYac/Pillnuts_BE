@@ -8,11 +8,13 @@ const productController = new ProductController();
 router.get('/saved', productController.createProducts);
 // 저장(찜)한 제품 목록 가져오기
 router.get('/dibs', productController.getDibsProducts);
-// 제품 저장하기 (찜하기)
-router.post('/:medicineId', productController.dibsProduct);
-// 저장(찜)한 제품 삭제하기
-router.delete('/:medicineId', productController.deleteDibsProduct);
+// 제품 비교하기
+router.get('/compare', productController.compareProducts);
 // 제품 목록 조회 (검색)
-router.get('/medicine', productController.findMedicines);
+router.get('/medicines', productController.findMedicines);
+// 제품 저장, 삭제하기 (찜하기)
+router.put('/:medicineId/dibs', productController.dibsProduct);
+// 제품 상세 조회
+router.get('/:medicineId', productController.findOneMedicine);
 
 module.exports = router;

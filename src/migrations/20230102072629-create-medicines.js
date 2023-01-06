@@ -48,15 +48,15 @@ module.exports = {
         allowNull: true,
       },
       eeDocData: {
-        type: Sequelize.DataTypes.STRING(100000),
+        type: Sequelize.DataTypes.STRING(30000),
         allowNull: true,
       },
       udDocData: {
-        type: Sequelize.DataTypes.STRING(100000),
+        type: Sequelize.DataTypes.STRING(30000),
         allowNull: true,
       },
       nbDocData: {
-        type: Sequelize.DataTypes.JSON(1000000),
+        type: Sequelize.DataTypes.STRING(1000000),
         allowNull: true,
       },
       createdAt: {

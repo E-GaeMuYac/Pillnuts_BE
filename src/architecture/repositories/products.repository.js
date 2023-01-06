@@ -46,9 +46,7 @@ class ProductRepository {
     nbDocData
   ) => {
     await Medicines.update(
-      { where: { itemSeq } },
       {
-        itemSeq,
         itemName,
         entpName,
         itemImage,
@@ -60,7 +58,8 @@ class ProductRepository {
         eeDocData,
         udDocData,
         nbDocData,
-      }
+      },
+      { where: { itemSeq } }
     );
   };
 
@@ -73,10 +72,25 @@ class ProductRepository {
   };
 
   // 저장하기 (찜하기)
-  dibsProduct = async (medicineId, userId) => {
+  createDibs = async (medicineId, userId) => {
     return SavedMedicines.create({
       medicineId,
       userId,
+    });
+  };
+
+  // 저장하기 취소 (찜취소)
+  deleteDibs = async (medicineId, userId) => {
+    return SavedMedicines.destroy({
+      where: { medicineId, userId },
+    });
+  };
+
+  // 이미 저장(찜)한 것인 지 확인
+  findOneDibs = async (medicineId, userId) => {
+    return SavedMedicines.findOne({
+      raw: true,
+      where: { medicineId, userId },
     });
   };
 
@@ -89,7 +103,6 @@ class ProductRepository {
       include: [
         {
           model: Medicines,
-          as: 'Medicine',
           attributes: [
             'medicineId',
             'itemName',
@@ -103,9 +116,11 @@ class ProductRepository {
     });
   };
 
-  deleteDibsProduct = async (medicineId, userId) => {
-    return SavedMedicines.destroy({
-      where: { medicineId, userId },
+  // 제품 상세 조회
+  findOneMedicine = async (medicineId) => {
+    return Medicines.findOne({
+      raw: true,
+      where: { medicineId },
     });
   };
 }

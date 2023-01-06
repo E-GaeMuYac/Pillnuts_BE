@@ -27,14 +27,14 @@ class ProductController {
     try {
       if (!req.params.medicineId)
         throw new InvalidParamsError('제품 정보가 없습니다.', 412);
-      if (!res.locals.user)
-        throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
-
+      // if (!res.locals.user)
+      //   throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
       const { medicineId } = req.params;
-      const userId = res.locals.user;
+      // const userId = res.locals.user;
+      const userId = 2;
 
-      await this.productService.dibsProduct(medicineId, userId);
-      return res.status(200).json({ msg: '저장에 성공하였습니다.' });
+      const result = await this.productService.dibsProduct(medicineId, userId);
+      return res.status(200).json({ msg: `${result}에 성공하였습니다.` });
     } catch (error) {
       next(error);
     }
@@ -43,10 +43,10 @@ class ProductController {
   // 저장(찜)한 제품 목록 가져오기
   getDibsProducts = async (req, res, next) => {
     try {
-      if (!res.locals.user)
-        throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
-
-      const userId = res.locals.user;
+      // if (!res.locals.user)
+      //   throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
+      // const userId = res.locals.user;
+      const userId = 2;
 
       const dibs = await this.productService.getDibsProducts(userId);
 
@@ -61,11 +61,11 @@ class ProductController {
     try {
       if (!req.params.medicineId)
         throw new InvalidParamsError('제품 정보가 없습니다.', 412);
-      if (!res.locals.user)
-        throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
-
+      // if (!res.locals.user)
+      //   throw new AuthenticationError('로그인이 필요한 서비스 입니다.', 401);
       const { medicineId } = req.params;
-      const userId = res.locals.user;
+      // const userId = res.locals.user;
+      const userId = 2;
 
       await this.productService.deleteDibsProduct(medicineId, userId);
       return res.status(200).json({ msg: '삭제에 성공하였습니다.' });
@@ -74,17 +74,52 @@ class ProductController {
     }
   };
 
-  // 제품 목록 조회 (검색)
+  // 제품 목록 조회 (검색) - 조금 더 만들어야함
   findMedicines = async (req, res, next) => {
     try {
-      if (!eq.query.type || !req.query.value)
+      if (!req.query.type || !req.query.value)
         throw InvalidParamsError('검색어를 확인해주세요.', 412);
+      //type을 세가지로 받을 예정
+      //itemName : 제품명, productType : 효능효과타입, materialName : 성분명
       const { type, value } = req.query;
 
-      return this.productService.findMedicines(type, value);
+      const products = this.productService.findMedicines(type, value);
+
+      res.status(200).json({ products });
     } catch (error) {
       next(error);
     }
+  };
+
+  // 제품 상세 조회
+  findOneMedicine = async (req, res, next) => {
+    try {
+      if (!req.params.medicineId)
+        throw new InvalidParamsError('약품 번호를 다시 확인해주세요.', 412);
+      const { medicineId } = req.params;
+
+      const product = await this.productService.findOneMedicine(medicineId);
+
+      res.status(200).json({ product });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // 제품 비교하기
+  compareProducts = async (req, res, next) => {
+    try {
+      if (!req.params)
+        throw new InvalidParamsError('비교 할 약품을 다시 확인해주세요.', 412);
+      const { compareA, compareB } = req.query;
+      if (!compareA || !compareB)
+        throw new InvalidParamsError('비교 할 약품을 다시 확인해주세요.', 412);
+
+      const productA = await this.productService.findOneMedicine(compareA);
+      const productB = await this.productService.findOneMedicine(compareB);
+
+      res.status(200).json({ compareA: productA, compareB: productB });
+    } catch (error) {}
   };
 }
 module.exports = ProductController;

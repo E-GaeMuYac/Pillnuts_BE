@@ -13,7 +13,7 @@ class ProductService {
 
   // api 등록하기
   createProducts = async () => {
-    for (let p = 1; p <= 1000; p++) {
+    for (let p = 1140; p <= 2000; p++) {
       //==================================기본 데이터들==========================================
       let {
         data: {
@@ -61,17 +61,23 @@ class ProductService {
           materialName.push(material);
         }
       }
+
       // 첨가물
       let ingrName = '';
-      for (let x = 0; x < ingredients.split('|').length; x++) {
-        if (ingredients.split('|').length === 1) {
-          ingrName += ingredients.split(']')[1];
-        } else if (x === ingredients.split('|').length - 1) {
-          ingrName += ingredients.split('|')[x].split(']')[1];
-        } else {
-          ingrName += ingredients.split('|')[x].split(']')[1] + ',';
+      if (ingredients === null) {
+        ingrName = ingredients;
+      } else if (ingredients.includes('|')) {
+        for (let x = 0; x < ingredients.split('|').length; x++) {
+          if (x === ingredients.split('|').length - 1) {
+            ingrName += ingredients.split('|')[x].split(']')[1];
+          } else {
+            ingrName += ingredients.split('|')[x].split(']')[1] + ',';
+          }
         }
+      } else {
+        ingrName += ingredients.split(']')[1];
       }
+
       // 효능효과
       const check = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
       let eeDocData = '';
@@ -85,16 +91,19 @@ class ProductService {
         }
       }
       // 용법용량
-      let udDocData = [];
-      for (let i = 0; i < udDoc.split('<').length; i++) {
-        if (check.test(udDoc.split('<')[i])) {
-          udDocData +=
-            udDoc
-              .split('<')
-              [i].replace(/[^(|)|,|.| |0-9|가-힣]/g, '')
-              .trim() + '\n';
+      let udDocData = '';
+      if (udDoc !== null) {
+        for (let i = 0; i < udDoc.split('<').length; i++) {
+          if (check.test(udDoc.split('<')[i])) {
+            udDocData +=
+              udDoc
+                .split('<')
+                [i].replace(/[^(|)|,|.| |0-9|가-힣]/g, '')
+                .trim() + '\n';
+          }
         }
       }
+
       // 주의사항
       let nbDocData = [];
       for (let i = 0; i < nbDoc.split('<').length; i++) {
@@ -156,6 +165,8 @@ class ProductService {
       }
 
       let product = await this.productsRepository.findOneProduct(itemSeq);
+      console.log('몇번 째 저장중인지 : ', p);
+      console.log('새로운 것(false), 기존 것(true) : ', Boolean(product));
       if (!product) {
         await this.productsRepository.createProducts(
           itemSeq, //등록 번호 > 깔끔하게 빼버리기
@@ -193,23 +204,34 @@ class ProductService {
 
   // 저장하기 (찜하기)
   dibsProduct = async (medicineId, userId) => {
-    let product = await this.productsRepository.findOneProduct(medicineId);
+    const product = await this.productsRepository.findOneMedicine(medicineId);
     if (!product) throw new ValidationError('제품 정보가 없습니다.', 412);
-    return this.productsRepository.dibsProduct(medicineId, userId);
+    const dibsProduct = await this.productsRepository.findOneDibs(
+      medicineId,
+      userId
+    );
+    if (!dibsProduct) {
+      await this.productsRepository.createDibs(medicineId, userId);
+      return '저장';
+    } else {
+      await this.productsRepository.deleteDibs(medicineId, userId);
+      return '삭제';
+    }
   };
 
   // 저장(찜)한 제품 목록 가져오기
   getDibsProducts = async (userId) => {
     const dibsProducts = await this.productsRepository.getDibsProducts(userId);
+    console.log(dibsProducts);
     if (!dibsProducts) return [];
     return dibsProducts.map((dibs) => {
       return {
-        medicineId: dibs.Medicine.medicineId,
-        itemName: dibs.Medicine.itemName,
-        entpName: dibs.Medicine.entpName,
-        etcOtcCode: dibs.Medicine.etcOtcCode,
-        productType: dibs.Medicine.productType,
-        itemImage: dibs.Medicine.itemImage,
+        medicineId: dibs['Medicine.medicineId'],
+        itemName: dibs['Medicine.itemName'],
+        entpName: dibs['Medicine.entpName'],
+        etcOtcCode: dibs['Medicine.etcOtcCode'],
+        productType: dibs['Medicine.productType'],
+        itemImage: dibs['Medicine.itemImage'],
       };
     });
   };
@@ -230,7 +252,7 @@ class ProductService {
     return;
   };
 
-  // 제품 목록 조회 (검색)
+  // 제품 목록 조회 (검색) - 더 많이 수정 해야함 아직 미완성
   findMedicines = async (type, value) => {
     let medicines = [];
     if (type === '') {
@@ -238,6 +260,15 @@ class ProductService {
     } else if (type === '') {
       medicines = await this.productsRepository.findMedicines(value);
     }
+    return medicines || [];
+  };
+
+  // 제품 상세 조회
+  findOneMedicine = async (medicineId) => {
+    const product = await this.productsRepository.findOneMedicine(medicineId);
+    if (!product)
+      throw new ValidationError('약품 정보를 찾을 수 없습니다.', 412);
+    return product;
   };
 }
 
