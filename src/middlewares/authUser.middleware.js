@@ -5,12 +5,12 @@ const { Users } = require('../models');
 module.exports = async (req, res, next) => {
     try {
         // 토큰이 없을 경우
-        if (!req.headers.token) {
+        const accessToken = req.headers.accesstoken;
+        if (!req.headers.accesstoken) {
             throw new AuthenticationError("accessToken이 없습니다.", 404)
         };
 
-        const accessToken = req.headers.token;
-        const refreshToken = req.headers.token;
+        const refreshToken = req.headers.refreshtoken;
 
         // access token, refresh token 확인
         const isAccessTokenValidate = validateAccessToken(accessToken);
@@ -68,7 +68,6 @@ function validateRefreshToken(refreshToken) {
         return false;
     }
 }
-
 
 // Access Token의 Payload를 가져온다.
 function getAccessTokenPayload(accessToken) {
