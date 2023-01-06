@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const loginMiddleware = require('../middlewares/login.middleware');
 
-router.use('/users', require('./users.route'));
 router.use('/api/users/login', loginMiddleware, require('./login.route'));
 
 

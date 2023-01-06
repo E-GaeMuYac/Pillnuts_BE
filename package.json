@@ -31,11 +31,11 @@
     "mysql2": "^2.3.3",
     "passport": "^0.6.0",
     "passport-kakao": "^1.0.1",
-    "prettier": "^2.8.1",
     "sequelize": "^6.28.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20",
+    "prettier": "^2.8.1",
     "sequelize-cli": "^6.5.2"
   }
 }
