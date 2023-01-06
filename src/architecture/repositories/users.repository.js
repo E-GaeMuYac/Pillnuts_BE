@@ -26,10 +26,11 @@ class UsersRepository {
     );
   };
 
-  updateUser = async (nickname, userId) => {
+  updateUser = async (nickname, userId, imageUrl) => {
     await this.usersModel.update(
       {
         nickname,
+        imageUrl,
       },
       { where: { userId } }
     );

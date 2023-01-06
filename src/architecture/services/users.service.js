@@ -1,6 +1,7 @@
 const UsersRepository = require('../repositories/users.repository');
 const { Users } = require('../../models/index.js');
 
+const createUrl = require('../../util/presignedUrl');
 const hash = require('../../util/encryption');
 const compare = require('../../util/compare');
 
@@ -41,7 +42,7 @@ class UsersService {
     await this.usersRepository.deleteToken(userId);
   };
 
-  updateUser = async (nickname, userId, password) => {
+  updateUser = async (nickname, userId, password, filename) => {
     const user = await this.usersRepository.findUser({
       raw: true,
       where: { userId },
@@ -49,11 +50,23 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('정보 수정에 실패하였습니다.');
     }
+
     const checkPW = compare(password, user.password);
     if (!checkPW) {
       throw new AuthenticationError('패스워드를 다시 확인해주세요.');
     }
-    await this.usersRepository.updateUser(nickname, userId);
+
+    if (filename) {
+      filename = Date.now() + filename;
+
+      const imageUrl = `${process.env.S3URL}/${filename}`;
+
+      await this.usersRepository.updateUser(nickname, userId, imageUrl);
+
+      return createUrl(`${process.env.BUCKET}/${filename}`);
+    } else {
+      await this.usersRepository.updateUser(nickname, userId);
+    }
   };
 
   deleteUser = async (userId, password) => {
