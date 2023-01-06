@@ -26,7 +26,7 @@ class ProductController {
   dibsProduct = async (req, res, next) => {
     try {
       const { medicineId } = req.params;
-      const userId = res.locals.user;
+      const { userId } = res.locals;
 
       if (!medicineId)
         throw new InvalidParamsError('제품 정보가 없습니다.', 412);
@@ -41,7 +41,7 @@ class ProductController {
   // 저장(찜)한 제품 목록 가져오기
   getDibsProducts = async (req, res, next) => {
     try {
-      const userId = res.locals.user;
+      const { userId } = res.locals;
 
       const dibs = await this.productService.getDibsProducts(userId);
 
