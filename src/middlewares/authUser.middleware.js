@@ -5,20 +5,22 @@ const { Users } = require('../models');
 module.exports = async (req, res, next) => {
   try {
     const refreshToken = req.headers.refreshtoken;
-
     // 토큰이 없을 경우
     let accessToken = req.headers.accesstoken;
     if (!refreshToken) {
-      throw new AuthenticationError('로그인이 필요합니다.', 401);
+      throw new AuthenticationError('로그인이 필요합니다.',
+       401);
     }
+   
 
     // access token, refresh token 확인
     const isAccessTokenValidate = validateAccessToken(accessToken);
     const isRefreshTokenValidate = validateRefreshToken(refreshToken);
 
-    // RefreshToken이 없을 경우,
+    // RefreshToken이 만료일 경우,
     if (!isRefreshTokenValidate) {
-      throw new AuthenticationError('로그인이 필요합니다.', 401);
+      throw new AuthenticationError('로그인이 필요합니다.', 
+      401);
     }
 
     // AccessToken을 확인 했을 때 만료일 경우,
@@ -35,7 +37,7 @@ module.exports = async (req, res, next) => {
       // 새로운 Access token을 발급해준다.
       const newAccessToken = createAccessToken(user.userId);
       res.header('accesstoken', newAccessToken);
-      accessToken = newAccessToken;
+      accessToken = newAccessTokeçn;
     }
 
     const { userId } = getAccessTokenPayload(accessToken);
