@@ -46,11 +46,22 @@ module.exports = async (req, res, next) => {
         next();
     } catch (err) {
         next(err);
+
     }
+
+    const { userId } = getAccessTokenPayload(accessToken);
+    res.locals.userId = userId;
+
+    next();
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ msg: '로그인이 필요합니다.' });
+  }
 };
 
 // Access Token을 검증한다.
 function validateAccessToken(accessToken) {
+
     try {
         jwt.verify(accessToken, process.env.SECRET_KEY); // JWT를 검증한다.
         return true;
@@ -67,13 +78,14 @@ function validateRefreshToken(refreshToken) {
     } catch (error) {
         return false;
     }
+
 }
 
 // Access Token의 Payload를 가져온다.
 function getAccessTokenPayload(accessToken) {
-    try {
-        return jwt.verify(accessToken, process.env.SECRET_KEY); 
-    } catch (error) {
-        return null;
-    }
+  try {
+    return jwt.verify(accessToken, process.env.SECRET_KEY);
+  } catch (error) {
+    return null;
+  }
 }
