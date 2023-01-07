@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       phoneNumber: {
         type: DataTypes.INTEGER,
         unique: true,
-        allowNull: false,
+        allowNull: true,
       },
       refreshtoken: {
         type: DataTypes.STRING,

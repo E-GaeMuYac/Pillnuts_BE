@@ -21,7 +21,7 @@ module.exports = {
       phoneNumber: {
         type: Sequelize.INTEGER,
         unique: true,
-        allowNull: false,
+        allowNull: true,
       },
       refreshtoken: {
         type: Sequelize.STRING,
