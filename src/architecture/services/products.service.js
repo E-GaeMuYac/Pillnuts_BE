@@ -13,7 +13,7 @@ class ProductService {
 
   // api 등록하기
   createProducts = async () => {
-    for (let p = 1140; p <= 2000; p++) {
+    for (let p = 1264; p <= 2000; p++) {
       //==================================기본 데이터들==========================================
       let {
         data: {
