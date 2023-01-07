@@ -14,6 +14,7 @@ class UsersController {
     try {
       const schema = Joi.object().keys({
         email: Joi.string().email().required(),
+        phoneNumber: Joi.number().required(),
         nickname: Joi.string().required(),
         password: Joi.string()
           .required()
@@ -29,8 +30,8 @@ class UsersController {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
 
-      const { email, password, nickname } = req.body;
-      await this.usersService.signUp(email, password, nickname);
+      const { email, password, nickname, phoneNumber } = req.body;
+      await this.usersService.signUp(email, password, nickname, phoneNumber);
       return res.status(201).json({ message: '회원가입에 성공하였습니다' });
     } catch (error) {
       next(error);
