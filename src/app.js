@@ -13,10 +13,10 @@ const corsOption = {
   optionsSuccessStatus: 200,
   exposedHeaders: ['accesstoken', 'refreshtoken'],
 };
-
+app.use(cors(corsOption));
 app.use(express.json());
 app.use('/', routes);
-app.use(cors(corsOption));
+
 // app.use('/login', loginRouter); // kakao로그인 요청이 서버로 온다.
 
 const ErrorHandler = require('./middlewares/error.handler.middleware');
