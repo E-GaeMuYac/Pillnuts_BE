@@ -14,11 +14,14 @@ class UsersController {
     try {
       const schema = Joi.object().keys({
         email: Joi.string().email().required(),
-        phoneNumber: Joi.number().required(),
+        phoneNumber: Joi.string()
+          .length(11)
+          .pattern(/^[0-9]+$/)
+          .required(),
         nickname: Joi.string().required(),
         password: Joi.string()
           .required()
-          .pattern(new RegExp('^[a-zA-Z]+[0-9]+$'))
+          .pattern(/^[a-zA-Z]+[0-9]+$/)
           .min(8)
           .max(15),
         confirm: Joi.string().required().valid(Joi.ref('password')),
