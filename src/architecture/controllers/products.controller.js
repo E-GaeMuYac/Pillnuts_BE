@@ -12,11 +12,26 @@ class ProductController {
     this.productService = new ProductService();
   }
   // api 저장하기
-  // DB는 마리아DB를 사용할 지 MySQL 그대로 사용할 지 noSQL 사용도 생각해보기.
-  createProducts = async (req, res, next) => {
+  updateProductsMain = async (req, res, next) => {
     try {
-      await this.productService.createProducts();
-      return res.status(200).json({ msg: '저장이 완료되었습니다.' });
+      await this.productService.updateProductsMain();
+      return res.status(200).json({ msg: 'main 정보가 업데이트 되었습니다.' });
+    } catch (error) {
+      next(error);
+    }
+  };
+  updateProductsType = async (req, res, next) => {
+    try {
+      await this.productService.updateProductsType();
+      return res.status(200).json({ msg: 'type 정보가 업데이트 되었습니다.' });
+    } catch (error) {
+      next(error);
+    }
+  };
+  updateProductsImage = async (req, res, next) => {
+    try {
+      await this.productService.updateProductsImage();
+      return res.status(200).json({ msg: 'image 정보가 업데이트 되었습니다.' });
     } catch (error) {
       next(error);
     }
@@ -54,15 +69,12 @@ class ProductController {
   // 제품 목록 조회 (검색) - 조금 더 만들어야함
   findMedicines = async (req, res, next) => {
     try {
-      if (!req.query.type || !req.query.value)
-        throw InvalidParamsError('검색어를 확인해주세요.', 412);
-      //type을 세가지로 받을 예정
-      //itemName : 제품명, productType : 효능효과타입, materialName : 성분명
-      const { type, value } = req.query;
+      const { value } = req.query;
+      if (!value) throw new InvalidParamsError('검색어를 확인해주세요.', 412);
 
-      const products = this.productService.findMedicines(type, value);
+      const products = await this.productService.findMedicines(value);
 
-      res.status(200).json({ products });
+      res.status(200).json(products);
     } catch (error) {
       next(error);
     }
