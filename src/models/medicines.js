@@ -30,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       itemName: {
         type: DataTypes.STRING,
-        unique: true,
         allowNull: false,
       },
       entpName: {
@@ -62,15 +61,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       eeDocData: {
-        type: DataTypes.STRING(30000),
+        type: DataTypes.STRING(3000),
         allowNull: true,
       },
       udDocData: {
-        type: DataTypes.STRING(30000),
+        type: DataTypes.STRING(3000),
         allowNull: true,
       },
       nbDocData: {
-        type: DataTypes.STRING(1000000),
+        type: DataTypes.STRING(100000),
         allowNull: true,
       },
       createdAt: {

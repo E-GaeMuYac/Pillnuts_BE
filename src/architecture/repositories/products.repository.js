@@ -1,43 +1,40 @@
 const { Medicines, SavedMedicines } = require('../../models');
+const { Op } = require('sequelize');
 
 class ProductRepository {
   //api 저장하기
-  createProducts = async (
+  createProductsMain = async (
     itemSeq,
     itemName,
     entpName,
-    itemImage,
     etcOtcCode,
-    productType,
     materialName,
     ingrName,
     validTerm,
     eeDocData,
     udDocData,
-    nbDocData
+    nbDocData,
+    productType
   ) => {
     await Medicines.create({
       itemSeq,
       itemName,
       entpName,
-      itemImage,
       etcOtcCode,
-      productType,
       materialName,
       ingrName,
       validTerm,
       eeDocData,
       udDocData,
       nbDocData,
+      productType,
     });
   };
-  updateProducts = async (
+  updateProductsMain = async (
     itemSeq,
     itemName,
     entpName,
-    itemImage,
     etcOtcCode,
-    productType,
     materialName,
     ingrName,
     validTerm,
@@ -49,9 +46,7 @@ class ProductRepository {
       {
         itemName,
         entpName,
-        itemImage,
         etcOtcCode,
-        productType,
         materialName,
         ingrName,
         validTerm,
@@ -63,11 +58,61 @@ class ProductRepository {
     );
   };
 
+  updateProductsType = async (itemSeq, productType) => {
+    return Medicines.update({ productType }, { where: { itemSeq } });
+  };
+
+  updateProductsImage = async (itemSeq, itemImage) => {
+    return Medicines.update({ itemImage }, { where: { itemSeq } });
+  };
+
+  // 전체 데이터 조회, 데이터는 itemSeq만
+  findAllProducts = async () => {
+    return Medicines.findAll({
+      raw: true,
+      attributes: ['itemSeq'],
+    });
+  };
+
   // 하나 찾기
   findOneProduct = async (itemSeq) => {
     return Medicines.findOne({
       raw: true,
       where: { itemSeq },
+    });
+  };
+
+  findSearchProduct = async (searchValue) => {
+    //itemName : 제품명, productType : 타입, eeDocData: 효능효과
+    return Medicines.findAll({
+      raw: true,
+      where: {
+        [Op.or]: [
+          {
+            itemName: {
+              [Op.like]: searchValue,
+            },
+          },
+          {
+            productType: {
+              [Op.like]: searchValue,
+            },
+          },
+          {
+            eeDocData: {
+              [Op.like]: searchValue,
+            },
+          },
+        ],
+      },
+      attributes: [
+        'medicineId',
+        'itemName',
+        'entpName',
+        'etcOtcCode',
+        'productType',
+        'itemImage',
+      ],
     });
   };
 
