@@ -5,11 +5,12 @@ class UsersRepository {
     this.usersModel = UsersModel;
   }
 
-  signUp = async (email, password, nickname) => {
+  signUp = async (email, password, nickname, phoneNumber) => {
     await this.usersModel.create({
       email,
       password,
       nickname,
+      phoneNumber,
     });
   };
 
