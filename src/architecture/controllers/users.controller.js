@@ -102,6 +102,17 @@ class UsersController {
     }
   };
 
+  findUser = async (req, res, next) => {
+    try {
+      const { userId } = res.locals;
+      const user = await this.usersService.findUser(userId);
+
+      return res.status(200).json({ user });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   updateUser = async (req, res, next) => {
     try {
       const { userId } = res.locals;
