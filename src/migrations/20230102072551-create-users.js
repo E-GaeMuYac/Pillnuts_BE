@@ -23,6 +23,11 @@ module.exports = {
         unique: true,
         allowNull: true,
       },
+      loginCount: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        defaultValue: [],
+      },
       refreshtoken: {
         type: Sequelize.STRING,
         unique: true,

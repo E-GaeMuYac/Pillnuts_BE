@@ -1,5 +1,4 @@
 const UsersService = require('../services/users.service');
-const url = require('url');
 const Joi = require('joi');
 
 const {
@@ -43,7 +42,7 @@ class UsersController {
 
   duplicateCheck = async (req, res, next) => {
     try {
-      const { email } = url.parse(req.url, true).query;
+      const { email } = req.query;
       const result = Joi.string().email().required().validate(email);
 
       if (result.error) {
