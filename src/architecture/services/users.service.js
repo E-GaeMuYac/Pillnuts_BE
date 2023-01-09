@@ -76,6 +76,20 @@ class UsersService {
     await this.usersRepository.deleteToken(userId);
   };
 
+  findUser = async (userId) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { userId },
+    });
+    if (!user) {
+      throw new InvalidParamsError('정보 조회에 실패하였습니다.');
+    }
+    const { nickname, imageUrl } = user;
+    const loginCount = user.loginCount.length;
+
+    return { nickname, loginCount, imageUrl };
+  };
+
   updateUser = async (nickname, userId, password, filename) => {
     const user = await this.usersRepository.findUser({
       raw: true,

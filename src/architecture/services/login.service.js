@@ -6,6 +6,7 @@ const {
 
 const bcrypt = require('bcrypt');
 const compare = require('../../util/compare');
+const formatDate = require('../../util/formatDate');
 
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
@@ -33,7 +34,19 @@ class LoginService {
     const accesstoken = await createAccessToken(existUser.userId); // 4. 비밀번호가 일치한다면, access token + refresh token을 발급해준다. (헤더(표준이라서..ㅎ*)에 넣어줘서 프론트로 보내준다.)
     const refreshtoken = await createRefreshToken();
 
-    await this.loginRepository.updateUser(existUser.userId, refreshtoken);
+    const today = formatDate(new Date());
+    const loginCount = existUser.loginCount;
+    const existLogin = loginCount.filter((day) => day == today);
+
+    if (!existLogin.length) {
+      loginCount.push(today);
+    }
+
+    await this.loginRepository.updateUser(
+      existUser.userId,
+      refreshtoken,
+      loginCount
+    );
     return { accesstoken, refreshtoken, existUser }; // 5. 로그인 성공!
   };
 }
