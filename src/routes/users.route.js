@@ -7,6 +7,8 @@ const usersController = new UsersController();
 
 router.post('/signup', loginMiddleware, usersController.signUp);
 router.get('/signup', usersController.duplicateCheck);
+router.get('/find/email', loginMiddleware, usersController.findEmail);
+router.put('/find/password', loginMiddleware, usersController.findPassword);
 router.put('/logout', authMiddleware, usersController.logout);
 router.put('/update', authMiddleware, usersController.updateUser);
 router.delete('/delete', authMiddleware, usersController.deleteUser);

@@ -28,7 +28,7 @@ class UsersController {
       });
 
       const result = schema.validate(req.body);
-      console.log(result.error);
+
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
@@ -53,6 +53,40 @@ class UsersController {
       await this.usersService.duplicateCheck(email);
 
       return res.status(200).json({ message: '사용가능한 이메일입니다.' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  findEmail = async (req, res, next) => {
+    try {
+      const { phoneNumber } = req.body;
+      const email = await this.usersService.findEmail(phoneNumber);
+
+      return res.status(200).json({ email });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  findPassword = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const result = Joi.string()
+        .required()
+        .pattern(/^[a-zA-Z]+[0-9]+$/)
+        .min(8)
+        .max(15)
+        .validate(password);
+      if (result.error) {
+        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+      }
+
+      await this.usersService.findPassword(email, password);
+
+      return res
+        .status(200)
+        .json({ message: '비밀번호가 정상적으로 변경되었습니다.' });
     } catch (error) {
       next(error);
     }
