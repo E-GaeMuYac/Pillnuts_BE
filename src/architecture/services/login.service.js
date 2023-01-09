@@ -11,7 +11,6 @@ const formatDate = require('../../util/formatDate');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const { createAccessToken, createRefreshToken } = require('../../util/token');
-const { STRING, NUMBER } = require('sequelize');
 
 class LoginService {
   loginRepository = new LoginRepository();
