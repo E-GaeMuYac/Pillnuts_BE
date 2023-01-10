@@ -31,6 +31,40 @@ class UsersService {
     }
   };
 
+  findEmail = async (phoneNumber) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { phoneNumber },
+    });
+    if (!user) {
+      throw new InvalidParamsError('해당하는 사용자가 없습니다.');
+    }
+    return user.email;
+  };
+
+  findPassword = async (email, password) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { email },
+    });
+    if (!user) {
+      throw new InvalidParamsError('해당하는 사용자가 없습니다.');
+    }
+    const checkPW = compare(password, user.password);
+    if (checkPW) {
+      throw new AuthenticationError('동일한 비밀번호입니다.');
+    }
+
+    password = hash(password);
+
+    await this.usersRepository.updateUser(
+      {
+        password,
+      },
+      { where: { email } }
+    );
+  };
+
   logout = async (userId) => {
     const user = await this.usersRepository.findUser({
       raw: true,
@@ -40,6 +74,20 @@ class UsersService {
       throw new InvalidParamsError('로그아웃에 실패하였습니다.');
     }
     await this.usersRepository.deleteToken(userId);
+  };
+
+  findUser = async (userId) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { userId },
+    });
+    if (!user) {
+      throw new InvalidParamsError('정보 조회에 실패하였습니다.');
+    }
+    const { nickname, imageUrl } = user;
+    const loginCount = user.loginCount.length;
+
+    return { nickname, loginCount, imageUrl };
   };
 
   updateUser = async (nickname, userId, password, filename) => {
@@ -61,11 +109,22 @@ class UsersService {
 
       const imageUrl = `${process.env.S3URL}/${filename}`;
 
-      await this.usersRepository.updateUser(nickname, userId, imageUrl);
+      await this.usersRepository.updateUser(
+        {
+          nickname,
+          imageUrl,
+        },
+        { where: { userId } }
+      );
 
       return createUrl(`${process.env.BUCKET}/${filename}`);
     } else {
-      await this.usersRepository.updateUser(nickname, userId);
+      await this.usersRepository.updateUser(
+        {
+          nickname,
+        },
+        { where: { userId } }
+      );
     }
   };
 

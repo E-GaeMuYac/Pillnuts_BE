@@ -33,9 +33,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       phoneNumber: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         unique: true,
         allowNull: true,
+      },
+      loginCount: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: [],
       },
       refreshtoken: {
         type: DataTypes.STRING,

@@ -10,9 +10,9 @@ class LoginRepository {
     return user;
   };
 
-  updateUser = async (userId, refreshtoken) => {
+  updateUser = async (userId, refreshtoken, loginCount) => {
     await Users.update(
-      { refreshtoken }, // ->userId가 일치하면, refresh token을 갱신(update)해준다.
+      { refreshtoken, loginCount }, // ->userId가 일치하면, refresh token을 갱신(update)해준다.
       { where: { userId } } // Users에서 일치하는 userId만 데려온다.
     );
   };
