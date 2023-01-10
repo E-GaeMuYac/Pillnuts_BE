@@ -9,7 +9,9 @@ class PostsService {
     await this.postsRepository.createPost(content);
   };
 
-  findPost = async () => {};
+  findPost = async () => {
+    return this.postsRepository.findPost();
+  };
 }
 
 module.exports = PostsService;
