@@ -10,19 +10,9 @@ const loginController = new LoginController();
 router.post('/normal', loginMiddleware, loginController.Login);
 
 // google Login
-router.get('/google', passport.authenticate('google', { scope: ['email'] }));
-router.get(
-  '/google/callback',
-  passport.authenticate(
-    'google',
-    { successRedirect: 'http://localhost:3000/api/users/login',
-      failureRedirect: 'http://localhost:3000/api/users/login/google/callback', // GoogleStrategy에서 실패하면 이 주소로 이동
-    },
-
-  )
-);
+router.get('/google', loginController.Google);
+router.get('/google/callback', loginController.GoogleCallback);
 router.get('/', loginController.ResponseToken);
-
 
 // kakao Login
 // router.get('/kakao', passport.authenticate('kakao')); // /kakao요청이 서버로 오면, 카카오 로그인 페이지로 이동하고, 카카오 서버를 통해 카카오 로그인을 하게 되면, 다음 라우터로 요청한다.

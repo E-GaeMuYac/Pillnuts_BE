@@ -3,9 +3,9 @@ const session = require('express-session');
 const app = express();
 const routes = require('./routes');
 const cors = require('cors');
-const passport = require('passport');  
-const passportConfig = require("./passport/index");
-passportConfig()
+const passport = require('passport');
+const passportConfig = require('./passport/index');
+passportConfig();
 
 require('dotenv').config();
 
@@ -19,11 +19,9 @@ const corsOption = {
 app.use(cors(corsOption));
 app.use(express.json());
 
-
 const ErrorHandler = require('./middlewares/error.handler.middleware');
 const { ApplicationCostProfiler } = require('aws-sdk');
 app.use(ErrorHandler);
-
 
 app.use(
   session({
@@ -31,12 +29,11 @@ app.use(
     saveUninitialized: false,
     secret: process.env.SESSION_SECRET,
   })
-)
+);
 // express-session이 router 위에 와야함
 app.use(passport.initialize()); // 요청 객체에 passport 설정을 심음
 app.use(passport.session()); // req.session 객체에 passport 정보를 추가 저장
 // passport.session()이 실행되면, 세션쿠키 정보를 바탕으로 해서 passport/index.js의 deserializeUser()가 실행하게 됨
-
 
 app.use('/', routes);
 
@@ -49,4 +46,3 @@ app.get('/', (req, res) => {
 });
 
 module.exports = app;
- 
