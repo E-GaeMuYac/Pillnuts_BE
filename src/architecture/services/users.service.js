@@ -16,9 +16,9 @@ class UsersService {
     this.usersRepository = new UsersRepository(Users);
   }
 
-  signUp = async (email, password, nickname) => {
+  signUp = async (email, password, nickname, phoneNumber) => {
     password = hash(password);
-    await this.usersRepository.signUp(email, password, nickname);
+    await this.usersRepository.signUp(email, password, nickname, phoneNumber);
   };
 
   duplicateCheck = async (email) => {

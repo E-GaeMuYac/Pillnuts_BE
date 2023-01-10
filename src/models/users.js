@@ -32,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
         allowNull: false,
       },
+      phoneNumber: {
+        type: DataTypes.INTEGER,
+        unique: true,
+        allowNull: true,
+      },
       refreshtoken: {
         type: DataTypes.STRING,
         unique: true,
@@ -39,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       imageUrl: {
         type: DataTypes.STRING,
