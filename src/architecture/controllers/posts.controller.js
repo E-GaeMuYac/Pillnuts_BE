@@ -20,7 +20,7 @@ class PostsController {
   findPost = async (req, res, next) => {
     try {
       const { post } = await this.postsService.findPost();
-      return res.status(201).json({ post });
+      return res.status(200).json({ post });
     } catch (error) {
       next(error);
     }
