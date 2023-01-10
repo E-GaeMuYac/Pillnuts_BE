@@ -34,7 +34,7 @@ module.exports = () => {
               { where: { userId: exUser.userId } }
             );
             const accesstoken = await createAccessToken(exUser.userId);
-            done(null, [accesstoken, refreshtoken, exUser, true]);
+            done(null, [ accesstoken, refreshtoken, exUser ]);
           } else {
             let nickname = profile._json.nickname;
             if (!nickname) {
@@ -50,7 +50,6 @@ module.exports = () => {
             done(null, [accesstoken, refreshtoken]); // 회원가입하고 로그인 인증 완료
           }
         } catch (error) {
-          console.error(error);
           done(error);
         }
       }
