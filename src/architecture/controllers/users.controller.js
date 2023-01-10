@@ -116,9 +116,8 @@ class UsersController {
   updateUser = async (req, res, next) => {
     try {
       const { userId } = res.locals;
-      const schema = Joi.string().required();
       const { nickname, password, filename } = req.body;
-      const result = schema.validate(nickname);
+      const result = Joi.string().required().validate(nickname);
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
