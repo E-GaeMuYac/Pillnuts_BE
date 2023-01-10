@@ -10,7 +10,11 @@ class PostsService {
   };
 
   findPost = async () => {
-    return this.postsRepository.findPost();
+    const post = await this.postsRepository.findPost();
+    if (!post) {
+      throw new Error('글 조회에 실패하였습니다.');
+    }
+    return post;
   };
 }
 
