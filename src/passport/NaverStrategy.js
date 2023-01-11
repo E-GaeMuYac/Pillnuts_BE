@@ -19,7 +19,6 @@ module.exports = () => {
       async (request, accessToken, refreshToken, profile, done) => {
         try {
           // 네이버 플랫폼에서 로그인 했고 & 소셜 로그인 한 경우
-          console.log(profile._json.response.email);
           const exUser = await Users.findOne({
             where: {
               email: profile._json.response.email,

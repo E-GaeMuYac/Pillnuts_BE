@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
-
+const passport = require('passport')
 const loginMiddleware = require('../middlewares/login.middleware');
 const LoginController = require('../architecture/controllers/login.controller');
 const loginController = new LoginController();
 
-// Login
+// Local Login
 router.post('/normal', loginMiddleware, loginController.Login);
 
 // Google Login
@@ -19,9 +18,7 @@ router.get('/naver', loginController.Naver);
 router.get('/naver/callback', loginController.NaverCallback);
 router.get('/', loginController.ResponseToken);
 
-
-
-// kakao Login
+// Kakao Login
 // router.get('/kakao', passport.authenticate('kakao')); // /kakao요청이 서버로 오면, 카카오 로그인 페이지로 이동하고, 카카오 서버를 통해 카카오 로그인을 하게 되면, 다음 라우터로 요청한다.
 
 // // 위에서 카카오 서버 로그인이 되면, 카카오 redirect url 설정에 따라 이쪽 라우터로 오게된다.

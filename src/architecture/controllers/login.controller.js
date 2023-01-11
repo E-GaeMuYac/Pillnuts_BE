@@ -55,7 +55,6 @@ class LoginController {
 
 
   ResponseToken = async (req, res) => {
-    console.log(req.user)
     const accesstoken = req.user[0];
     const refreshtoken = req.user[1];
     const nickname = req.user[2].nickname;
