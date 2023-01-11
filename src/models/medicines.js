@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'SavedMedicines',
         foreignKey: 'medicineId',
       });
+      this.hasMany(models.Ingredients, {
+        as: 'Ingredients',
+        foreignKey: 'ingredientId',
+      });
     }
   }
   Medicines.init(
@@ -40,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      totalAmount: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       etcOtcCode: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -47,10 +55,7 @@ module.exports = (sequelize, DataTypes) => {
       productType: {
         type: DataTypes.STRING,
         allowNull: false,
-      },
-      materialName: {
-        type: DataTypes.JSON,
-        allowNull: false,
+        defaultValue: '',
       },
       ingrName: {
         type: DataTypes.STRING,
