@@ -1,3 +1,4 @@
+const passport = require('passport');
 const { ValidationError } = require('../../middlewares/exceptions/error.class');
 require('dotenv').config({ path: '../.env' });
 const Joi = require('joi');
@@ -36,6 +37,22 @@ class LoginController {
     } catch (error) {
       next(error);
     }
+  };
+
+  Google = passport.authenticate('google', { scope: ['email'] });
+
+  GoogleCallback = passport.authenticate('google', {
+    successRedirect: '/', // GoogleStrategy에서 성공한다면 이 주소로 이동
+    failureRedirect: '/api/users/login/google/callback', // GoogleStrategy에서 실패하면 이 주소로 이동
+  });
+
+  ResponseToken = async (req, res) => {
+    const accesstoken = req.user[0];
+    const refreshtoken = req.user[1];
+    const nickname = req.user[2].nickname;
+    res.header({ accesstoken, refreshtoken }).status(201).json({
+      nickname,
+    });
   };
 }
 
