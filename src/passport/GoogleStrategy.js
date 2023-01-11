@@ -46,7 +46,7 @@ module.exports = () => {
               nickname: nickname,
             });
 
-            const accesstoken = await createAccessToken(exUser.userId);
+            const accesstoken = await createAccessToken(newUser.userId);
             done(null, [accesstoken, refreshtoken]); // 회원가입하고 로그인 인증 완료
           }
         } catch (error) {
