@@ -6,7 +6,7 @@ module.exports = () => {
   google(); // 구글 등록
 
   passport.serializeUser((user, done) => {
-    done(null, user[2].userId);
+    done(null, user);
   });
 
   passport.deserializeUser((userId, done) => {
@@ -17,6 +17,5 @@ module.exports = () => {
           where: { userId },
         })
       );
-    done(null, false);
   });
 };

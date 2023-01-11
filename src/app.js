@@ -20,7 +20,6 @@ app.use(cors(corsOption));
 app.use(express.json());
 
 const ErrorHandler = require('./middlewares/error.handler.middleware');
-const { ApplicationCostProfiler } = require('aws-sdk');
 app.use(ErrorHandler);
 
 app.use(

@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/app.js",
     "dev": "nodemon src/app.js",
     "db:create": "npx sequelize db:create --config ./src/config/config.js",
     "db:migrate": "npx sequelize db:migrate --config ./src/config/config.js --migrations-path ./src/migrations --models-path ./src/models",
@@ -25,7 +24,6 @@
     "aws-sdk": "^2.1287.0",
     "axios": "^1.2.2",
     "bcrypt": "^5.1.0",
-    "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
