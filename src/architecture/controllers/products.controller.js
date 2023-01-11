@@ -65,6 +65,19 @@ class ProductController {
     }
   };
 
+  // 성분 설명 추가
+  updateMaterials = async (req, res, next) => {
+    try {
+      const { contents } = req.body;
+
+      await this.productService.updateMaterials(contents);
+
+      res.status(200).json({ msg: '성분 설명 저장을 완료하였습니다.' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   // 저장하기(찜하기)
   dibsProduct = async (req, res, next) => {
     try {

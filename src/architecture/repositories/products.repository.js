@@ -88,8 +88,8 @@ class ProductRepository {
       where: { name },
     });
   };
-  createMaterial = async (name, unit) => {
-    return Materials.create({ name, unit });
+  updateMaterials = async (materialId, content) => {
+    return Materials.update({ content }, { where: { materialId } });
   };
 
   // 전체 데이터 조회, 데이터는 itemSeq만

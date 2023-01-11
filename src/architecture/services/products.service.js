@@ -271,6 +271,15 @@ class ProductService {
     return;
   };
 
+  // 성분 설명 추가
+  updateMaterials = async (contents) => {
+    for (let i = 0; i < contents.length; i++) {
+      let { materialId, content } = contents[i];
+      await this.productsRepository.updateMaterials(materialId, content);
+    }
+    return;
+  };
+
   // 저장하기 (찜하기)
   dibsProduct = async (medicineId, userId) => {
     const product = await this.productsRepository.findOneMedicine(medicineId);
