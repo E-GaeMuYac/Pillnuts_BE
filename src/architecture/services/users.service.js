@@ -90,7 +90,7 @@ class UsersService {
     return { nickname, loginCount, imageUrl };
   };
 
-  updateUser = async (nickname, userId, password, filename) => {
+  updateNickname = async (nickname, userId) => {
     const user = await this.usersRepository.findUser({
       raw: true,
       where: { userId },
@@ -98,34 +98,35 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('정보 수정에 실패하였습니다.');
     }
+    await this.usersRepository.updateUser(
+      {
+        nickname,
+      },
+      { where: { userId } }
+    );
+  };
 
-    const checkPW = compare(password, user.password);
-    if (!checkPW) {
-      throw new AuthenticationError('패스워드를 다시 확인해주세요.');
+  updateImg = async (userId, filename) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { userId },
+    });
+
+    if (!user) {
+      throw new InvalidParamsError('정보 수정에 실패하였습니다.');
     }
+    filename = Date.now() + filename;
 
-    if (filename) {
-      filename = Date.now() + filename;
+    const imageUrl = `${process.env.S3URL}/${filename}`;
 
-      const imageUrl = `${process.env.S3URL}/${filename}`;
+    await this.usersRepository.updateUser(
+      {
+        imageUrl,
+      },
+      { where: { userId } }
+    );
 
-      await this.usersRepository.updateUser(
-        {
-          nickname,
-          imageUrl,
-        },
-        { where: { userId } }
-      );
-
-      return createUrl(`${process.env.BUCKET}/${filename}`);
-    } else {
-      await this.usersRepository.updateUser(
-        {
-          nickname,
-        },
-        { where: { userId } }
-      );
-    }
+    return createUrl(`${process.env.BUCKET}/${filename}`);
   };
 
   deleteUser = async (userId, password) => {
