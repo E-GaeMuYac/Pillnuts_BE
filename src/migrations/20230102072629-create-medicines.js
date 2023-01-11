@@ -26,6 +26,10 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: true,
       },
+      totalAmount: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
+      },
       etcOtcCode: {
         type: Sequelize.DataTypes.STRING,
         allowNull: true,
@@ -33,10 +37,7 @@ module.exports = {
       productType: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
-      },
-      materialName: {
-        type: Sequelize.DataTypes.JSON,
-        allowNull: false,
+        defaultValue: '',
       },
       ingrName: {
         type: Sequelize.DataTypes.STRING,
