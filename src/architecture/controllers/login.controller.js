@@ -46,7 +46,16 @@ class LoginController {
     failureRedirect: '/api/users/login/google/callback', // GoogleStrategy에서 실패하면 이 주소로 이동
   });
 
+  Naver = passport.authenticate('naver', { scope: ['email'] });
+
+  NaverCallback = passport.authenticate('naver', {
+    successRedirect: '/', // NaverStrategy에서 성공한다면 이 주소로 이동
+    failureRedirect: '/api/users/login/naver/callback', // NaverStrategy에서 실패하면 이 주소로 이동
+  });
+
+
   ResponseToken = async (req, res) => {
+    console.log(req.user)
     const accesstoken = req.user[0];
     const refreshtoken = req.user[1];
     const nickname = req.user[2].nickname;

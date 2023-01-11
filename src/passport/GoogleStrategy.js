@@ -2,6 +2,7 @@ const passport = require('passport');
 const Google = require('passport-google-oauth2');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
+
 const GoogleStrategy = Google.Strategy;
 
 require('dotenv').config();
@@ -37,16 +38,18 @@ module.exports = () => {
             done(null, [ accesstoken, refreshtoken, exUser ]);
           } else {
             let nickname = profile._json.nickname;
-            if (!nickname) {
+            if (!nickname) { 
               nickname = profile._json.email.split('@')[0];
             }
             // 가입되지 않은 유저면, 회원가입시키고 로그인 시킨다.
             const newUser = await Users.create({
               email: profile._json.email,
+              refreshtoken,
               nickname: nickname,
             });
 
             const accesstoken = await createAccessToken(newUser.userId);
+            
             done(null, [accesstoken, refreshtoken]); // 회원가입하고 로그인 인증 완료
           }
         } catch (error) {

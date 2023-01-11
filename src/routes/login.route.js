@@ -9,14 +9,15 @@ const loginController = new LoginController();
 // Login
 router.post('/normal', loginMiddleware, loginController.Login);
 
-// google Login
+// Google Login
 router.get('/google', loginController.Google);
 router.get('/google/callback', loginController.GoogleCallback);
 router.get('/', loginController.ResponseToken);
 
-
-
-
+// Naver Login
+router.get('/naver', loginController.Naver);
+router.get('/naver/callback', loginController.NaverCallback);
+router.get('/', loginController.ResponseToken);
 
 
 
@@ -28,7 +29,7 @@ router.get('/', loginController.ResponseToken);
 // failureRedirect: '/', // kakaoStrategy에서 실패한다면 실행
 // }),
 // (req, res) => { // kakaoStrategy에서 성공한다면 콜백 실행
-//     res.redirect('/');
+//     res.redirect('/');ç
 // },
 // );
 
