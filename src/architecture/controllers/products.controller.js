@@ -2,37 +2,65 @@ const ProductService = require('../services/products.service');
 
 const {
   InvalidParamsError,
-  ValidationError,
-  AuthenticationError,
-  ExistError,
 } = require('../../middlewares/exceptions/error.class.js');
 
 class ProductController {
   constructor() {
     this.productService = new ProductService();
   }
+
   // api 저장하기
   updateProductsMain = async (req, res, next) => {
     try {
-      await this.productService.updateProductsMain();
-      return res.status(200).json({ msg: 'main 정보가 업데이트 되었습니다.' });
+      const { start } = req.query;
+      await this.productService.updateProductsMain(start);
+      res.redirect('/api/products/apiUpdateType?start=1');
     } catch (error) {
+      if (
+        error.message.includes(
+          'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
+        )
+      ) {
+        res.redirect(
+          `/api/products/apiUpdateMain?start=${error.config.params.pageNo}`
+        );
+      }
       next(error);
     }
   };
   updateProductsType = async (req, res, next) => {
     try {
-      await this.productService.updateProductsType();
-      return res.status(200).json({ msg: 'type 정보가 업데이트 되었습니다.' });
+      const { start } = req.query;
+      await this.productService.updateProductsType(start);
+      res.redirect('/api/products/apiUpdateImage?start=1');
     } catch (error) {
+      if (
+        error.message.includes(
+          'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
+        )
+      ) {
+        res.redirect(
+          `/api/products/apiUpdateType?start=${error.config.params.pageNo}`
+        );
+      }
       next(error);
     }
   };
   updateProductsImage = async (req, res, next) => {
     try {
-      await this.productService.updateProductsImage();
-      return res.status(200).json({ msg: 'image 정보가 업데이트 되었습니다.' });
+      const { start } = req.query;
+      await this.productService.updateProductsImage(start);
+      return res.status(200).json({ msg: 'api 정보가 업데이트 되었습니다.' });
     } catch (error) {
+      if (
+        error.message.includes(
+          'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
+        )
+      ) {
+        res.redirect(
+          `/api/products/apiUpdateImage?start=${error.config.params.pageNo}`
+        );
+      }
       next(error);
     }
   };

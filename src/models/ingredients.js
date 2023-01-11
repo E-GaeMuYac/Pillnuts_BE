@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       volume: {
         allowNull: false,
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(10, 5),
       },
       createdAt: {
         allowNull: false,

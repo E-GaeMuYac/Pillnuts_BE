@@ -2,17 +2,14 @@ const ProductRepository = require('../repositories/products.repository');
 require('dotenv').config();
 const axios = require('axios');
 const {
-  InvalidParamsError,
   ValidationError,
-  AuthenticationError,
-  ExistError,
 } = require('../../middlewares/exceptions/error.class.js');
 
 class ProductService {
   productsRepository = new ProductRepository();
 
   // api 등록하기
-  updateProductsMain = async () => {
+  updateProductsMain = async (start) => {
     let {
       data: { body: body },
     } = await axios.get(process.env.MEDI_A_API_END_POINT, {
@@ -26,43 +23,19 @@ class ProductService {
         type: 'json',
       },
     });
-    for (let p = 1; p <= body.totalCount; p++) {
-      //==================================기본 데이터들==========================================
+    for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
       let {
-        data: {
-          body: {
-            items: items,
-            // [
-            //   {
-            //     ITEM_SEQ: itemSeq,
-            //     ITEM_NAME: itemName,
-            //     ENTP_NAME: entpName,
-            //     ETC_OTC_CODE: etcOtcCode,
-            //     MATERIAL_NAME: materials,
-            //     VALID_TERM: validTerm,
-            //     EE_DOC_DATA: eeDoc,
-            //     UD_DOC_DATA: udDoc,
-            //     NB_DOC_DATA: nbDoc,
-            //     INGR_NAME: ingredients,
-            //   },
-            // ],
-          },
-        },
+        data: { body: mainBody },
       } = await axios.get(process.env.MEDI_A_API_END_POINT, {
         params: {
-          // 공공데이터포탈에서 발급 받은 인증키
-          serviceKey: process.env.MEDI_API_KEY_DEC,
-          // 한 페이지 결과 수. 100개까지만 가능
-          numOfRows: 100,
-          // 페이지 번호.
-          pageNo: p,
+          serviceKey: process.env.MEDI_API_KEY_DEC, // 공공데이터포탈에서 발급 받은 인증키
+          numOfRows: 100, // 한 페이지 결과 수. 100개까지만 가능
+          pageNo: p, // 페이지 번호.
           type: 'json',
-          // item_name: '게보린',
         },
-        // timeout: 30000,
       });
 
-      for (let rowCount = 0; rowCount < 100; rowCount++) {
+      for (let rowCount = 0; rowCount < mainBody.numOfRows; rowCount++) {
         let {
           ITEM_SEQ: itemSeq,
           ITEM_NAME: itemName,
@@ -74,22 +47,11 @@ class ProductService {
           UD_DOC_DATA: udDoc,
           NB_DOC_DATA: nbDoc,
           INGR_NAME: ingredients,
-        } = items[rowCount];
+        } = mainBody.items[rowCount];
 
-        let materialName = [];
-        for (let j = 0; j < materials.split('|').length; j++) {
-          if (j === 0) {
-            let material = {};
-            material.총량 = materials.split('|')[j].split(':')[1];
-            materialName.push(material);
-          } else if (materials.split('|')[j].includes('성분명')) {
-            let material = {};
-            material.성분명 = materials.split('|')[j].split(':')[1].trim();
-            material.분량 = materials.split('|')[j + 1].split(':')[1].trim();
-            material.단위 = materials.split('|')[j + 2].split(':')[1].trim();
-            materialName.push(material);
-          }
-        }
+        // 총량
+        let totalAmount = materials.split('|')[0].split(':')[1];
+        if (totalAmount == null) totalAmount = '';
 
         // 첨가물
         let ingrName = '';
@@ -156,24 +118,21 @@ class ProductService {
         }
 
         // DB에 저장되어 있는 지 확인
-        let product = await this.productsRepository.findOneProduct(itemSeq);
-
-        const productType = '';
+        let medicine = await this.productsRepository.findOneProduct(itemSeq);
 
         // 없으면 create. 있으면 update
-        if (!product) {
-          await this.productsRepository.createProductsMain(
+        if (!medicine) {
+          medicine = await this.productsRepository.createProductsMain(
             itemSeq, //등록 번호
             itemName, //등록 명
             entpName, //제조사
             etcOtcCode, //약국 구매 가능 여부
-            materialName, //성분
             ingrName, //첨가물
             validTerm, //유통기한
             eeDocData, //효능효과
             udDocData, //용법용량
             nbDocData, //주의사항
-            productType
+            totalAmount // 총량
           );
         } else {
           await this.productsRepository.updateProductsMain(
@@ -181,23 +140,57 @@ class ProductService {
             itemName, //등록 명
             entpName, //제조사
             etcOtcCode, //약국 구매 가능 여부
-            materialName, //성분
             ingrName, //첨가물
             validTerm, //유통기한
             eeDocData, //효능효과
             udDocData, //용법용량
-            nbDocData //주의사항
+            nbDocData, //주의사항
+            totalAmount // 총량
           );
         }
-        console.log(
-          `몇개째 저장되고 있나용? ${p}페이지의 ${rowCount}개째 저장중입니다.`
-        );
+
+        // 성분
+        for (let j = 0; j < materials.split('|').length; j++) {
+          if (materials.split('|')[j].includes('성분명')) {
+            let name = materials.split('|')[j].split(':')[1].trim();
+            let material = await this.productsRepository.findOneMaterial(name);
+            if (!material) {
+              let unit = materials.split('|')[j + 2].split(':')[1].trim();
+              material = await this.productsRepository.createMaterial(
+                name,
+                unit
+              );
+            }
+
+            let volume = materials.split('|')[j + 1].split(':')[1].trim();
+
+            let ingredient = await this.productsRepository.findOneIngredient(
+              medicine.medicineId,
+              material.materialId
+            );
+
+            if (!ingredient) {
+              ingredient = await this.productsRepository.createIngredients(
+                medicine.medicineId,
+                material.materialId,
+                volume
+              );
+            } else {
+              if (ingredient.volume !== volume)
+                await this.productsRepository.updateIngredients(
+                  ingredient.ingredientId,
+                  volume
+                );
+            }
+          }
+        }
+        console.log(`main update ${p}페이지의 ${rowCount}번쨰 저장중`);
       }
     }
     return;
   };
   // 효과 분류
-  updateProductsType = async () => {
+  updateProductsType = async (start) => {
     let {
       data: { body: body },
     } = await axios.get(process.env.MEDI_B_API_END_POINT, {
@@ -211,61 +204,71 @@ class ProductService {
         type: 'json',
       },
     });
-    for (let i = 0; i < body.totalCount; i++) {
-      let itemSeq = products[i];
+    for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
       let {
-        data: { body: productTypeBody },
+        data: { body: typeBody },
       } = await axios.get(process.env.MEDI_B_API_END_POINT, {
         params: {
-          // 공공데이터포탈에서 발급 받은 인증키
           serviceKey: process.env.MEDI_API_KEY_DEC,
-          // 한 페이지 결과 수. 100개까지만 가능
-          numOfRows: 1,
-          // 페이지 번호.
-          pageNo: 1,
+          numOfRows: 100,
+          pageNo: p,
           type: 'json',
-          prdlst_Stdr_code: itemSeq,
         },
       });
-      // 효과 분류
-      let productType = '';
-      if (productTypeBody.totalCount === 0) {
-        productType = null;
-      } else {
-        productType = productTypeBody.items[0].PRDUCT_TYPE.split(']')[1];
-      }
 
-      await this.productsRepository.updateProductsType(itemSeq, productType);
+      for (let rowCount = 0; rowCount < typeBody.numOfRows; rowCount++) {
+        // 효과 분류
+        let productType = '';
+        if (typeBody.items[rowCount].PRDUCT_TYPE !== null) {
+          productType = typeBody.items[rowCount].PRDUCT_TYPE.split(']')[1];
+        }
+        await this.productsRepository.updateProductsType(
+          typeBody.items[rowCount].ITEM_SEQ,
+          productType
+        );
+
+        console.log(`type update ${p}페이지의 ${rowCount}번쨰 저장중`);
+      }
     }
+    return;
   };
   //알약 이미지 저장
-  updateProductsImage = async () => {
-    const products = await this.productsRepository.findAllProducts();
-    for (let i = 0; i < products.length; i++) {
-      let itemSeq = products[i];
+  updateProductsImage = async (start) => {
+    let {
+      data: { body: body },
+    } = await axios.get(process.env.MEDI_C_API_END_POINT, {
+      params: {
+        serviceKey: process.env.MEDI_API_KEY_DEC,
+        numOfRows: 1,
+        pageNo: 1,
+        type: 'json',
+      },
+    });
+    for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
       let {
-        data: { body: itemImageBody },
+        data: { body: imageBody },
       } = await axios.get(process.env.MEDI_C_API_END_POINT, {
         params: {
-          // 공공데이터포탈에서 발급 받은 인증키
           serviceKey: process.env.MEDI_API_KEY_DEC,
-          // 한 페이지 결과 수. 100개까지만 가능
-          numOfRows: 1,
-          // 페이지 번호.
-          pageNo: 1,
+          numOfRows: 100,
+          pageNo: p,
           type: 'json',
-          item_seq: itemSeq,
         },
       });
-      let itemImage = '';
-      if (itemImageBody.totalCount === 0) {
-        itemImage = null;
-      } else {
-        itemImage = itemImageBody.items[0].ITEM_IMAGE;
-      }
 
-      await this.productsRepository.updateProductsImage(itemSeq, itemImage);
+      for (let rowCount = 0; rowCount < imageBody.numOfRows; rowCount++) {
+        let itemImage = '';
+        if (imageBody.items[rowCount].ITEM_IMAGE !== null) {
+          itemImage = imageBody.items[rowCount].ITEM_IMAGE;
+          await this.productsRepository.updateProductsImage(
+            imageBody.items[rowCount].ITEM_SEQ,
+            itemImage
+          );
+        }
+        console.log(`image update ${p}페이지의 ${rowCount}번쨰 저장중`);
+      }
     }
+    return;
   };
 
   // 저장하기 (찜하기)
@@ -314,8 +317,21 @@ class ProductService {
   // 제품 상세 조회
   findOneMedicine = async (medicineId) => {
     const product = await this.productsRepository.findOneMedicine(medicineId);
+    const ingredients = await this.productsRepository.findAllIngredients(
+      medicineId
+    );
+    product.materialName = ingredients.map((i) => {
+      return {
+        material: i['Material.name'],
+        분량: i.volume,
+        단위: i['Material.unit'],
+        설명: i['Material.content'],
+      };
+    });
+
     if (!product)
       throw new ValidationError('약품 정보를 찾을 수 없습니다.', 412);
+
     return product;
   };
 }
