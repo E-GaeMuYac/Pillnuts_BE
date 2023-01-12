@@ -34,8 +34,10 @@ module.exports = () => {
               { refreshtoken },
               { where: { userId: GoogleExUser.userId } }
             );
+
             const accesstoken = await createAccessToken(GoogleExUser.userId);
             done(null, [ accesstoken, refreshtoken, GoogleExUser ]);
+
           } else {
             let nickname = profile._json.nickname;
             if (!nickname) { 

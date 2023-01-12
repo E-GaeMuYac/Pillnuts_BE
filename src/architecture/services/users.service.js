@@ -31,6 +31,40 @@ class UsersService {
     }
   };
 
+  findEmail = async (phoneNumber) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { phoneNumber },
+    });
+    if (!user) {
+      throw new InvalidParamsError('해당하는 사용자가 없습니다.');
+    }
+    return user.email;
+  };
+
+  findPassword = async (email, password) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { email },
+    });
+    if (!user) {
+      throw new InvalidParamsError('해당하는 사용자가 없습니다.');
+    }
+    const checkPW = compare(password, user.password);
+    if (checkPW) {
+      throw new AuthenticationError('동일한 비밀번호입니다.');
+    }
+
+    password = hash(password);
+
+    await this.usersRepository.updateUser(
+      {
+        password,
+      },
+      { where: { email } }
+    );
+  };
+
   logout = async (userId) => {
     const user = await this.usersRepository.findUser({
       raw: true,
@@ -42,7 +76,21 @@ class UsersService {
     await this.usersRepository.deleteToken(userId);
   };
 
-  updateUser = async (nickname, userId, password, filename) => {
+  findUser = async (userId) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { userId },
+    });
+    if (!user) {
+      throw new InvalidParamsError('정보 조회에 실패하였습니다.');
+    }
+    const { nickname, imageUrl } = user;
+    const loginCount = user.loginCount.length;
+
+    return { nickname, loginCount, imageUrl };
+  };
+
+  updateNickname = async (nickname, userId) => {
     const user = await this.usersRepository.findUser({
       raw: true,
       where: { userId },
@@ -50,23 +98,35 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('정보 수정에 실패하였습니다.');
     }
+    await this.usersRepository.updateUser(
+      {
+        nickname,
+      },
+      { where: { userId } }
+    );
+  };
 
-    const checkPW = compare(password, user.password);
-    if (!checkPW) {
-      throw new AuthenticationError('패스워드를 다시 확인해주세요.');
+  updateImg = async (userId, filename) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { userId },
+    });
+
+    if (!user) {
+      throw new InvalidParamsError('정보 수정에 실패하였습니다.');
     }
+    filename = Date.now() + filename;
 
-    if (filename) {
-      filename = Date.now() + filename;
+    const imageUrl = `${process.env.S3URL}/${filename}`;
 
-      const imageUrl = `${process.env.S3URL}/${filename}`;
+    await this.usersRepository.updateUser(
+      {
+        imageUrl,
+      },
+      { where: { userId } }
+    );
 
-      await this.usersRepository.updateUser(nickname, userId, imageUrl);
-
-      return createUrl(`${process.env.BUCKET}/${filename}`);
-    } else {
-      await this.usersRepository.updateUser(nickname, userId);
-    }
+    return createUrl(`${process.env.BUCKET}/${filename}`);
   };
 
   deleteUser = async (userId, password) => {

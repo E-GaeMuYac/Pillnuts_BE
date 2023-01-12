@@ -7,7 +7,13 @@ const ProductController = require('../architecture/controllers/products.controll
 const productController = new ProductController();
 
 // api 저장하기
-router.get('/saved', productController.createProducts);
+router.get('/apiUpdateMain', productController.updateProductsMain);
+router.get('/apiUpdateType', productController.updateProductsType);
+router.get('/apiUpdateImage', productController.updateProductsImage);
+
+// 성분 설명 등록
+router.put('/materials', productController.updateMaterials);
+
 // 저장(찜)한 제품 목록 가져오기
 router.get('/dibs', authMiddleware, productController.getDibsProducts);
 // 제품 비교하기
