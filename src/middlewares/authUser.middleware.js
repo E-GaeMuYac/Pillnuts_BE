@@ -31,13 +31,14 @@ module.exports = async (req, res, next) => {
         attribute: ['userId'],
       });
       if (!user) {
-        throw new AuthenticationError('로그인이 유효하지 않습니다.', 401);
+        throw new AuthenticationError('로그인이 유효하지 않습니다.',
+         401);
       }
 
       // 새로운 Access token을 발급해준다.
       const newAccessToken = createAccessToken(user.userId);
       res.header('accesstoken', newAccessToken);
-      accessToken = newAccessTokeçn;
+      accessToken = newAccessToken;
     }
 
     const { userId } = getAccessTokenPayload(accessToken);

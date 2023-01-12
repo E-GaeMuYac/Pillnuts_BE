@@ -113,20 +113,28 @@ class UsersController {
     }
   };
 
-  updateUser = async (req, res, next) => {
+  updateNickname = async (req, res, next) => {
     try {
       const { userId } = res.locals;
-      const { nickname, password, filename } = req.body;
+      const { nickname } = req.body;
       const result = Joi.string().required().validate(nickname);
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
-      const presignedUrl = await this.usersService.updateUser(
-        nickname,
-        userId,
-        password,
-        filename
-      );
+      await this.usersService.updateNickname(nickname, userId);
+
+      return res.status(201).json({ message: '회원정보가 수정되었습니다' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateImg = async (req, res, next) => {
+    try {
+      const { userId } = res.locals;
+      const { filename } = req.body;
+
+      const presignedUrl = await this.usersService.updateImg(userId, filename);
 
       return res
         .status(201)
