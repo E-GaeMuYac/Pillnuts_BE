@@ -34,7 +34,7 @@ module.exports = () => {
               { where: { userId: exUser.userId } }
             );
             const accesstoken = await createAccessToken(exUser.userId);
-            done(null, [ accesstoken, refreshtoken, exUser ]);
+            done(null, [accesstoken, refreshtoken, exUser]);
           } else {
             let nickname = profile._json.nickname;
             if (!nickname) {
