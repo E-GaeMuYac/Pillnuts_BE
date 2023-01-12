@@ -2,6 +2,9 @@ const passport = require('passport');
 const Naver = require('passport-naver-v2');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
+const {
+  AuthenticationError,
+} = require('../middlewares/exceptions/error.class');
 
 const NaverStrategy = Naver.Strategy;
 
@@ -18,6 +21,17 @@ module.exports = () => {
       },
       async (request, accessToken, refreshToken, profile, done) => {
         try {
+          // 이미 로컬 로그인에서 가입된 이메일이면
+          const LocalExUser = await Users.findOne({
+            where: {
+              email,
+            },
+            raw: true,
+          });
+          if (LocalExUser) {
+            throw new AuthenticationError('이미 로그인이 되어있습니다.', 403);
+          }
+
           // 네이버 플랫폼에서 로그인 했고 & 소셜 로그인 한 경우
           const NaverExUser = await Users.findOne({
             where: {
@@ -46,7 +60,7 @@ module.exports = () => {
               email: profile._json.response.email,
               refreshtoken,
               imageUrl: profile._json.response.email,
-              nickname
+              nickname,
             });
 
             const accesstoken = await createAccessToken(NaverNewUser.userId);
