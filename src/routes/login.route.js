@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport')
 const loginMiddleware = require('../middlewares/login.middleware');
 const LoginController = require('../architecture/controllers/login.controller');
 const loginController = new LoginController();
@@ -9,16 +8,14 @@ const loginController = new LoginController();
 router.post('/normal', loginMiddleware, loginController.Login);
 
 // Google Login
-router.get('/google', loginController.Google);
-router.get('/google/callback', loginController.GoogleCallback);
-router.get('/', loginController.ResponseToken);
+router.get('/google', loginMiddleware, loginController.google);
+router.get('/google/callback', loginMiddleware, loginController.googleCallback);
+router.get('/', loginMiddleware, loginController.responseToken);
 
 // Naver Login
-router.get('/naver', loginController.Naver);
-router.get('/naver/callback', loginController.NaverCallback);
-
+router.get('/naver', loginMiddleware, loginController.naver);
+router.get('/naver/callback', loginMiddleware, loginController.naverCallback);
 
 // Kakao Login
-
 
 module.exports = router;
