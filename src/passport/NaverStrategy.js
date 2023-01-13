@@ -2,6 +2,7 @@ const passport = require('passport');
 const Naver = require('passport-naver-v2');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
+const { ExistError } = require('../middlewares/exceptions/error.class');
 
 const NaverStrategy = Naver.Strategy;
 
@@ -22,6 +23,7 @@ module.exports = () => {
           const NaverExUser = await Users.findOne({
             where: {
               email: profile._json.response.email,
+              loginType: 'Naver',
             },
             raw: true,
           });
@@ -35,22 +37,34 @@ module.exports = () => {
               { where: { userId: NaverExUser.userId } }
             );
             const accesstoken = await createAccessToken(NaverExUser.userId);
-            done(null, [accesstoken, refreshtoken, NaverExUser]);
+            done(null, [accesstoken, refreshtoken, NaverExUser.nickname]);
           } else {
+            // 로컬 로그인과 이메일 중복체크
+            const user = await Users.findOne({
+              raw: true,
+              where: { email: profile.email },
+            });
+            if (user) {
+              throw new ExistError('이미 존재하는 이메일입니다.');
+            }
+
             let nickname = profile._json.response.nickname;
             if (!nickname) {
               nickname = profile._json.response.email.split('@')[0];
             }
+
             // 가입되지 않은 유저면, 회원가입 시키고 로그인 시킨다.
+
             const NaverNewUser = await Users.create({
               email: profile._json.response.email,
               refreshtoken,
-              imageUrl: profile._json.response.email,
-              nickname
+              imageUrl: profile.profileImage,
+              nickname,
+              loginType: 'Naver',
             });
 
             const accesstoken = await createAccessToken(NaverNewUser.userId);
-            done(null, [accesstoken, refreshtoken]); // 회원가입하고 로그인 인증 완료
+            done(null, [accesstoken, refreshtoken, nickname]); // 회원가입하고 로그인 인증 완료
           }
         } catch (error) {
           done(error);
