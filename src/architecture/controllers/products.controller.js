@@ -2,21 +2,77 @@ const ProductService = require('../services/products.service');
 
 const {
   InvalidParamsError,
-  ValidationError,
-  AuthenticationError,
-  ExistError,
 } = require('../../middlewares/exceptions/error.class.js');
 
 class ProductController {
   constructor() {
     this.productService = new ProductService();
   }
+
   // api 저장하기
-  // DB는 마리아DB를 사용할 지 MySQL 그대로 사용할 지 noSQL 사용도 생각해보기.
-  createProducts = async (req, res, next) => {
+  updateProductsMain = async (req, res, next) => {
     try {
-      await this.productService.createProducts();
-      return res.status(200).json({ msg: '저장이 완료되었습니다.' });
+      const { start } = req.query;
+      await this.productService.updateProductsMain(start);
+      res.redirect('/api/products/apiUpdateType?start=1');
+    } catch (error) {
+      if (
+        error.message.includes(
+          'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
+        )
+      ) {
+        res.redirect(
+          `/api/products/apiUpdateMain?start=${error.config.params.pageNo}`
+        );
+      }
+      next(error);
+    }
+  };
+  updateProductsType = async (req, res, next) => {
+    try {
+      const { start } = req.query;
+      await this.productService.updateProductsType(start);
+      res.redirect('/api/products/apiUpdateImage?start=1');
+    } catch (error) {
+      if (
+        error.message.includes(
+          'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
+        )
+      ) {
+        res.redirect(
+          `/api/products/apiUpdateType?start=${error.config.params.pageNo}`
+        );
+      }
+      next(error);
+    }
+  };
+  updateProductsImage = async (req, res, next) => {
+    try {
+      const { start } = req.query;
+      await this.productService.updateProductsImage(start);
+      return res.status(200).json({ msg: 'api 정보가 업데이트 되었습니다.' });
+    } catch (error) {
+      if (
+        error.message.includes(
+          'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
+        )
+      ) {
+        res.redirect(
+          `/api/products/apiUpdateImage?start=${error.config.params.pageNo}`
+        );
+      }
+      next(error);
+    }
+  };
+
+  // 성분 설명 추가
+  updateMaterials = async (req, res, next) => {
+    try {
+      const { contents } = req.body;
+
+      await this.productService.updateMaterials(contents);
+
+      res.status(200).json({ msg: '성분 설명 저장을 완료하였습니다.' });
     } catch (error) {
       next(error);
     }
@@ -54,15 +110,12 @@ class ProductController {
   // 제품 목록 조회 (검색) - 조금 더 만들어야함
   findMedicines = async (req, res, next) => {
     try {
-      if (!req.query.type || !req.query.value)
-        throw InvalidParamsError('검색어를 확인해주세요.', 412);
-      //type을 세가지로 받을 예정
-      //itemName : 제품명, productType : 효능효과타입, materialName : 성분명
-      const { type, value } = req.query;
+      const { value } = req.query;
+      if (!value) throw new InvalidParamsError('검색어를 확인해주세요.', 412);
 
-      const products = this.productService.findMedicines(type, value);
+      const products = await this.productService.findMedicines(value);
 
-      res.status(200).json({ products });
+      res.status(200).json(products);
     } catch (error) {
       next(error);
     }

@@ -1,66 +1,103 @@
-const { Medicines, SavedMedicines } = require('../../models');
+const {
+  Medicines,
+  SavedMedicines,
+  Materials,
+  Ingredients,
+} = require('../../models');
+const { Op } = require('sequelize');
 
 class ProductRepository {
   //api 저장하기
-  createProducts = async (
-    itemSeq,
-    itemName,
-    entpName,
-    itemImage,
-    etcOtcCode,
-    productType,
-    materialName,
-    ingrName,
-    validTerm,
-    eeDocData,
-    udDocData,
-    nbDocData
+  createProductsMain = async (
+    itemSeq, //등록 번호
+    itemName, //등록 명
+    entpName, //제조사
+    etcOtcCode, //약국 구매 가능 여부
+    ingrName, //첨가물
+    validTerm, //유통기한
+    eeDocData, //효능효과
+    udDocData, //용법용량
+    nbDocData, //주의사항
+    totalAmount // 총량
   ) => {
-    await Medicines.create({
+    return await Medicines.create({
       itemSeq,
       itemName,
       entpName,
-      itemImage,
       etcOtcCode,
-      productType,
-      materialName,
       ingrName,
       validTerm,
       eeDocData,
       udDocData,
       nbDocData,
+      totalAmount,
     });
   };
-  updateProducts = async (
-    itemSeq,
-    itemName,
-    entpName,
-    itemImage,
-    etcOtcCode,
-    productType,
-    materialName,
-    ingrName,
-    validTerm,
-    eeDocData,
-    udDocData,
-    nbDocData
+  updateProductsMain = async (
+    itemSeq, //등록 번호
+    itemName, //등록 명
+    entpName, //제조사
+    etcOtcCode, //약국 구매 가능 여부
+    ingrName, //첨가물
+    validTerm, //유통기한
+    eeDocData, //효능효과
+    udDocData, //용법용량
+    nbDocData, //주의사항
+    totalAmount // 총량
   ) => {
     await Medicines.update(
       {
-        itemName,
-        entpName,
-        itemImage,
-        etcOtcCode,
-        productType,
-        materialName,
-        ingrName,
-        validTerm,
-        eeDocData,
-        udDocData,
-        nbDocData,
+        itemName, //등록 명
+        entpName, //제조사
+        etcOtcCode, //약국 구매 가능 여부
+        ingrName, //첨가물
+        validTerm, //유통기한
+        eeDocData, //효능효과
+        udDocData, //용법용량
+        nbDocData, //주의사항
+        totalAmount, // 총량
       },
       { where: { itemSeq } }
     );
+  };
+  createIngredients = async (medicineId, materialId, volume) => {
+    await Ingredients.create({
+      medicineId,
+      materialId,
+      volume,
+    });
+  };
+  updateIngredients = async (ingredientId, volume) => {
+    return Ingredients.update({ volume }, { where: { ingredientId } });
+  };
+  findOneIngredient = async (medicineId, materialId) => {
+    return Ingredients.findOne({
+      raw: true,
+      where: { medicineId, materialId },
+    });
+  };
+  updateProductsType = async (itemSeq, productType) => {
+    return Medicines.update({ productType }, { where: { itemSeq } });
+  };
+  updateProductsImage = async (itemSeq, itemImage) => {
+    return Medicines.update({ itemImage }, { where: { itemSeq } });
+  };
+  findOneMaterial = async (name) => {
+    return Materials.findOne({
+      raw: true,
+      where: { name },
+    });
+  };
+  updateMaterials = async (materialId, content) => {
+    return Materials.update({ content }, { where: { materialId } });
+  };
+
+  // 전체 데이터 조회, 데이터는 itemSeq만
+  findAllProducts = async () => {
+    return Medicines.findAll({
+      raw: true,
+      attributes: ['itemSeq'],
+    });
   };
 
   // 하나 찾기
@@ -68,6 +105,41 @@ class ProductRepository {
     return Medicines.findOne({
       raw: true,
       where: { itemSeq },
+    });
+  };
+
+  // 검색
+  findSearchProduct = async (searchValue) => {
+    //itemName : 제품명, productType : 타입, eeDocData: 효능효과
+    return Medicines.findAll({
+      raw: true,
+      where: {
+        [Op.or]: [
+          {
+            itemName: {
+              [Op.like]: searchValue,
+            },
+          },
+          // {
+          //   productType: {
+          //     [Op.like]: searchValue,
+          //   },
+          // },
+          // {
+          //   eeDocData: {
+          //     [Op.like]: searchValue,
+          //   },
+          // },
+        ],
+      },
+      attributes: [
+        'medicineId',
+        'itemName',
+        'entpName',
+        'etcOtcCode',
+        'productType',
+        'itemImage',
+      ],
     });
   };
 
@@ -121,6 +193,20 @@ class ProductRepository {
     return Medicines.findOne({
       raw: true,
       where: { medicineId },
+    });
+  };
+
+  findAllIngredients = async (medicineId) => {
+    return Ingredients.findAll({
+      raw: true,
+      where: { medicineId },
+      attributes: ['volume'],
+      include: [
+        {
+          model: Materials,
+          attributes: ['name', 'unit', 'content'],
+        },
+      ],
     });
   };
 }
