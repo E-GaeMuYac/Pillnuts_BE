@@ -53,20 +53,24 @@ class LoginController {
     failureRedirect: '/api/users/login/naver/callback', // NaverStrategy에서 실패하면 이 주소로 이동
   });
 
-  kakao = passport.authenticate('kakao', { scope: ['account_email', 'profile_nickname', 'profile_image'] });
+  kakao = passport.authenticate('kakao', {
+    scope: ['account_email', 'profile_nickname', 'profile_image'],
+  });
 
   kakaoCallback = passport.authenticate('kakao', {
-    successRedirect: '/api/users/login', // KakaoStrategy에서 성공한다면 이 주소로 이동
+    successRedirect: 'localhost:3000', // KakaoStrategy에서 성공한다면 이 주소로 이동
     failureRedirect: '/api/users/login/kakao/callback', // KakaoStrategy에서 실패하면 이 주소로 이동
   });
 
-
   responseToken = (req, res) => {
+    console.log(req);
     const accesstoken = req.user[0];
     const refreshtoken = req.user[1];
     const nickname = req.user[2];
     res.header({ accesstoken, refreshtoken }).status(201).json({
       nickname,
+      accesstoken,
+      refreshtoken,
     });
   };
 }
