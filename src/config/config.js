@@ -25,4 +25,6 @@ const test = {
     dialect: 'mysql',
 };
 
+
+
 module.exports = { development, production, test };

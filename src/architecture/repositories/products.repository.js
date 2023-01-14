@@ -4,7 +4,6 @@ const {
   Materials,
   Ingredients,
 } = require('../../models');
-const { Op } = require('sequelize');
 
 class ProductRepository {
   //api 저장하기
@@ -20,7 +19,7 @@ class ProductRepository {
     nbDocData, //주의사항
     totalAmount // 총량
   ) => {
-    return await Medicines.create({
+    return Medicines.create({
       itemSeq,
       itemName,
       entpName,
@@ -82,6 +81,9 @@ class ProductRepository {
   updateProductsImage = async (itemSeq, itemImage) => {
     return Medicines.update({ itemImage }, { where: { itemSeq } });
   };
+  createMaterial = async (name, unit) => {
+    return Materials.create({ name, unit });
+  };
   findOneMaterial = async (name) => {
     return Materials.findOne({
       raw: true,
@@ -109,29 +111,21 @@ class ProductRepository {
   };
 
   // 검색
-  findSearchProduct = async (searchValue) => {
+  findSearchProduct = async (data, page, pageSize) => {
+    console.log(data);
     //itemName : 제품명, productType : 타입, eeDocData: 효능효과
-    return Medicines.findAll({
+    return Medicines.findAndCountAll({
       raw: true,
-      where: {
-        [Op.or]: [
-          {
-            itemName: {
-              [Op.like]: searchValue,
-            },
-          },
-          // {
-          //   productType: {
-          //     [Op.like]: searchValue,
-          //   },
-          // },
-          // {
-          //   eeDocData: {
-          //     [Op.like]: searchValue,
-          //   },
-          // },
-        ],
-      },
+      where: data,
+      include: [
+        {
+          model: SavedMedicines,
+          as: 'SavedMedicines',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+      ],
       attributes: [
         'medicineId',
         'itemName',
@@ -139,7 +133,18 @@ class ProductRepository {
         'etcOtcCode',
         'productType',
         'itemImage',
+        [
+          SavedMedicines.sequelize.fn(
+            'count',
+            SavedMedicines.sequelize.col('SavedMedicines.medicineId')
+          ),
+          'savedCount',
+        ],
       ],
+      group: ['medicineId'],
+      order: [['savedCount', 'DESC']],
+      offset: (page - 1) * pageSize,
+      limit: Number(pageSize),
     });
   };
 
@@ -195,7 +200,6 @@ class ProductRepository {
       where: { medicineId },
     });
   };
-
   findAllIngredients = async (medicineId) => {
     return Ingredients.findAll({
       raw: true,

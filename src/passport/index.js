@@ -1,21 +1,16 @@
 const passport = require('passport');
 const google = require('./GoogleStrategy');
-const { Users } = require('../models');
+const naver = require('./NaverStrategy');
 
 module.exports = () => {
   google(); // 구글 등록
+  naver(); // 네이버 등록
 
   passport.serializeUser((user, done) => {
     done(null, user);
   });
 
-  passport.deserializeUser((userId, done) => {
-    if (userId)
-      return done(
-        null,
-        Users.findOne({
-          where: { userId },
-        })
-      );
+  passport.deserializeUser(async (user, done) => {
+    if (user) return done(null, user);
   });
 };
