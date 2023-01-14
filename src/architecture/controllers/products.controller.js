@@ -9,10 +9,6 @@ class ProductController {
     this.productService = new ProductService();
   }
 
-  test = () => {
-    console.log('hi');
-  };
-
   // api 저장하기
   updateProductsMain = async (req, res, next) => {
     try {
