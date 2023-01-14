@@ -3,6 +3,7 @@ const Google = require('passport-google-oauth2');
 const { ExistError } = require('../middlewares/exceptions/error.class');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
+const formatDate = require('../../util/formatDate');
 
 const GoogleStrategy = Google.Strategy;
 
@@ -33,8 +34,16 @@ module.exports = () => {
 
           // 이미 가입된 구글 프로필이면, 로그인 인증 완료
           if (GoogleExUser) {
+            const today = formatDate(new Date());
+            const loginCount = existUser.loginCount;
+            const existLogin = loginCount.filter((day) => day == today);
+
+            if (!existLogin.length) {
+              loginCount.push(today);
+            }
+
             await Users.update(
-              { refreshtoken }, // refresh token을 update해줌
+              { refreshtoken, loginCount }, // refresh token을 update해줌
               { where: { userId: GoogleExUser.userId } }
             );
 
