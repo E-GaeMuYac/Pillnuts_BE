@@ -51,7 +51,7 @@ module.exports = () => {
             if (LocalExUser) {
               throw new ExistError('이미 존재하는 이메일입니다.');
             }
-  
+
             let nickname = profile._json.nickname;
             if (!nickname) {
               nickname = profile._json.email.split('@')[0];
@@ -60,8 +60,8 @@ module.exports = () => {
             const GoogleNewUser = await Users.create({
               email: profile._json.email,
               refreshtoken,
-              imageUrl: profile.photos,
-              nickname, 
+              imageUrl: profile._json.picture,
+              nickname,
               loginType: 'Google',
             });
 
