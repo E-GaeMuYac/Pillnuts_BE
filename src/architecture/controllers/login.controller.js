@@ -1,6 +1,6 @@
 const passport = require('passport');
 const { ValidationError } = require('../../middlewares/exceptions/error.class');
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 const Joi = require('joi');
 
 const LoginService = require('../services/login.service');
