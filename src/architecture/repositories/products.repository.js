@@ -144,7 +144,7 @@ class ProductRepository {
       group: ['medicineId'],
       order: [['savedCount', 'DESC']],
       offset: (page - 1) * pageSize,
-      limit: pageSize,
+      limit: Number(pageSize),
     });
   };
 
