@@ -58,7 +58,7 @@ class LoginController {
   });
 
   kakaoCallback = passport.authenticate('kakao', {
-    successRedirect: 'localhost:3000', // KakaoStrategy에서 성공한다면 이 주소로 이동
+    successRedirect: '/api/users/login', // KakaoStrategy에서 성공한다면 이 주소로 이동
     failureRedirect: '/api/users/login/kakao/callback', // KakaoStrategy에서 실패하면 이 주소로 이동
   });
 
@@ -69,8 +69,6 @@ class LoginController {
     const nickname = req.user[2];
     res.header({ accesstoken, refreshtoken }).status(201).json({
       nickname,
-      accesstoken,
-      refreshtoken,
     });
   };
 }
