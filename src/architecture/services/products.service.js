@@ -338,7 +338,6 @@ class ProductService {
       page,
       pageSize
     );
-    console.log(searchData);
     return (
       { searchLength: searchData.count.length, data: searchData.rows } || []
     );
