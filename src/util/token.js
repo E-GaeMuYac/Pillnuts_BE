@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+
 require('dotenv').config();
 
 createAccessToken = (userId) => {
@@ -9,4 +10,18 @@ createRefreshToken = () => {
   return jwt.sign({}, process.env.SECRET_KEY, { expiresIn: '7d' });
 };
 
-module.exports = { createAccessToken, createRefreshToken };
+// Refresh Token을 검증한다.
+validateRefreshToken = (refreshtoken) => {
+  try {
+    jwt.verify(refreshtoken, process.env.SECRET_KEY);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+module.exports = {
+  createAccessToken,
+  createRefreshToken,
+  validateRefreshToken,
+};

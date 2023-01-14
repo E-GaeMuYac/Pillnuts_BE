@@ -39,17 +39,24 @@ class LoginController {
     }
   };
 
-  Google = passport.authenticate('google', { scope: ['email'] });
+  google = passport.authenticate('google', { scope: ['email'] });
 
-  GoogleCallback = passport.authenticate('google', {
-    successRedirect: '/', // GoogleStrategy에서 성공한다면 이 주소로 이동
+  googleCallback = passport.authenticate('google', {
+    successRedirect: '/api/users/login', // GoogleStrategy에서 성공한다면 이 주소로 이동
     failureRedirect: '/api/users/login/google/callback', // GoogleStrategy에서 실패하면 이 주소로 이동
   });
 
-  ResponseToken = async (req, res) => {
+  naver = passport.authenticate('naver', { scope: ['email'] });
+
+  naverCallback = passport.authenticate('naver', {
+    successRedirect: '/api/users/login', // NaverStrategy에서 성공한다면 이 주소로 이동
+    failureRedirect: '/api/users/login/naver/callback', // NaverStrategy에서 실패하면 이 주소로 이동
+  });
+
+  responseToken = (req, res) => {
     const accesstoken = req.user[0];
     const refreshtoken = req.user[1];
-    const nickname = req.user[2].nickname;
+    const nickname = req.user[2];
     res.header({ accesstoken, refreshtoken }).status(201).json({
       nickname,
     });
