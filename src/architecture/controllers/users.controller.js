@@ -1,5 +1,4 @@
 const UsersService = require('../services/users.service');
-const url = require('url');
 const Joi = require('joi');
 
 const {
@@ -14,18 +13,21 @@ class UsersController {
     try {
       const schema = Joi.object().keys({
         email: Joi.string().email().required(),
-        phoneNumber: Joi.number().required(),
+        phoneNumber: Joi.string()
+          .length(11)
+          .pattern(/^[0-9]+$/)
+          .required(),
         nickname: Joi.string().required(),
         password: Joi.string()
           .required()
-          .pattern(new RegExp('^[a-zA-Z]+[0-9]+$'))
+          .pattern(/^[a-zA-Z]+[0-9]+$/)
           .min(8)
           .max(15),
         confirm: Joi.string().required().valid(Joi.ref('password')),
       });
 
       const result = schema.validate(req.body);
-      console.log(result.error);
+
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
@@ -40,7 +42,7 @@ class UsersController {
 
   duplicateCheck = async (req, res, next) => {
     try {
-      const { email } = url.parse(req.url, true).query;
+      const { email } = req.query;
       const result = Joi.string().email().required().validate(email);
 
       if (result.error) {
@@ -50,6 +52,40 @@ class UsersController {
       await this.usersService.duplicateCheck(email);
 
       return res.status(200).json({ message: '사용가능한 이메일입니다.' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  findEmail = async (req, res, next) => {
+    try {
+      const { phoneNumber } = req.body;
+      const email = await this.usersService.findEmail(phoneNumber);
+
+      return res.status(200).json({ email });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  findPassword = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const result = Joi.string()
+        .required()
+        .pattern(/^[a-zA-Z]+[0-9]+$/)
+        .min(8)
+        .max(15)
+        .validate(password);
+      if (result.error) {
+        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+      }
+
+      await this.usersService.findPassword(email, password);
+
+      return res
+        .status(200)
+        .json({ message: '비밀번호가 정상적으로 변경되었습니다.' });
     } catch (error) {
       next(error);
     }
@@ -66,21 +102,39 @@ class UsersController {
     }
   };
 
-  updateUser = async (req, res, next) => {
+  findUser = async (req, res, next) => {
     try {
       const { userId } = res.locals;
-      const schema = Joi.string().required();
-      const { nickname, password, filename } = req.body;
-      const result = schema.validate(nickname);
+      const user = await this.usersService.findUser(userId);
+
+      return res.status(200).json({ user });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateNickname = async (req, res, next) => {
+    try {
+      const { userId } = res.locals;
+      const { nickname } = req.body;
+      const result = Joi.string().required().validate(nickname);
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
-      const presignedUrl = await this.usersService.updateUser(
-        nickname,
-        userId,
-        password,
-        filename
-      );
+      await this.usersService.updateNickname(nickname, userId);
+
+      return res.status(201).json({ message: '회원정보가 수정되었습니다' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateImg = async (req, res, next) => {
+    try {
+      const { userId } = res.locals;
+      const { filename } = req.body;
+
+      const presignedUrl = await this.usersService.updateImg(userId, filename);
 
       return res
         .status(201)
