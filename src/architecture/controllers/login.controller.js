@@ -63,14 +63,12 @@ class LoginController {
   });
 
   responseToken = (req, res) => {
-    console.log(req);
     const accesstoken = req.user[0];
     const refreshtoken = req.user[1];
     const nickname = req.user[2];
-    res
-      .header({ accesstoken, refreshtoken })
-      .status(201)
-      .redirect('http://localhost:3000');
+    res.header({ accesstoken, refreshtoken }).status(201).json({
+      nickname,
+    });
   };
 }
 
