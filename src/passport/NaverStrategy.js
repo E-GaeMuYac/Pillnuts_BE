@@ -41,7 +41,7 @@ module.exports = () => {
             // 로컬 로그인과 이메일 중복체크
             const LocalExUser = await Users.findOne({
               raw: true,
-              where: { email: profile.email },
+              where: { email: profile._json.response.email },
             });
             if (LocalExUser) {
               throw new ExistError('이미 존재하는 이메일입니다.');
