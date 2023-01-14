@@ -37,6 +37,7 @@ module.exports = () => {
               { refreshtoken }, // refresh token을 update해줌
               { where: { userId: GoogleExUser.userId } }
             );
+
             const accesstoken = await createAccessToken(GoogleExUser.userId);
             done(null, [accesstoken, refreshtoken, GoogleExUser.nickname]);
           } else if (!GoogleExUser) {
@@ -50,6 +51,7 @@ module.exports = () => {
             if (LocalExUser) {
               throw new ExistError('이미 존재하는 이메일입니다.');
             }
+  
             let nickname = profile._json.nickname;
             if (!nickname) {
               nickname = profile._json.email.split('@')[0];
