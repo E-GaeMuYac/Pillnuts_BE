@@ -8,7 +8,6 @@ const compare = require('../../util/compare');
 const formatDate = require('../../util/formatDate');
 
 require('dotenv').config();
-const jwt = require('jsonwebtoken');
 const { createAccessToken, createRefreshToken } = require('../../util/token');
 
 class LoginService {
@@ -48,7 +47,6 @@ class LoginService {
     );
     return { accesstoken, refreshtoken, existUser }; // 5. 로그인 성공!
   };
- 
 }
 
 module.exports = LoginService;

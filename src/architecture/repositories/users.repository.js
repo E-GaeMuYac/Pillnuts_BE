@@ -1,5 +1,3 @@
-const { Op } = require('sequelize');
-
 class UsersRepository {
   constructor(UsersModel) {
     this.usersModel = UsersModel;
@@ -11,6 +9,7 @@ class UsersRepository {
       password,
       nickname,
       phoneNumber,
+      loginType: 'Local',
     });
   };
 
