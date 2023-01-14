@@ -3,7 +3,7 @@ const Google = require('passport-google-oauth2');
 const { ExistError } = require('../middlewares/exceptions/error.class');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
-const formatDate = require('../../util/formatDate');
+const formatDate = require('../util/formatDate');
 
 const GoogleStrategy = Google.Strategy;
 
@@ -31,17 +31,16 @@ module.exports = () => {
           });
 
           const refreshtoken = await createRefreshToken();
+          const today = formatDate(new Date());
 
           // 이미 가입된 구글 프로필이면, 로그인 인증 완료
           if (GoogleExUser) {
-            const today = formatDate(new Date());
-            const loginCount = existUser.loginCount;
+            const loginCount = GoogleExUser.loginCount;
             const existLogin = loginCount.filter((day) => day == today);
 
             if (!existLogin.length) {
               loginCount.push(today);
             }
-
             await Users.update(
               { refreshtoken, loginCount }, // refresh token을 update해줌
               { where: { userId: GoogleExUser.userId } }
@@ -51,6 +50,7 @@ module.exports = () => {
             done(null, [accesstoken, refreshtoken, GoogleExUser.nickname]);
           } else if (!GoogleExUser) {
             // 로컬 로그인과 이메일 중복체크
+
             const LocalExUser = await Users.findOne({
               raw: true,
               where: {
@@ -72,6 +72,7 @@ module.exports = () => {
               imageUrl: profile._json.picture,
               nickname,
               loginType: 'Google',
+              loginCount: [today],
             });
 
             const accesstoken = await createAccessToken(GoogleNewUser.userId);

@@ -3,6 +3,7 @@ const Naver = require('passport-naver-v2');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
 const { ExistError } = require('../middlewares/exceptions/error.class');
+const formatDate = require('../util/formatDate');
 
 const NaverStrategy = Naver.Strategy;
 
@@ -28,11 +29,11 @@ module.exports = () => {
             raw: true,
           });
           const refreshtoken = await createRefreshToken();
+          const today = formatDate(new Date());
 
           // 이미 가입된 네이버 프로필이면, 로그인 인증 완료
           if (NaverExUser) {
-            const today = formatDate(new Date());
-            const loginCount = existUser.loginCount;
+            const loginCount = NaverExUser.loginCount;
             const existLogin = loginCount.filter((day) => day == today);
             if (!existLogin.length) {
               loginCount.push(today);
@@ -67,6 +68,7 @@ module.exports = () => {
               imageUrl: profile.profileImage,
               nickname,
               loginType: 'Naver',
+              loginCount: [today],
             });
 
             const accesstoken = await createAccessToken(NaverNewUser.userId);
