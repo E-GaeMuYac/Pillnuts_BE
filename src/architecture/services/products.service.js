@@ -4,6 +4,7 @@ const axios = require('axios');
 const {
   ValidationError,
 } = require('../../middlewares/exceptions/error.class.js');
+const { Op } = require('sequelize');
 
 class ProductService {
   productsRepository = new ProductRepository();
@@ -315,12 +316,32 @@ class ProductService {
   };
 
   // 제품 목록 조회 (검색)
-  findMedicines = async (value) => {
-    const searchValue = '%' + value.replace(/\s/gi, '') + '%';
-    const products = await this.productsRepository.findSearchProduct(
-      searchValue
+  findMedicines = async (type, value, page, pageSize) => {
+    const searchValue = ('%' + value + '%').replace(/\s|\b/gi, '');
+    let data;
+
+    if (type === 'itemName') {
+      data = {
+        itemName: {
+          [Op.like]: searchValue,
+        },
+      };
+    } else if (type === 'productType') {
+      data = {
+        productType: {
+          [Op.like]: searchValue,
+        },
+      };
+    }
+    const searchData = await this.productsRepository.findSearchProduct(
+      data,
+      page,
+      pageSize
     );
-    return products || [];
+    console.log(searchData);
+    return (
+      { searchLength: searchData.count.length, data: searchData.rows } || []
+    );
   };
 
   // 제품 상세 조회
