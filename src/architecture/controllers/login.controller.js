@@ -50,14 +50,14 @@ class LoginController {
 
   naverCallback = passport.authenticate('naver', {
     successRedirect: '/api/users/login', // NaverStrategy에서 성공한다면 이 주소로 이동
-    failureRedirect: 'https://api.geniuskim.shop', // NaverStrategy에서 실패하면 이 주소로 이동
+    failureRedirect: '/api/users/login/naver/callback', // NaverStrategy에서 실패하면 이 주소로 이동
   });
 
-  kakao = passport.authenticate('kakao', { scope: ['email'] });
+  kakao = passport.authenticate('kakao', { scope: ['account_email', 'profile_nickname', 'profile_image'] });
 
   kakaoCallback = passport.authenticate('kakao', {
     successRedirect: '/api/users/login', // KakaoStrategy에서 성공한다면 이 주소로 이동
-    failureRedirect: 'https://api.geniuskim.shop', // KakaoStrategy에서 실패하면 이 주소로 이동
+    failureRedirect: '/api/users/login/kakao/callback', // KakaoStrategy에서 실패하면 이 주소로 이동
   });
 
 
