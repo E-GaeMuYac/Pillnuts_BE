@@ -60,7 +60,7 @@ module.exports = () => {
             const GoogleNewUser = await Users.create({
               email: profile._json.email,
               refreshtoken,
-              imageUrl: profileImage,
+              imageUrl: profile.photos,
               nickname, 
               loginType: 'Google',
             });
