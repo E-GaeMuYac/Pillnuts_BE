@@ -2,7 +2,7 @@ const { Medicines, Materials, Ingredients } = require('../models');
 require('dotenv').config();
 const axios = require('axios');
 
-module.exports = async (start, res, next) => {
+module.exports = async (req, res, next) => {
   try {
     let {
       data: { body: body },
@@ -17,7 +17,7 @@ module.exports = async (start, res, next) => {
         type: 'json',
       },
     });
-    for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
+    for (let p = 1; p <= (body.totalCount / 100).toFixed(); p++) {
       let {
         data: { body: mainBody },
       } = await axios.get(process.env.MEDI_A_API_END_POINT, {
