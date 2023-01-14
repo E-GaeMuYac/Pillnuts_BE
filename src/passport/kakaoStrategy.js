@@ -28,13 +28,18 @@ module.exports = () => {
               loginType: 'Kakao',
             },
           });
-
+          const today = formatDate(new Date());
           const refreshtoken = await createRefreshToken();
 
           // 이미 가입된 카카오 프로필이면, 로그인 인증 완료
           if (KakaoExUser) {
+            const loginCount = GoogleExUser.loginCount;
+            const existLogin = loginCount.filter((day) => day == today);
+            if (!existLogin.length) {
+              loginCount.push(today);
+            }
             await Users.update(
-              { refreshtoken }, // refresh token을 update해줌
+              { refreshtoken, loginCount }, // refresh token을 update해줌
               { where: { userId: KakaoExUser.userId } }
             );
 
@@ -64,6 +69,7 @@ module.exports = () => {
               imageUrl: profile._json.kakao_account.profile.thumbnail_image_url,
               nickname,
               loginType: 'Kakao',
+              loginCount: [today],
             });
 
             const accesstoken = await createAccessToken(KakaoNewUser.userId);
