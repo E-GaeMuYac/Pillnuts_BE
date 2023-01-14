@@ -107,13 +107,23 @@ class ProductController {
     }
   };
 
-  // 제품 목록 조회 (검색) - 조금 더 만들어야함
+  // 제품 목록 조회 (검색)
   findMedicines = async (req, res, next) => {
     try {
-      const { value } = req.query;
-      if (!value) throw new InvalidParamsError('검색어를 확인해주세요.', 412);
+      let { type, value, page, pageSize } = req.query;
 
-      const products = await this.productService.findMedicines(value);
+      if (!type || (type !== 'itemName' && type !== 'productType'))
+        throw new InvalidParamsError('검색분류를 확인해주세요.', 412);
+      if (!value) throw new InvalidParamsError('검색어를 확인해주세요.', 412);
+      if (!page || page <= 0) page = 1;
+      if (!pageSize || pageSize <= 0) pageSize = 20;
+
+      const products = await this.productService.findMedicines(
+        type,
+        value,
+        page,
+        pageSize
+      );
 
       res.status(200).json(products);
     } catch (error) {
