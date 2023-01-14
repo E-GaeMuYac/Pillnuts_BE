@@ -26,8 +26,6 @@ class UsersController {
 
       const result = schema.validate(req.body);
 
-      console.log(result.error);
-
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
