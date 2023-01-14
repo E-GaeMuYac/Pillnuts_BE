@@ -1,5 +1,5 @@
 require('dotenv').config();
-const jwt = require('jsonwebtoken');
+const { validateRefreshToken } = require('../util/token');
 const {
   AuthenticationError,
 } = require('../middlewares/exceptions/error.class');
@@ -23,23 +23,3 @@ module.exports = (req, res, next) => {
     next(error);
   }
 };
-
-// Access Token을 검증한다.
-function validateAccessToken(accesstoken) {
-  try {
-    jwt.verify(accesstoken, process.env.SECRET_KEY);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
-
-// Refresh Token을 검증한다.
-function validateRefreshToken(refreshtoken) {
-  try {
-    jwt.verify(refreshtoken, process.env.SECRET_KEY);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}

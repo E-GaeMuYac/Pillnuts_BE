@@ -19,9 +19,14 @@ module.exports = {
         allowNull: false,
       },
       phoneNumber: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         unique: true,
         allowNull: true,
+      },
+      loginCount: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        defaultValue: [],
       },
       refreshtoken: {
         type: Sequelize.STRING,
@@ -31,6 +36,10 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
         allowNull: true,
+      },
+      loginType: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       imageUrl: {
         type: Sequelize.STRING,

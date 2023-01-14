@@ -16,7 +16,6 @@ module.exports = {
       },
       itemName: {
         type: Sequelize.DataTypes.STRING,
-        unique: true,
         allowNull: false,
       },
       entpName: {
@@ -27,6 +26,10 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: true,
       },
+      totalAmount: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
+      },
       etcOtcCode: {
         type: Sequelize.DataTypes.STRING,
         allowNull: true,
@@ -34,10 +37,7 @@ module.exports = {
       productType: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
-      },
-      materialName: {
-        type: Sequelize.DataTypes.JSON,
-        allowNull: false,
+        defaultValue: '',
       },
       ingrName: {
         type: Sequelize.DataTypes.STRING,
@@ -48,15 +48,15 @@ module.exports = {
         allowNull: true,
       },
       eeDocData: {
-        type: Sequelize.DataTypes.STRING(30000),
+        type: Sequelize.DataTypes.STRING(3000),
         allowNull: true,
       },
       udDocData: {
-        type: Sequelize.DataTypes.STRING(30000),
+        type: Sequelize.DataTypes.STRING(3000),
         allowNull: true,
       },
       nbDocData: {
-        type: Sequelize.DataTypes.STRING(1000000),
+        type: Sequelize.DataTypes.STRING(100000),
         allowNull: true,
       },
       createdAt: {

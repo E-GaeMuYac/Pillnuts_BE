@@ -49,7 +49,7 @@ class LoginController {
   naver = passport.authenticate('naver', { scope: ['email'] });
 
   naverCallback = passport.authenticate('naver', {
-    successRedirect: '/', // NaverStrategy에서 성공한다면 이 주소로 이동
+    successRedirect: '/api/users/login', // NaverStrategy에서 성공한다면 이 주소로 이동
     failureRedirect: '/api/users/login/naver/callback', // NaverStrategy에서 실패하면 이 주소로 이동
   });
 

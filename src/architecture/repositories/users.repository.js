@@ -27,14 +27,9 @@ class UsersRepository {
     );
   };
 
-  updateUser = async (nickname, userId, imageUrl) => {
-    await this.usersModel.update(
-      {
-        nickname,
-        imageUrl,
-      },
-      { where: { userId } }
-    );
+  updateUser = async (data, where) => {
+    console.log(data, where);
+    await this.usersModel.update(data, where);
   };
 
   deleteUser = async (userId) => {

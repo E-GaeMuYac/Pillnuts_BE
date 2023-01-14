@@ -40,6 +40,7 @@ module.exports = () => {
             const accesstoken = await createAccessToken(GoogleExUser.userId);
             done(null, [accesstoken, refreshtoken, GoogleExUser.nickname]);
           } else if (!GoogleExUser) {
+            // 로컬 로그인과 이메일 중복체크
             const LocalExUser = await Users.findOne({
               raw: true,
               where: {
@@ -53,11 +54,12 @@ module.exports = () => {
             if (!nickname) {
               nickname = profile._json.email.split('@')[0];
             }
-            // 가입되지 않은 유저면, 회원가입시키고 로그인 시킨다.
+            // 가입되지 않은 유저면, 회원가입 시키고 로그인 시킨다.
             const GoogleNewUser = await Users.create({
               email: profile._json.email,
               refreshtoken,
-              nickname,
+              imageUrl: profileImage,
+              nickname, 
               loginType: 'Google',
             });
 

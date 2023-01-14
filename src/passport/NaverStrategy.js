@@ -31,23 +31,22 @@ module.exports = () => {
 
           // 이미 가입된 네이버 프로필이면, 로그인 인증 완료
           if (NaverExUser) {
-            await Users.update(
-              // refresh token을 update해줌
+            await Users.update( // refresh token을 update해줌
               { refreshtoken },
               { where: { userId: NaverExUser.userId } }
             );
             const accesstoken = await createAccessToken(NaverExUser.userId);
             done(null, [accesstoken, refreshtoken, NaverExUser.nickname]);
-          } else {
+          } else if (!NaverExUser){
             // 로컬 로그인과 이메일 중복체크
-            const user = await Users.findOne({
+            const LocalExUser = await Users.findOne({
               raw: true,
               where: { email: profile.email },
             });
-            if (user) {
+            if (LocalExUser) {
               throw new ExistError('이미 존재하는 이메일입니다.');
             }
-
+ 
             let nickname = profile._json.response.nickname;
             if (!nickname) {
               nickname = profile._json.response.email.split('@')[0];

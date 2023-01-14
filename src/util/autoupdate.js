@@ -1,15 +1,9 @@
-const ProductRepository = require('../repositories/products.repository');
+const { Medicines, Materials, Ingredients } = require('../models');
 require('dotenv').config();
 const axios = require('axios');
-const {
-  ValidationError,
-} = require('../../middlewares/exceptions/error.class.js');
 
-class ProductService {
-  productsRepository = new ProductRepository();
-
-  // api 등록하기
-  updateProductsMain = async (start) => {
+module.exports = async (start, res, next) => {
+  try {
     let {
       data: { body: body },
     } = await axios.get(process.env.MEDI_A_API_END_POINT, {
@@ -118,34 +112,39 @@ class ProductService {
         }
 
         // DB에 저장되어 있는 지 확인
-        let medicine = await this.productsRepository.findOneProduct(itemSeq);
+        let medicine = await Medicines.findOne({
+          raw: true,
+          where: { itemSeq },
+        });
 
         // 없으면 create. 있으면 update
         if (!medicine) {
-          medicine = await this.productsRepository.createProductsMain(
-            itemSeq, //등록 번호
-            itemName, //등록 명
-            entpName, //제조사
-            etcOtcCode, //약국 구매 가능 여부
-            ingrName, //첨가물
-            validTerm, //유통기한
-            eeDocData, //효능효과
-            udDocData, //용법용량
-            nbDocData, //주의사항
-            totalAmount // 총량
-          );
+          medicine = await Medicines.create({
+            itemSeq,
+            itemName,
+            entpName,
+            etcOtcCode,
+            ingrName,
+            validTerm,
+            eeDocData,
+            udDocData,
+            nbDocData,
+            totalAmount,
+          });
         } else {
-          await this.productsRepository.updateProductsMain(
-            itemSeq, //등록 번호
-            itemName, //등록 명
-            entpName, //제조사
-            etcOtcCode, //약국 구매 가능 여부
-            ingrName, //첨가물
-            validTerm, //유통기한
-            eeDocData, //효능효과
-            udDocData, //용법용량
-            nbDocData, //주의사항
-            totalAmount // 총량
+          await Medicines.update(
+            {
+              itemName, //등록 명
+              entpName, //제조사
+              etcOtcCode, //약국 구매 가능 여부
+              ingrName, //첨가물
+              validTerm, //유통기한
+              eeDocData, //효능효과
+              udDocData, //용법용량
+              nbDocData, //주의사항
+              totalAmount, // 총량
+            },
+            { where: { itemSeq } }
           );
         }
 
@@ -153,44 +152,55 @@ class ProductService {
         for (let j = 0; j < materials.split('|').length; j++) {
           if (materials.split('|')[j].includes('성분명')) {
             let name = materials.split('|')[j].split(':')[1].trim();
-            let material = await this.productsRepository.findOneMaterial(name);
+            let material = await Materials.findOne({
+              raw: true,
+              where: { name },
+            });
             if (!material) {
               let unit = materials.split('|')[j + 2].split(':')[1].trim();
-              material = await this.productsRepository.createMaterial(
-                name,
-                unit
-              );
+              material = Materials.create({ name, unit });
             }
 
             let volume = materials.split('|')[j + 1].split(':')[1].trim();
 
-            let ingredient = await this.productsRepository.findOneIngredient(
-              medicine.medicineId,
-              material.materialId
-            );
+            let ingredient = await Ingredients.findOne({
+              raw: true,
+              where: {
+                medicineId: medicine.medicineId,
+                materialId: material.materialId,
+              },
+            });
 
             if (!ingredient) {
-              ingredient = await this.productsRepository.createIngredients(
-                medicine.medicineId,
-                material.materialId,
-                volume
-              );
+              ingredient = await Ingredients.create({
+                medicineId: medicine.medicineId,
+                materialId: material.materialId,
+                volume,
+              });
             } else {
               if (ingredient.volume !== volume)
-                await this.productsRepository.updateIngredients(
-                  ingredient.ingredientId,
-                  volume
+                await Ingredients.update(
+                  { volume },
+                  { where: { ingredientId: ingredient.ingredientId } }
                 );
             }
           }
         }
-        console.log(`main update ${p}페이지의 ${rowCount}번쨰 저장중`);
       }
     }
-    return;
-  };
-  // 효과 분류
-  updateProductsType = async (start) => {
+  } catch (error) {
+    if (
+      error.message.includes(
+        'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
+      )
+    ) {
+      res.redirect(
+        `/api/products/apiUpdateMain?start=${error.config.params.pageNo}`
+      );
+    }
+    next(error);
+  }
+  try {
     let {
       data: { body: body },
     } = await axios.get(process.env.MEDI_B_API_END_POINT, {
@@ -222,18 +232,27 @@ class ProductService {
         if (typeBody.items[rowCount].PRDUCT_TYPE !== null) {
           productType = typeBody.items[rowCount].PRDUCT_TYPE.split(']')[1];
         }
-        await this.productsRepository.updateProductsType(
-          typeBody.items[rowCount].ITEM_SEQ,
-          productType
+        await Medicines.update(
+          { productType },
+          { where: { itemSeq: typeBody.items[rowCount].ITEM_SEQ } }
         );
 
-        console.log(`type update ${p}페이지의 ${rowCount}번쨰 저장중`);
+        console.log(`type update ${p}페이지의 ${rowCount}번째 저장중`);
       }
     }
-    return;
-  };
-  //알약 이미지 저장
-  updateProductsImage = async (start) => {
+  } catch (error) {
+    if (
+      error.message.includes(
+        'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
+      )
+    ) {
+      res.redirect(
+        `/api/products/apiUpdateType?start=${error.config.params.pageNo}`
+      );
+    }
+    next(error);
+  }
+  try {
     let {
       data: { body: body },
     } = await axios.get(process.env.MEDI_C_API_END_POINT, {
@@ -260,89 +279,24 @@ class ProductService {
         let itemImage = '';
         if (imageBody.items[rowCount].ITEM_IMAGE !== null) {
           itemImage = imageBody.items[rowCount].ITEM_IMAGE;
-          await this.productsRepository.updateProductsImage(
-            imageBody.items[rowCount].ITEM_SEQ,
-            itemImage
+          await Medicines.update(
+            { itemImage },
+            { where: { itemSeq: imageBody.items[rowCount].ITEM_SEQ } }
           );
         }
-        console.log(`image update ${p}페이지의 ${rowCount}번쨰 저장중`);
+        console.log(`image update ${p}페이지의 ${rowCount}번째 저장중`);
       }
     }
-    return;
-  };
-
-  // 성분 설명 추가
-  updateMaterials = async (contents) => {
-    for (let i = 0; i < contents.length; i++) {
-      let { materialId, content } = contents[i];
-      await this.productsRepository.updateMaterials(materialId, content);
+  } catch (error) {
+    if (
+      error.message.includes(
+        'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
+      )
+    ) {
+      res.redirect(
+        `/api/products/apiUpdateImage?start=${error.config.params.pageNo}`
+      );
     }
-    return;
-  };
-
-  // 저장하기 (찜하기)
-  dibsProduct = async (medicineId, userId) => {
-    const product = await this.productsRepository.findOneMedicine(medicineId);
-    if (!product) throw new ValidationError('제품 정보가 없습니다.', 412);
-    const dibsProduct = await this.productsRepository.findOneDibs(
-      medicineId,
-      userId
-    );
-    if (!dibsProduct) {
-      await this.productsRepository.createDibs(medicineId, userId);
-      return '저장';
-    } else {
-      await this.productsRepository.deleteDibs(medicineId, userId);
-      return '삭제';
-    }
-  };
-
-  // 저장(찜)한 제품 목록 가져오기
-  getDibsProducts = async (userId) => {
-    const dibsProducts = await this.productsRepository.getDibsProducts(userId);
-    console.log(dibsProducts);
-    if (!dibsProducts) return [];
-    return dibsProducts.map((dibs) => {
-      return {
-        medicineId: dibs['Medicine.medicineId'],
-        itemName: dibs['Medicine.itemName'],
-        entpName: dibs['Medicine.entpName'],
-        etcOtcCode: dibs['Medicine.etcOtcCode'],
-        productType: dibs['Medicine.productType'],
-        itemImage: dibs['Medicine.itemImage'],
-      };
-    });
-  };
-
-  // 제품 목록 조회 (검색)
-  findMedicines = async (value) => {
-    const searchValue = '%' + value.replace(/\s/gi, '') + '%';
-    const products = await this.productsRepository.findSearchProduct(
-      searchValue
-    );
-    return products || [];
-  };
-
-  // 제품 상세 조회
-  findOneMedicine = async (medicineId) => {
-    const product = await this.productsRepository.findOneMedicine(medicineId);
-    const ingredients = await this.productsRepository.findAllIngredients(
-      medicineId
-    );
-    product.materialName = ingredients.map((i) => {
-      return {
-        material: i['Material.name'],
-        분량: i.volume,
-        단위: i['Material.unit'],
-        설명: i['Material.content'],
-      };
-    });
-
-    if (!product)
-      throw new ValidationError('약품 정보를 찾을 수 없습니다.', 412);
-
-    return product;
-  };
-}
-
-module.exports = ProductService;
+    next(error);
+  }
+};
