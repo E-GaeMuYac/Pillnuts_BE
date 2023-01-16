@@ -166,11 +166,21 @@ class ProductController {
       if (!compareA || !compareB)
         throw new InvalidParamsError('비교 할 약품을 다시 확인해주세요.', 412);
 
-      const productA = await this.productService.findOneMedicine(compareA);
-      const productB = await this.productService.findOneMedicine(compareB);
+      const { userId } = res.locals;
+
+      const productA = await this.productService.findOneMedicine(
+        compareA,
+        userId
+      );
+      const productB = await this.productService.findOneMedicine(
+        compareB,
+        userId
+      );
 
       res.status(200).json({ compareA: productA, compareB: productB });
-    } catch (error) {}
+    } catch (error) {
+      next(error);
+    }
   };
 }
 module.exports = ProductController;
