@@ -71,9 +71,7 @@ class UsersController {
       const { email, password } = req.body;
       const result = Joi.string()
         .required()
-        .pattern(/^[a-zA-Z]+[0-9]+$/)
-        .min(8)
-        .max(15)
+        .pattern(new RegExp(/^(?=.*[A-Za-z])(?=.*[0-9]).{8,15}$/))
         .validate(password);
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
