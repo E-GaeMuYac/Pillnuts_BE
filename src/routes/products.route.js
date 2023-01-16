@@ -33,6 +33,6 @@ router.get('/medicines', authCheck, productController.findMedicines);
 // 제품 저장, 삭제하기 (찜하기)
 router.put('/:medicineId/dibs', authMiddleware, productController.dibsProduct);
 // 제품 상세 조회
-router.get('/:medicineId', productController.findOneMedicine);
+router.get('/:medicineId', authCheck, productController.findOneMedicine);
 
 module.exports = router;

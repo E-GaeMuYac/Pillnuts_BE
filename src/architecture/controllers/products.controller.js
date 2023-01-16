@@ -141,11 +141,15 @@ class ProductController {
   findOneMedicine = async (req, res, next) => {
     try {
       const { medicineId } = req.params;
+      const { userId } = res.locals;
 
       if (!medicineId)
         throw new InvalidParamsError('제품 정보가 없습니다.', 412);
 
-      const product = await this.productService.findOneMedicine(medicineId);
+      const product = await this.productService.findOneMedicine(
+        medicineId,
+        userId
+      );
 
       res.status(200).json({ product });
     } catch (error) {

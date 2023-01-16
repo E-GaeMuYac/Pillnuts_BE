@@ -356,22 +356,39 @@ class ProductService {
   };
 
   // 제품 상세 조회
-  findOneMedicine = async (medicineId) => {
+  findOneMedicine = async (medicineId, userId) => {
     const product = await this.productsRepository.findOneMedicine(medicineId);
+
+    if (!product)
+      throw new ValidationError('약품 정보를 찾을 수 없습니다.', 412);
+
     const ingredients = await this.productsRepository.findAllIngredients(
       medicineId
     );
+
+    product.itemName = product.itemName.split('(')[0];
+    product.productType = product.productType.split('.');
+
     product.materialName = ingredients.map((i) => {
+      if (i['Material.unit'] === '그램') {
+        i.volume = i.volume * 1000;
+      }
       return {
         material: i['Material.name'],
         분량: i.volume,
-        단위: i['Material.unit'],
         설명: i['Material.content'],
       };
     });
 
-    if (!product)
-      throw new ValidationError('약품 정보를 찾을 수 없습니다.', 412);
+    if (userId) {
+      const dibs = await this.productsRepository.findOneDibs(
+        medicineId,
+        userId
+      );
+      product.dibs = Boolean(dibs);
+    } else {
+      product.dibs = false;
+    }
 
     return product;
   };
