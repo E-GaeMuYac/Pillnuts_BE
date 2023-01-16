@@ -18,7 +18,18 @@ class UsersService {
 
   signUp = async (email, password, nickname, phoneNumber) => {
     password = hash(password);
-    await this.usersRepository.signUp(email, password, nickname, phoneNumber);
+
+    const filename = `icon${Math.floor(Math.random() * 5)}.png`;
+
+    const imageUrl = `${process.env.ICON_URL}${filename}`;
+
+    await this.usersRepository.signUp(
+      email,
+      password,
+      nickname,
+      phoneNumber,
+      imageUrl
+    );
   };
 
   duplicateCheck = async (email) => {
