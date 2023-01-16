@@ -115,18 +115,31 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('정보 수정에 실패하였습니다.');
     }
-    filename = Date.now() + filename;
+    if (filename) {
+      filename = Date.now() + filename;
 
-    const imageUrl = `${process.env.S3URL}/${filename}`;
+      const imageUrl = `${process.env.S3URL}/${filename}`;
 
-    await this.usersRepository.updateUser(
-      {
-        imageUrl,
-      },
-      { where: { userId } }
-    );
+      await this.usersRepository.updateUser(
+        {
+          imageUrl,
+        },
+        { where: { userId } }
+      );
 
-    return createUrl(`${process.env.BUCKET}/${filename}`);
+      return createUrl(`${process.env.BUCKET}/${filename}`);
+    } else {
+      const filename = `icon${Math.floor(Math.random() * 5)}.png`;
+
+      const imageUrl = `${process.env.ICON_URL}${filename}`;
+
+      await this.usersRepository.updateUser(
+        {
+          imageUrl,
+        },
+        { where: { userId } }
+      );
+    }
   };
 
   deleteUser = async (userId, password) => {
