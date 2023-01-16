@@ -34,7 +34,7 @@ class UsersService {
   findEmail = async (phoneNumber) => {
     const user = await this.usersRepository.findUser({
       raw: true,
-      where: { phoneNumber },
+      where: { phoneNumber, loginType: 'Local' },
     });
     if (!user) {
       throw new InvalidParamsError('해당하는 사용자가 없습니다.');
@@ -42,10 +42,21 @@ class UsersService {
     return user.email;
   };
 
+  findPhoneNumber = async (email) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { email, loginType: 'Local' },
+    });
+    if (!user) {
+      throw new InvalidParamsError('해당하는 사용자가 없습니다.');
+    }
+    return user.phoneNumber;
+  };
+
   findPassword = async (email, password) => {
     const user = await this.usersRepository.findUser({
       raw: true,
-      where: { email },
+      where: { email, loginType: 'Local' },
     });
     if (!user) {
       throw new InvalidParamsError('해당하는 사용자가 없습니다.');
@@ -61,7 +72,7 @@ class UsersService {
       {
         password,
       },
-      { where: { email } }
+      { where: { email, loginType: 'Local' } }
     );
   };
 
