@@ -30,7 +30,7 @@
 
 - 📌 Pillnuts는 알약(pill)과 땅콩(peanuts)의 합성어로, 땅콩의 껍질을 까서 먹는 것을 모티브로 하여 ‘약의 속(성분)을 파헤쳐보자’ 라는 의미이다.
 
-<br> 
+<br>
 
 ## 🗓 프로젝트 기간
 
@@ -71,30 +71,30 @@
 
 ## 🛠 기술스택
 
-기술스택 | 설명
----|:---:
-Node.js | 자바스크립트 런타임
-Express | 웹 프레임워크
-MySQL | MySQL
-Docker | Docker
+| 기술스택 |        설명         |
+| -------- | :-----------------: |
+| Node.js  | 자바스크립트 런타임 |
+| Express  |    웹 프레임워크    |
+| MySQL    |        MySQL        |
+| Docker   |       Docker        |
 
 <br>
 
-## 📖 라이브러리 
+## 📖 라이브러리
 
-라이브러리 | 설명
----|:---:
-bcrypt | 비밀번호 암호화
-cors | 교차 리소스 공유
-dotenv  | 환경변수 관리
-express | 서버
-joi | 입력데이터 검출
-jsonwebtoken | 서명 암호화
-mysql | MySQL
-node-cron | 스케쥴 업무 자동화
-sequelize  | MySQL ORM
-sequelize--cli | MySQL ORM Console
-passport | User Authenticate
+| 라이브러리     |        설명        |
+| -------------- | :----------------: |
+| bcrypt         |  비밀번호 암호화   |
+| cors           |  교차 리소스 공유  |
+| dotenv         |   환경변수 관리    |
+| express        |        서버        |
+| joi            |  입력데이터 검출   |
+| jsonwebtoken   |    서명 암호화     |
+| mysql          |       MySQL        |
+| node-cron      | 스케쥴 업무 자동화 |
+| sequelize      |     MySQL ORM      |
+| sequelize--cli | MySQL ORM Console  |
+| passport       | User Authenticate  |
 
 <br>
 
@@ -145,7 +145,6 @@ passport | User Authenticate
 
 ![architecture](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/531c79b9-8a5f-4c16-b7bb-4922f754bb2f/%E1%84%86%E1%85%AE%E1%84%8C%E1%85%A6.drawio_%281%29.drawio_%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230114%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230114T095007Z&X-Amz-Expires=86400&X-Amz-Signature=6094522c52053a37105aa6ebb949044949ca7afada335b6c6d09a222181b7e05&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22%25E1%2584%2586%25E1%2585%25AE%25E1%2584%258C%25E1%2585%25A6.drawio%2520%281%29.drawio%2520%281%29.png%22&x-id=GetObject)
 
-
 <br>
 
 ## 🐜 DB ERD
@@ -176,8 +175,8 @@ passport | User Authenticate
   - mig: migration
   - 제목은 50자 미만, 문장의 끝에 마침표 넣지 않음. 과거 시제 사용하지 않고, 명령어로 작성하도록 함.
   - 제목 외에 추가적으로 정보를 전달하고 싶을 경우 본문에 추가 정보 기입
-  > 예시 : [feat] comment router CRUD 기능 추가 :  본인 이름
+    > 예시 : [feat] comment router CRUD 기능 추가 : 본인 이름
 - 각 기능 브랜치에서 작업 후 push —> develop 브랜치에 merge는 pull requests를 통해서 하기.
   - 모든 pull requests는 팀원들의 확인 후 merge
   - 이슈가 생길 시 issue 탭 활용
-<br>
+    <br>
