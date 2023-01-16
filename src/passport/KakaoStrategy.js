@@ -57,7 +57,8 @@ module.exports = () => {
             if (LocalExUser) {
               throw new ExistError('이미 존재하는 이메일입니다.');
             }
-
+            
+            
             let { nickname } = profile._json.kakao_account.profile;
             if (!nickname) {
               nickname = profile._json.kakao_account.email.split('@')[0];

@@ -5,7 +5,7 @@ const routes = require('./routes');
 const cors = require('cors');
 const passport = require('passport');
 const passportConfig = require('./passport/index');
-passportConfig();
+
 
 require('dotenv').config();
 
@@ -18,6 +18,7 @@ const corsOption = {
 };
 app.use(cors(corsOption));
 app.use(express.json());
+passportConfig();
 
 const ErrorHandler = require('./middlewares/error.handler.middleware');
 app.use(ErrorHandler);
