@@ -16,7 +16,7 @@ class LoginService {
   existUser = async (email, password) => {
     const existUser = await this.loginRepository.existUser(email); // 2. Users에 ExistUser의 email이 있는지 찾아본다.
     if (!existUser) {
-      throw new ExistError(
+      throw new ValidationError(
         '로그인 정보를 다시 확인해주세요.', // 2-1. Users에 ExistUser의 email이 없다면, ExistError(412)를 띄운다.
         412
       );
@@ -25,7 +25,7 @@ class LoginService {
     const match = compare(password, existUser.password); // 3. 비밀번호를 확인한다. -> existUser의 password만 불러온다.
     if (!match) {
       throw new ValidationError(
-        '비밀번호가 일치하지 않습니다.', // 3-1. 입력한 비밀번호와 db에 저장되어있는 비번을 compare해서 비밀번호가 일치하지 않은 경우, validationError(412)를 띄운다.
+        '로그인 정보를 다시 확인해주세요.', // 3-1. 입력한 비밀번호와 db에 저장되어있는 비번을 compare해서 비밀번호가 일치하지 않은 경우, validationError(412)를 띄운다.
         412
       );
     }
