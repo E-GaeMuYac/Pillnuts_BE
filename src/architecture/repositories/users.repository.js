@@ -27,7 +27,6 @@ class UsersRepository {
   };
 
   updateUser = async (data, where) => {
-    console.log(data, where);
     await this.usersModel.update(data, where);
   };
 
