@@ -127,7 +127,7 @@ class UsersController {
 
   updateImg = async (req, res, next) => {
     try {
-      const { userId } = { userId: 103 }; //res.locals;
+      const { userId } = res.locals;
       const { filename } = req.body;
 
       const presignedUrl = await this.usersService.updateImg(userId, filename);
