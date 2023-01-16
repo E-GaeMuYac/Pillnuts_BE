@@ -22,10 +22,11 @@ module.exports = () => {
       async (request, accessToken, refreshToken, profile, done) => {
         try {
           // 카카오 플랫폼에서 로그인 했었고 & 소셜 로그인 한 경우
+          const url = profile._json.kakao_account;
           const KakaoExUser = await Users.findOne({
             raw: true,
             where: {
-              email: profile._json.kakao_account.email,
+              email: url.email,
               loginType: 'Kakao',
             },
           });
@@ -51,24 +52,31 @@ module.exports = () => {
             const LocalExUser = await Users.findOne({
               raw: true,
               where: {
-                email: profile._json.kakao_account.email,
+                email: url.email,
               },
             });
             if (LocalExUser) {
               throw new ExistError('이미 존재하는 이메일입니다.');
             }
-            
-            
-            let { nickname } = profile._json.kakao_account.profile;
+
+            let { nickname } = url.profile;
             if (!nickname) {
-              nickname = profile._json.kakao_account.email.split('@')[0];
+              nickname = url.email.split('@')[0];
+            }
+
+            let imageUrl = url.profile.thumbnail_image_url;
+            const basicImage =
+              'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_110x110.jpg';
+            if (imageUrl === basicImage || !imageUrl) {
+              const filename = `icon${Math.floor(Math.random() * 5)}.png`;
+              imageUrl = `${process.env.ICON_URL}${filename}`;
             }
 
             // 가입되지 않은 유저면, 회원가입 시키고 로그인 시킨다.
             const KakaoNewUser = await Users.create({
-              email: profile._json.kakao_account.email,
+              email: url.email,
               refreshtoken,
-              imageUrl: profile._json.kakao_account.profile.thumbnail_image_url,
+              imageUrl,
               nickname,
               loginType: 'Kakao',
               loginCount: [today],
