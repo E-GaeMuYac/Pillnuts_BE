@@ -66,7 +66,6 @@ class LoginController {
     const accesstoken = req.user[0];
     const refreshtoken = req.user[1];
     const nickname = req.user[2];
-    // res.header({ accesstoken, refreshtoken, nickname }).status(201)
     res.redirect(
       `http://localhost:3000?accesstoken=${accesstoken}&refreshtoken=${refreshtoken}$nickname=${nickname}`
     ); 
