@@ -20,9 +20,7 @@ class UsersController {
         nickname: Joi.string().required(),
         password: Joi.string()
           .required()
-          .pattern(/^[a-zA-Z]+[0-9]+$/)
-          .min(8)
-          .max(15),
+          .pattern(new RegExp(/^(?=.*[A-Za-z])(?=.*[0-9]).{8,15}$/)),
         confirm: Joi.string().required().valid(Joi.ref('password')),
       });
 

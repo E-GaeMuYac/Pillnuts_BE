@@ -6,6 +6,15 @@ const authMiddleware = require('../middlewares/authUser.middleware');
 const ProductController = require('../architecture/controllers/products.controller');
 const productController = new ProductController();
 
+const cron = require('node-cron');
+const dbAutoUpdate = require('../util/autoupdate');
+
+//시간 조정 필요 (UTC기준으로)
+cron.schedule('0 2 * * TUE', function () {
+  console.log('화요일 오전 2시가 되어 자동으로 api가 등록 됩니다.');
+  dbAutoUpdate();
+});
+
 // api 저장하기
 router.get('/apiUpdateMain', productController.updateProductsMain);
 router.get('/apiUpdateType', productController.updateProductsType);

@@ -3,6 +3,7 @@ const Naver = require('passport-naver-v2');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
 const { ExistError } = require('../middlewares/exceptions/error.class');
+const formatDate = require('../util/formatDate');
 
 const NaverStrategy = Naver.Strategy;
 
@@ -28,16 +29,23 @@ module.exports = () => {
             raw: true,
           });
           const refreshtoken = await createRefreshToken();
+          const today = formatDate(new Date());
 
           // 이미 가입된 네이버 프로필이면, 로그인 인증 완료
           if (NaverExUser) {
-            await Users.update( // refresh token을 update해줌
-              { refreshtoken },
+            const loginCount = NaverExUser.loginCount;
+            const existLogin = loginCount.filter((day) => day == today);
+            if (!existLogin.length) {
+              loginCount.push(today);
+            }
+            await Users.update(
+              // refresh token을 update해줌
+              { refreshtoken, loginCount },
               { where: { userId: NaverExUser.userId } }
             );
             const accesstoken = await createAccessToken(NaverExUser.userId);
             done(null, [accesstoken, refreshtoken, NaverExUser.nickname]);
-          } else if (!NaverExUser){
+          } else if (!NaverExUser) {
             // 로컬 로그인과 이메일 중복체크
             const LocalExUser = await Users.findOne({
               raw: true,
@@ -46,7 +54,7 @@ module.exports = () => {
             if (LocalExUser) {
               throw new ExistError('이미 존재하는 이메일입니다.');
             }
- 
+
             let nickname = profile._json.response.nickname;
             if (!nickname) {
               nickname = profile._json.response.email.split('@')[0];
@@ -60,6 +68,7 @@ module.exports = () => {
               imageUrl: profile.profileImage,
               nickname,
               loginType: 'Naver',
+              loginCount: [today],
             });
 
             const accesstoken = await createAccessToken(NaverNewUser.userId);
