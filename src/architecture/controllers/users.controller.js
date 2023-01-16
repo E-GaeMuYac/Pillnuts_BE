@@ -66,6 +66,17 @@ class UsersController {
     }
   };
 
+  findPhoneNumber = async (req, res, next) => {
+    try {
+      const { email } = req.body;
+      const phoneNumber = await this.usersService.findPhoneNumber(email);
+
+      return res.status(200).json({ phoneNumber });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   findPassword = async (req, res, next) => {
     try {
       const { email, password } = req.body;
