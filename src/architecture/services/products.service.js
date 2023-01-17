@@ -11,18 +11,17 @@ class ProductService {
 
   // api 등록하기
   updateProductsMain = async (start) => {
-    // let {
-    //   data: { body: body },
-    // } = await axios.get(process.env.MEDI_A_API_END_POINT, {
-    //   params: {
-    //     serviceKey: process.env.MEDI_API_KEY_DEC,
-    //     numOfRows: 1,
-    //     pageNo: 1,
-    //     type: 'json',
-    //   },
-    // });
-    for (let p = start; p <= 514; p++) {
-      // for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
+    let {
+      data: { body: body },
+    } = await axios.get(process.env.MEDI_A_API_END_POINT, {
+      params: {
+        serviceKey: process.env.MEDI_API_KEY_DEC,
+        numOfRows: 1,
+        pageNo: 1,
+        type: 'json',
+      },
+    });
+    for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
       let {
         data: { body: mainBody },
       } = await axios.get(process.env.MEDI_A_API_END_POINT, {
@@ -305,12 +304,19 @@ class ProductService {
   // 저장(찜)한 제품 목록 가져오기
   getDibsProducts = async (userId) => {
     const dibsProducts = await this.productsRepository.getDibsProducts(userId);
-    console.log(dibsProducts);
     if (!dibsProducts) return [];
     return dibsProducts.map((dibs) => {
+      dibs['Medicine.productType'] = dibs['Medicine.productType'].split('.');
+      if (dibs['Medicine.productType'].length > 1) {
+        for (let i = 0; i < dibs['Medicine.productType'].length; i++) {
+          if (i !== dibs['Medicine.productType'].length - 1) {
+            dibs['Medicine.productType'][i] += '제';
+          }
+        }
+      }
       return {
         medicineId: dibs['Medicine.medicineId'],
-        itemName: dibs['Medicine.itemName'],
+        itemName: dibs['Medicine.itemName'].split('(')[0],
         entpName: dibs['Medicine.entpName'],
         etcOtcCode: dibs['Medicine.etcOtcCode'],
         productType: dibs['Medicine.productType'],
