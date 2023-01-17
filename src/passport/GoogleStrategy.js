@@ -65,11 +65,19 @@ module.exports = () => {
             if (!nickname) {
               nickname = profile._json.email.split('@')[0];
             }
+
+            let imageUrl = profile._json.picture;
+            const basicImage =
+              'https://lh3.googleusercontent.com/a/default-user=s96-c';
+            if (imageUrl === basicImage || !imageUrl) {
+              const filename = `icon${Math.floor(Math.random() * 5)}.png`;
+              imageUrl = `${process.env.ICON_URL}${filename}`;
+            }
             // 가입되지 않은 유저면, 회원가입 시키고 로그인 시킨다.
             const GoogleNewUser = await Users.create({
               email: profile._json.email,
               refreshtoken,
-              imageUrl: profile._json.picture,
+              imageUrl,
               nickname,
               loginType: 'Google',
               loginCount: [today],

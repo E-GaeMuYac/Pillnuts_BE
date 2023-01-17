@@ -3,12 +3,13 @@ class UsersRepository {
     this.usersModel = UsersModel;
   }
 
-  signUp = async (email, password, nickname, phoneNumber) => {
+  signUp = async (email, password, nickname, phoneNumber, imageUrl) => {
     await this.usersModel.create({
       email,
       password,
       nickname,
       phoneNumber,
+      imageUrl,
       loginType: 'Local',
     });
   };
@@ -27,7 +28,6 @@ class UsersRepository {
   };
 
   updateUser = async (data, where) => {
-    console.log(data, where);
     await this.usersModel.update(data, where);
   };
 

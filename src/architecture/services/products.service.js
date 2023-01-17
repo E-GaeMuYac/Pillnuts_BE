@@ -11,31 +11,28 @@ class ProductService {
 
   // api 등록하기
   updateProductsMain = async (start) => {
-    let {
-      data: { body: body },
-    } = await axios.get(process.env.MEDI_A_API_END_POINT, {
-      params: {
-        // 공공데이터포탈에서 발급 받은 인증키
-        serviceKey: process.env.MEDI_API_KEY_DEC,
-        // 한 페이지 결과 수. 100개까지만 가능
-        numOfRows: 1,
-        // 페이지 번호.
-        pageNo: 1,
-        type: 'json',
-      },
-    });
-    for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
+    // let {
+    //   data: { body: body },
+    // } = await axios.get(process.env.MEDI_A_API_END_POINT, {
+    //   params: {
+    //     serviceKey: process.env.MEDI_API_KEY_DEC,
+    //     numOfRows: 1,
+    //     pageNo: 1,
+    //     type: 'json',
+    //   },
+    // });
+    for (let p = start; p <= 514; p++) {
+      // for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
       let {
         data: { body: mainBody },
       } = await axios.get(process.env.MEDI_A_API_END_POINT, {
         params: {
-          serviceKey: process.env.MEDI_API_KEY_DEC, // 공공데이터포탈에서 발급 받은 인증키
-          numOfRows: 100, // 한 페이지 결과 수. 100개까지만 가능
-          pageNo: p, // 페이지 번호.
+          serviceKey: process.env.MEDI_API_KEY_DEC,
+          numOfRows: 100,
+          pageNo: p,
           type: 'json',
         },
       });
-
       for (let rowCount = 0; rowCount < mainBody.numOfRows; rowCount++) {
         let {
           ITEM_SEQ: itemSeq,
@@ -86,6 +83,7 @@ class ProductService {
                   .trim() + '\n';
             }
           }
+          eeDocData = eeDocData.substring(5);
         }
 
         // 용법용량
@@ -100,6 +98,7 @@ class ProductService {
                   .trim() + '\n';
             }
           }
+          udDocData = udDocData.substring(5);
         }
 
         // 주의사항
@@ -116,11 +115,10 @@ class ProductService {
                   .trim() + '\n';
             }
           }
+          nbDocData = nbDocData.substring(8).trim();
         }
-
         // DB에 저장되어 있는 지 확인
         let medicine = await this.productsRepository.findOneProduct(itemSeq);
-
         // 없으면 create. 있으면 update
         if (!medicine) {
           medicine = await this.productsRepository.createProductsMain(
@@ -163,7 +161,13 @@ class ProductService {
               );
             }
 
-            let volume = materials.split('|')[j + 1].split(':')[1].trim();
+            let volume = materials
+              .split('|')
+              [j + 1].split(':')[1]
+              .trim()
+              .split('(')[0]
+              .split(' ')[0]
+              .replace(/[^0-9]/g, '');
 
             let ingredient = await this.productsRepository.findOneIngredient(
               medicine.medicineId,
@@ -316,9 +320,10 @@ class ProductService {
   };
 
   // 제품 목록 조회 (검색)
-  findMedicines = async (type, value, page, pageSize) => {
+  findMedicines = async (type, value, page, pageSize, userId) => {
     const searchValue = ('%' + value + '%').replace(/\s|\b/gi, '');
     let data;
+    let dibs = [];
 
     if (type === 'itemName') {
       data = {
@@ -338,28 +343,75 @@ class ProductService {
       page,
       pageSize
     );
+    if (userId) {
+      dibs = await this.productsRepository.getDibsProducts(userId);
+    }
+
+    const processingData = searchData.rows.map((d) => {
+      d.productType = d.productType.split('.');
+      if (d.productType.length > 1) {
+        for (let i = 0; i < d.productType.length; i++) {
+          if (i !== d.productType.length - 1) {
+            d.productType[i] += '제';
+          }
+        }
+      }
+      return {
+        medicineId: d.medicineId,
+        itemName: d.itemName.split('(')[0],
+        entpName: d.entpName,
+        etcOtcCode: d.etcOtcCode,
+        productType: d.productType,
+        itemImage: d.itemImage,
+        dibs: Boolean(dibs.find((v) => v.medicineId === d.medicineId)),
+      };
+    });
     return (
-      { searchLength: searchData.count.length, data: searchData.rows } || []
+      { searchLength: searchData.count.length, data: processingData } || []
     );
   };
 
   // 제품 상세 조회
-  findOneMedicine = async (medicineId) => {
+  findOneMedicine = async (medicineId, userId) => {
     const product = await this.productsRepository.findOneMedicine(medicineId);
+
+    if (!product)
+      throw new ValidationError('약품 정보를 찾을 수 없습니다.', 412);
+
     const ingredients = await this.productsRepository.findAllIngredients(
       medicineId
     );
+
+    product.itemName = product.itemName.split('(')[0];
+    product.productType = product.productType.split('.');
+    if (product.productType.length > 1) {
+      for (let i = 0; i < product.productType.length; i++) {
+        if (i !== product.productType.length - 1) {
+          product.productType[i] += '제';
+        }
+      }
+    }
+
     product.materialName = ingredients.map((i) => {
+      if (i['Material.unit'] === '그램') {
+        i.volume = i.volume * 1000;
+      }
       return {
         material: i['Material.name'],
         분량: i.volume,
-        단위: i['Material.unit'],
         설명: i['Material.content'],
       };
     });
 
-    if (!product)
-      throw new ValidationError('약품 정보를 찾을 수 없습니다.', 412);
+    if (userId) {
+      const dibs = await this.productsRepository.findOneDibs(
+        medicineId,
+        userId
+      );
+      product.dibs = Boolean(dibs);
+    } else {
+      product.dibs = false;
+    }
 
     return product;
   };

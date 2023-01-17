@@ -59,13 +59,20 @@ module.exports = () => {
             if (!nickname) {
               nickname = profile._json.response.email.split('@')[0];
             }
+            let imageUrl = profile.profileImage;
+            const basicImage =
+              'https://ssl.pstatic.net/static/pwe/address/img_profile.png';
+            if (imageUrl === basicImage || !imageUrl) {
+              const filename = `icon${Math.floor(Math.random() * 5)}.png`;
+              imageUrl = `${process.env.ICON_URL}${filename}`;
+            }
 
             // 가입되지 않은 유저면, 회원가입 시키고 로그인 시킨다.
 
             const NaverNewUser = await Users.create({
               email: profile._json.response.email,
               refreshtoken,
-              imageUrl: profile.profileImage,
+              imageUrl,
               nickname,
               loginType: 'Naver',
               loginCount: [today],

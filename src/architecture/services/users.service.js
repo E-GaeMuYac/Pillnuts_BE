@@ -18,7 +18,18 @@ class UsersService {
 
   signUp = async (email, password, nickname, phoneNumber) => {
     password = hash(password);
-    await this.usersRepository.signUp(email, password, nickname, phoneNumber);
+
+    const filename = `icon${Math.floor(Math.random() * 5)}.png`;
+
+    const imageUrl = `${process.env.ICON_URL}${filename}`;
+
+    await this.usersRepository.signUp(
+      email,
+      password,
+      nickname,
+      phoneNumber,
+      imageUrl
+    );
   };
 
   duplicateCheck = async (email) => {
@@ -34,7 +45,7 @@ class UsersService {
   findEmail = async (phoneNumber) => {
     const user = await this.usersRepository.findUser({
       raw: true,
-      where: { phoneNumber },
+      where: { phoneNumber, loginType: 'Local' },
     });
     if (!user) {
       throw new InvalidParamsError('해당하는 사용자가 없습니다.');
@@ -42,10 +53,21 @@ class UsersService {
     return user.email;
   };
 
+  findPhoneNumber = async (email) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { email, loginType: 'Local' },
+    });
+    if (!user) {
+      throw new InvalidParamsError('해당하는 사용자가 없습니다.');
+    }
+    return user.phoneNumber;
+  };
+
   findPassword = async (email, password) => {
     const user = await this.usersRepository.findUser({
       raw: true,
-      where: { email },
+      where: { email, loginType: 'Local' },
     });
     if (!user) {
       throw new InvalidParamsError('해당하는 사용자가 없습니다.');
@@ -61,7 +83,7 @@ class UsersService {
       {
         password,
       },
-      { where: { email } }
+      { where: { email, loginType: 'Local' } }
     );
   };
 
@@ -84,10 +106,10 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('정보 조회에 실패하였습니다.');
     }
-    const { nickname, imageUrl } = user;
+    const { nickname, imageUrl, loginType } = user;
     const loginCount = user.loginCount.length;
 
-    return { nickname, loginCount, imageUrl };
+    return { nickname, loginCount, imageUrl, loginType };
   };
 
   updateNickname = async (nickname, userId) => {
@@ -115,18 +137,31 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('정보 수정에 실패하였습니다.');
     }
-    filename = Date.now() + filename;
+    if (filename) {
+      filename = Date.now() + filename;
 
-    const imageUrl = `${process.env.S3URL}/${filename}`;
+      const imageUrl = `${process.env.S3URL}/${filename}`;
 
-    await this.usersRepository.updateUser(
-      {
-        imageUrl,
-      },
-      { where: { userId } }
-    );
+      await this.usersRepository.updateUser(
+        {
+          imageUrl,
+        },
+        { where: { userId } }
+      );
 
-    return createUrl(`${process.env.BUCKET}/${filename}`);
+      return createUrl(`${process.env.BUCKET}/${filename}`);
+    } else {
+      const filename = `icon${Math.floor(Math.random() * 5)}.png`;
+
+      const imageUrl = `${process.env.ICON_URL}${filename}`;
+
+      await this.usersRepository.updateUser(
+        {
+          imageUrl,
+        },
+        { where: { userId } }
+      );
+    }
   };
 
   deleteUser = async (userId, password) => {
@@ -136,10 +171,11 @@ class UsersService {
     });
     if (!user) {
       throw new InvalidParamsError('탈퇴에 실패하였습니다.');
-    }
-    const checkPW = compare(password, user.password);
-    if (!checkPW) {
-      throw new AuthenticationError('패스워드를 다시 확인해주세요.');
+    } else if (user.loginType === 'Local') {
+      const checkPW = compare(password, user.password);
+      if (!checkPW) {
+        throw new AuthenticationError('패스워드를 다시 확인해주세요.');
+      }
     }
     await this.usersRepository.deleteUser(userId);
   };

@@ -17,9 +17,7 @@ class LoginController {
         email: Joi.string().email().required(),
         password: Joi.string()
           .required()
-          .pattern(new RegExp('^[a-zA-Z]+[0-9]+$'))
-          .min(8)
-          .max(15),
+          .pattern(new RegExp(/^(?=.*[A-Za-z])(?=.*[0-9]).{8,15}$/)),
       });
       const result = schema.validate(req.body);
 
