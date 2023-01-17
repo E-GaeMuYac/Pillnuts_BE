@@ -15,12 +15,10 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
       },
       phoneNumber: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: true,
       },
       loginCount: {
