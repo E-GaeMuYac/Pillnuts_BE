@@ -141,11 +141,15 @@ class ProductController {
   findOneMedicine = async (req, res, next) => {
     try {
       const { medicineId } = req.params;
+      const { userId } = res.locals;
 
       if (!medicineId)
         throw new InvalidParamsError('제품 정보가 없습니다.', 412);
 
-      const product = await this.productService.findOneMedicine(medicineId);
+      const product = await this.productService.findOneMedicine(
+        medicineId,
+        userId
+      );
 
       res.status(200).json({ product });
     } catch (error) {
@@ -162,11 +166,21 @@ class ProductController {
       if (!compareA || !compareB)
         throw new InvalidParamsError('비교 할 약품을 다시 확인해주세요.', 412);
 
-      const productA = await this.productService.findOneMedicine(compareA);
-      const productB = await this.productService.findOneMedicine(compareB);
+      const { userId } = res.locals;
+
+      const productA = await this.productService.findOneMedicine(
+        compareA,
+        userId
+      );
+      const productB = await this.productService.findOneMedicine(
+        compareB,
+        userId
+      );
 
       res.status(200).json({ compareA: productA, compareB: productB });
-    } catch (error) {}
+    } catch (error) {
+      next(error);
+    }
   };
 }
 module.exports = ProductController;
