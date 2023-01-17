@@ -112,8 +112,6 @@ class ProductRepository {
 
   // 검색
   findSearchProduct = async (data, page, pageSize) => {
-    console.log(data);
-    //itemName : 제품명, productType : 타입, eeDocData: 효능효과
     return Medicines.findAndCountAll({
       raw: true,
       where: data,
