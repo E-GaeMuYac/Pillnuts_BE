@@ -41,7 +41,7 @@ module.exports = () => {
             await Users.update(
               // refresh token을 update해줌
               { refreshtoken, loginCount },
-              { where: { userId: NaverExUser.userId } }
+              { where: { userId: NaverExUser.userId }}
             );
             const accesstoken = await createAccessToken(NaverExUser.userId);
             done(null, [accesstoken, refreshtoken, NaverExUser.nickname]);
