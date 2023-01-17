@@ -35,7 +35,7 @@ class UsersService {
   duplicateCheck = async (email) => {
     const user = await this.usersRepository.findUser({
       raw: true,
-      where: { email },
+      where: { email, loginType: 'Local' },
     });
     if (user) {
       throw new ExistError('중복된 이메일입니다.');
