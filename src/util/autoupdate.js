@@ -8,11 +8,8 @@ module.exports = async (req, res, next) => {
       data: { body: body },
     } = await axios.get(process.env.MEDI_A_API_END_POINT, {
       params: {
-        // 공공데이터포탈에서 발급 받은 인증키
         serviceKey: process.env.MEDI_API_KEY_DEC,
-        // 한 페이지 결과 수. 100개까지만 가능
         numOfRows: 1,
-        // 페이지 번호.
         pageNo: 1,
         type: 'json',
       },
@@ -22,13 +19,12 @@ module.exports = async (req, res, next) => {
         data: { body: mainBody },
       } = await axios.get(process.env.MEDI_A_API_END_POINT, {
         params: {
-          serviceKey: process.env.MEDI_API_KEY_DEC, // 공공데이터포탈에서 발급 받은 인증키
-          numOfRows: 100, // 한 페이지 결과 수. 100개까지만 가능
-          pageNo: p, // 페이지 번호.
+          serviceKey: process.env.MEDI_API_KEY_DEC,
+          numOfRows: 100,
+          pageNo: p,
           type: 'json',
         },
       });
-
       for (let rowCount = 0; rowCount < mainBody.numOfRows; rowCount++) {
         let {
           ITEM_SEQ: itemSeq,
@@ -79,6 +75,7 @@ module.exports = async (req, res, next) => {
                   .trim() + '\n';
             }
           }
+          eeDocData = eeDocData.substring(5);
         }
 
         // 용법용량
@@ -93,6 +90,7 @@ module.exports = async (req, res, next) => {
                   .trim() + '\n';
             }
           }
+          udDocData = udDocData.substring(5);
         }
 
         // 주의사항
@@ -109,42 +107,36 @@ module.exports = async (req, res, next) => {
                   .trim() + '\n';
             }
           }
+          nbDocData = nbDocData.substring(8).trim();
         }
-
         // DB에 저장되어 있는 지 확인
-        let medicine = await Medicines.findOne({
-          raw: true,
-          where: { itemSeq },
-        });
-
+        let medicine = await this.productsRepository.findOneProduct(itemSeq);
         // 없으면 create. 있으면 update
         if (!medicine) {
-          medicine = await Medicines.create({
-            itemSeq,
-            itemName,
-            entpName,
-            etcOtcCode,
-            ingrName,
-            validTerm,
-            eeDocData,
-            udDocData,
-            nbDocData,
-            totalAmount,
-          });
+          medicine = await this.productsRepository.createProductsMain(
+            itemSeq, //등록 번호
+            itemName, //등록 명
+            entpName, //제조사
+            etcOtcCode, //약국 구매 가능 여부
+            ingrName, //첨가물
+            validTerm, //유통기한
+            eeDocData, //효능효과
+            udDocData, //용법용량
+            nbDocData, //주의사항
+            totalAmount // 총량
+          );
         } else {
-          await Medicines.update(
-            {
-              itemName, //등록 명
-              entpName, //제조사
-              etcOtcCode, //약국 구매 가능 여부
-              ingrName, //첨가물
-              validTerm, //유통기한
-              eeDocData, //효능효과
-              udDocData, //용법용량
-              nbDocData, //주의사항
-              totalAmount, // 총량
-            },
-            { where: { itemSeq } }
+          await this.productsRepository.updateProductsMain(
+            itemSeq, //등록 번호
+            itemName, //등록 명
+            entpName, //제조사
+            etcOtcCode, //약국 구매 가능 여부
+            ingrName, //첨가물
+            validTerm, //유통기한
+            eeDocData, //효능효과
+            udDocData, //용법용량
+            nbDocData, //주의사항
+            totalAmount // 총량
           );
         }
 
@@ -152,53 +144,59 @@ module.exports = async (req, res, next) => {
         for (let j = 0; j < materials.split('|').length; j++) {
           if (materials.split('|')[j].includes('성분명')) {
             let name = materials.split('|')[j].split(':')[1].trim();
-            let material = await Materials.findOne({
-              raw: true,
-              where: { name },
-            });
+            let material = await this.productsRepository.findOneMaterial(name);
             if (!material) {
               let unit = materials.split('|')[j + 2].split(':')[1].trim();
-              material = Materials.create({ name, unit });
+              material = await this.productsRepository.createMaterial(
+                name,
+                unit
+              );
             }
 
-            let volume = materials.split('|')[j + 1].split(':')[1].trim();
+            let volume = materials
+              .split('|')
+              [j + 1].split(':')[1]
+              .trim()
+              .split('(')[0]
+              .split(' ')[0]
+              .replace(/[^0-9]/g, '');
 
-            let ingredient = await Ingredients.findOne({
-              raw: true,
-              where: {
-                medicineId: medicine.medicineId,
-                materialId: material.materialId,
-              },
-            });
+            let ingredient = await this.productsRepository.findOneIngredient(
+              medicine.medicineId,
+              material.materialId
+            );
 
             if (!ingredient) {
-              ingredient = await Ingredients.create({
-                medicineId: medicine.medicineId,
-                materialId: material.materialId,
-                volume,
-              });
+              ingredient = await this.productsRepository.createIngredients(
+                medicine.medicineId,
+                material.materialId,
+                volume
+              );
             } else {
               if (ingredient.volume !== volume)
-                await Ingredients.update(
-                  { volume },
-                  { where: { ingredientId: ingredient.ingredientId } }
+                await this.productsRepository.updateIngredients(
+                  ingredient.ingredientId,
+                  volume
                 );
             }
           }
         }
+        console.log(`main update ${p}페이지의 ${rowCount}번쨰 저장중`);
       }
     }
   } catch (error) {
     if (
-      error.message.includes(
-        'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
-      )
+      error.message.includes('Axios') ||
+      error.message.includes('ECONNRESET') ||
+      error.message.includes('ECONNREFUSED') ||
+      error.message.includes('ETIMEDOUT')
     ) {
       res.redirect(
         `/api/products/apiUpdateMain?start=${error.config.params.pageNo}`
       );
+    } else {
+      next(error);
     }
-    next(error);
   }
   try {
     let {
@@ -242,15 +240,17 @@ module.exports = async (req, res, next) => {
     }
   } catch (error) {
     if (
-      error.message.includes(
-        'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
-      )
+      error.message.includes('Axios') ||
+      error.message.includes('ECONNRESET') ||
+      error.message.includes('ECONNREFUSED') ||
+      error.message.includes('ETIMEDOUT')
     ) {
       res.redirect(
         `/api/products/apiUpdateType?start=${error.config.params.pageNo}`
       );
+    } else {
+      next(error);
     }
-    next(error);
   }
   try {
     let {
@@ -289,14 +289,16 @@ module.exports = async (req, res, next) => {
     }
   } catch (error) {
     if (
-      error.message.includes(
-        'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
-      )
+      error.message.includes('Axios') ||
+      error.message.includes('ECONNRESET') ||
+      error.message.includes('ECONNREFUSED') ||
+      error.message.includes('ETIMEDOUT')
     ) {
       res.redirect(
         `/api/products/apiUpdateImage?start=${error.config.params.pageNo}`
       );
+    } else {
+      next(error);
     }
-    next(error);
   }
 };
