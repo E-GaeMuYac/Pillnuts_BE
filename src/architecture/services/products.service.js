@@ -15,11 +15,8 @@ class ProductService {
       data: { body: body },
     } = await axios.get(process.env.MEDI_A_API_END_POINT, {
       params: {
-        // 공공데이터포탈에서 발급 받은 인증키
         serviceKey: process.env.MEDI_API_KEY_DEC,
-        // 한 페이지 결과 수. 100개까지만 가능
         numOfRows: 1,
-        // 페이지 번호.
         pageNo: 1,
         type: 'json',
       },
@@ -29,13 +26,12 @@ class ProductService {
         data: { body: mainBody },
       } = await axios.get(process.env.MEDI_A_API_END_POINT, {
         params: {
-          serviceKey: process.env.MEDI_API_KEY_DEC, // 공공데이터포탈에서 발급 받은 인증키
-          numOfRows: 100, // 한 페이지 결과 수. 100개까지만 가능
-          pageNo: p, // 페이지 번호.
+          serviceKey: process.env.MEDI_API_KEY_DEC,
+          numOfRows: 100,
+          pageNo: p,
           type: 'json',
         },
       });
-
       for (let rowCount = 0; rowCount < mainBody.numOfRows; rowCount++) {
         let {
           ITEM_SEQ: itemSeq,
@@ -316,9 +312,10 @@ class ProductService {
   };
 
   // 제품 목록 조회 (검색)
-  findMedicines = async (type, value, page, pageSize) => {
+  findMedicines = async (type, value, page, pageSize, userId) => {
     const searchValue = ('%' + value + '%').replace(/\s|\b/gi, '');
     let data;
+    let dibs = [];
 
     if (type === 'itemName') {
       data = {
@@ -338,28 +335,60 @@ class ProductService {
       page,
       pageSize
     );
+    if (userId) {
+      dibs = await this.productsRepository.getDibsProducts(userId);
+    }
+
+    const processingData = searchData.rows.map((d) => {
+      return {
+        medicineId: d.medicineId,
+        itemName: d.itemName.split('(')[0],
+        entpName: d.entpName,
+        etcOtcCode: d.etcOtcCode,
+        productType: d.productType.split('.'),
+        itemImage: d.itemImage,
+        dibs: Boolean(dibs.find((v) => v.medicineId === d.medicineId)),
+      };
+    });
     return (
-      { searchLength: searchData.count.length, data: searchData.rows } || []
+      { searchLength: searchData.count.length, data: processingData } || []
     );
   };
 
   // 제품 상세 조회
-  findOneMedicine = async (medicineId) => {
+  findOneMedicine = async (medicineId, userId) => {
     const product = await this.productsRepository.findOneMedicine(medicineId);
+
+    if (!product)
+      throw new ValidationError('약품 정보를 찾을 수 없습니다.', 412);
+
     const ingredients = await this.productsRepository.findAllIngredients(
       medicineId
     );
+
+    product.itemName = product.itemName.split('(')[0];
+    product.productType = product.productType.split('.');
+
     product.materialName = ingredients.map((i) => {
+      if (i['Material.unit'] === '그램') {
+        i.volume = i.volume * 1000;
+      }
       return {
         material: i['Material.name'],
         분량: i.volume,
-        단위: i['Material.unit'],
         설명: i['Material.content'],
       };
     });
 
-    if (!product)
-      throw new ValidationError('약품 정보를 찾을 수 없습니다.', 412);
+    if (userId) {
+      const dibs = await this.productsRepository.findOneDibs(
+        medicineId,
+        userId
+      );
+      product.dibs = Boolean(dibs);
+    } else {
+      product.dibs = false;
+    }
 
     return product;
   };

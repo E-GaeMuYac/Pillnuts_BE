@@ -17,15 +17,17 @@ class ProductController {
       res.redirect('/api/products/apiUpdateType?start=1');
     } catch (error) {
       if (
-        error.message.includes(
-          'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
-        )
+        error.message.includes('Axios') ||
+        error.message.includes('ECONNRESET') ||
+        error.message.includes('ECONNREFUSED') ||
+        error.message.includes('ETIMEDOUT')
       ) {
         res.redirect(
           `/api/products/apiUpdateMain?start=${error.config.params.pageNo}`
         );
+      } else {
+        next(error);
       }
-      next(error);
     }
   };
   updateProductsType = async (req, res, next) => {
@@ -35,9 +37,10 @@ class ProductController {
       res.redirect('/api/products/apiUpdateImage?start=1');
     } catch (error) {
       if (
-        error.message.includes(
-          'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
-        )
+        error.message.includes('Axios') ||
+        error.message.includes('ECONNRESET') ||
+        error.message.includes('ECONNREFUSED') ||
+        error.message.includes('ETIMEDOUT')
       ) {
         res.redirect(
           `/api/products/apiUpdateType?start=${error.config.params.pageNo}`
@@ -53,9 +56,10 @@ class ProductController {
       return res.status(200).json({ msg: 'api 정보가 업데이트 되었습니다.' });
     } catch (error) {
       if (
-        error.message.includes(
-          'Axios' || 'ECONNRESET' || 'ECONNREFUSED' || 'ETIMEDOUT'
-        )
+        error.message.includes('Axios') ||
+        error.message.includes('ECONNRESET') ||
+        error.message.includes('ECONNREFUSED') ||
+        error.message.includes('ETIMEDOUT')
       ) {
         res.redirect(
           `/api/products/apiUpdateImage?start=${error.config.params.pageNo}`
@@ -111,6 +115,7 @@ class ProductController {
   findMedicines = async (req, res, next) => {
     try {
       let { type, value, page, pageSize } = req.query;
+      const { userId } = res.locals;
 
       if (!type || (type !== 'itemName' && type !== 'productType'))
         throw new InvalidParamsError('검색분류를 확인해주세요.', 412);
@@ -122,10 +127,11 @@ class ProductController {
         type,
         value,
         page,
-        pageSize
+        pageSize,
+        userId
       );
 
-      res.status(200).json(products);
+      return res.status(200).json(products);
     } catch (error) {
       next(error);
     }
@@ -135,11 +141,15 @@ class ProductController {
   findOneMedicine = async (req, res, next) => {
     try {
       const { medicineId } = req.params;
+      const { userId } = res.locals;
 
       if (!medicineId)
         throw new InvalidParamsError('제품 정보가 없습니다.', 412);
 
-      const product = await this.productService.findOneMedicine(medicineId);
+      const product = await this.productService.findOneMedicine(
+        medicineId,
+        userId
+      );
 
       res.status(200).json({ product });
     } catch (error) {
@@ -156,11 +166,21 @@ class ProductController {
       if (!compareA || !compareB)
         throw new InvalidParamsError('비교 할 약품을 다시 확인해주세요.', 412);
 
-      const productA = await this.productService.findOneMedicine(compareA);
-      const productB = await this.productService.findOneMedicine(compareB);
+      const { userId } = res.locals;
+
+      const productA = await this.productService.findOneMedicine(
+        compareA,
+        userId
+      );
+      const productB = await this.productService.findOneMedicine(
+        compareB,
+        userId
+      );
 
       res.status(200).json({ compareA: productA, compareB: productB });
-    } catch (error) {}
+    } catch (error) {
+      next(error);
+    }
   };
 }
 module.exports = ProductController;

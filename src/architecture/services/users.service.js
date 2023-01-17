@@ -106,10 +106,10 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('정보 조회에 실패하였습니다.');
     }
-    const { nickname, imageUrl } = user;
+    const { nickname, imageUrl, loginType } = user;
     const loginCount = user.loginCount.length;
 
-    return { nickname, loginCount, imageUrl };
+    return { nickname, loginCount, imageUrl, loginType };
   };
 
   updateNickname = async (nickname, userId) => {
@@ -171,10 +171,11 @@ class UsersService {
     });
     if (!user) {
       throw new InvalidParamsError('탈퇴에 실패하였습니다.');
-    }
-    const checkPW = compare(password, user.password);
-    if (!checkPW) {
-      throw new AuthenticationError('패스워드를 다시 확인해주세요.');
+    } else if (user.loginType === 'Local') {
+      const checkPW = compare(password, user.password);
+      if (!checkPW) {
+        throw new AuthenticationError('패스워드를 다시 확인해주세요.');
+      }
     }
     await this.usersRepository.deleteUser(userId);
   };

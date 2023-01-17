@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const authMiddleware = require('../middlewares/authUser.middleware');
+const authCheck = require('../middlewares/authCheck.middleware');
 
 const ProductController = require('../architecture/controllers/products.controller');
 const productController = new ProductController();
@@ -26,12 +27,12 @@ router.put('/materials', productController.updateMaterials);
 // 저장(찜)한 제품 목록 가져오기
 router.get('/dibs', authMiddleware, productController.getDibsProducts);
 // 제품 비교하기
-router.get('/compare', productController.compareProducts);
+router.get('/compare', authCheck, productController.compareProducts);
 // 제품 목록 조회 (검색)
-router.get('/medicines', productController.findMedicines);
+router.get('/medicines', authCheck, productController.findMedicines);
 // 제품 저장, 삭제하기 (찜하기)
 router.put('/:medicineId/dibs', authMiddleware, productController.dibsProduct);
 // 제품 상세 조회
-router.get('/:medicineId', productController.findOneMedicine);
+router.get('/:medicineId', authCheck, productController.findOneMedicine);
 
 module.exports = router;
