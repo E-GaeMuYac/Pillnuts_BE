@@ -11,17 +11,18 @@ class ProductService {
 
   // api 등록하기
   updateProductsMain = async (start) => {
-    let {
-      data: { body: body },
-    } = await axios.get(process.env.MEDI_A_API_END_POINT, {
-      params: {
-        serviceKey: process.env.MEDI_API_KEY_DEC,
-        numOfRows: 1,
-        pageNo: 1,
-        type: 'json',
-      },
-    });
-    for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
+    // let {
+    //   data: { body: body },
+    // } = await axios.get(process.env.MEDI_A_API_END_POINT, {
+    //   params: {
+    //     serviceKey: process.env.MEDI_API_KEY_DEC,
+    //     numOfRows: 1,
+    //     pageNo: 1,
+    //     type: 'json',
+    //   },
+    // });
+    for (let p = start; p <= 514; p++) {
+      // for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
       let {
         data: { body: mainBody },
       } = await axios.get(process.env.MEDI_A_API_END_POINT, {
@@ -82,6 +83,7 @@ class ProductService {
                   .trim() + '\n';
             }
           }
+          eeDocData = eeDocData.substring(5);
         }
 
         // 용법용량
@@ -96,6 +98,7 @@ class ProductService {
                   .trim() + '\n';
             }
           }
+          udDocData = udDocData.substring(5);
         }
 
         // 주의사항
@@ -112,11 +115,10 @@ class ProductService {
                   .trim() + '\n';
             }
           }
+          nbDocData = nbDocData.substring(8).trim();
         }
-
         // DB에 저장되어 있는 지 확인
         let medicine = await this.productsRepository.findOneProduct(itemSeq);
-
         // 없으면 create. 있으면 update
         if (!medicine) {
           medicine = await this.productsRepository.createProductsMain(
@@ -159,7 +161,13 @@ class ProductService {
               );
             }
 
-            let volume = materials.split('|')[j + 1].split(':')[1].trim();
+            let volume = materials
+              .split('|')
+              [j + 1].split(':')[1]
+              .trim()
+              .split('(')[0]
+              .split(' ')[0]
+              .replace(/[^0-9]/g, '');
 
             let ingredient = await this.productsRepository.findOneIngredient(
               medicine.medicineId,
@@ -340,12 +348,20 @@ class ProductService {
     }
 
     const processingData = searchData.rows.map((d) => {
+      d.productType = d.productType.split('.');
+      if (d.productType.length > 1) {
+        for (let i = 0; i < d.productType.length; i++) {
+          if (i !== d.productType.length - 1) {
+            d.productType[i] += '제';
+          }
+        }
+      }
       return {
         medicineId: d.medicineId,
         itemName: d.itemName.split('(')[0],
         entpName: d.entpName,
         etcOtcCode: d.etcOtcCode,
-        productType: d.productType.split('.'),
+        productType: d.productType,
         itemImage: d.itemImage,
         dibs: Boolean(dibs.find((v) => v.medicineId === d.medicineId)),
       };
@@ -368,6 +384,13 @@ class ProductService {
 
     product.itemName = product.itemName.split('(')[0];
     product.productType = product.productType.split('.');
+    if (product.productType.length > 1) {
+      for (let i = 0; i < product.productType.length; i++) {
+        if (i !== product.productType.length - 1) {
+          product.productType[i] += '제';
+        }
+      }
+    }
 
     product.materialName = ingredients.map((i) => {
       if (i['Material.unit'] === '그램') {
