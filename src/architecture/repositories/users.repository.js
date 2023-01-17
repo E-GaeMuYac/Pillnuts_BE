@@ -20,7 +20,7 @@ class UsersRepository {
 
   deleteToken = async (userId) => {
     await this.usersModel.update(
-      { refreshtoken: '' },
+      { refreshtoken: null },
       {
         where: { userId },
       }
