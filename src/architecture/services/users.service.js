@@ -138,7 +138,7 @@ class UsersService {
       throw new InvalidParamsError('정보 수정에 실패하였습니다.');
     }
     if (filename) {
-      filename = Date.now() + filename;
+      filename = Date.now() + encodeURIComponent(filename);
 
       const imageUrl = `${process.env.S3URL}/${filename}`;
 

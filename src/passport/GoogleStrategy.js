@@ -1,6 +1,5 @@
 const passport = require('passport');
 const Google = require('passport-google-oauth2');
-const { ExistError } = require('../middlewares/exceptions/error.class');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
 const formatDate = require('../util/formatDate');

@@ -1,6 +1,5 @@
 const passport = require('passport');
 const Kakao = require('passport-kakao');
-const { ExistError } = require('../middlewares/exceptions/error.class');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
 const formatDate = require('../util/formatDate');
