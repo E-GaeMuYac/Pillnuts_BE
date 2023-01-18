@@ -51,7 +51,6 @@ class UsersService {
       throw new InvalidParamsError('해당하는 사용자가 없습니다.');
     }
     const { email, imageUrl } = user;
-    console.log(email, imageUrl);
     return { email, imageUrl };
   };
 

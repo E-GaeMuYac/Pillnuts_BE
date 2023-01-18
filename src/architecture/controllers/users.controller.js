@@ -58,9 +58,9 @@ class UsersController {
   findEmail = async (req, res, next) => {
     try {
       const { phoneNumber } = req.query;
-      const user = await this.usersService.findEmail(phoneNumber);
+      const email = await this.usersService.findEmail(phoneNumber);
 
-      return res.status(200).json({ user });
+      return res.status(200).json({ email });
     } catch (error) {
       next(error);
     }
