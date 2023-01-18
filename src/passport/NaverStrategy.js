@@ -2,7 +2,6 @@ const passport = require('passport');
 const Naver = require('passport-naver-v2');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
-const { ExistError } = require('../middlewares/exceptions/error.class');
 const formatDate = require('../util/formatDate');
 
 const NaverStrategy = Naver.Strategy;
