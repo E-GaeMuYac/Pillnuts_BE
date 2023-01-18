@@ -2,7 +2,6 @@ const passport = require('passport');
 const Naver = require('passport-naver-v2');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
-const { ExistError } = require('../middlewares/exceptions/error.class');
 const formatDate = require('../util/formatDate');
 
 const NaverStrategy = Naver.Strategy;
@@ -45,42 +44,32 @@ module.exports = () => {
             );
             const accesstoken = await createAccessToken(NaverExUser.userId);
             done(null, [accesstoken, refreshtoken, NaverExUser.nickname]);
-          } else if (!NaverExUser) {
-            // 로컬 로그인과 이메일 중복체크
-            const LocalExUser = await Users.findOne({
-              raw: true,
-              where: { email: profile._json.response.email },
-            });
-            if (LocalExUser) {
-              throw new ExistError('이미 존재하는 이메일입니다.');
-            }
-
-            let nickname = profile._json.response.nickname;
-            if (!nickname) {
-              nickname = profile._json.response.email.split('@')[0];
-            }
-            let imageUrl = profile.profileImage;
-            const basicImage =
-              'https://ssl.pstatic.net/static/pwe/address/img_profile.png';
-            if (imageUrl === basicImage || !imageUrl) {
-              const filename = `icon${Math.floor(Math.random() * 5)}.png`;
-              imageUrl = `${process.env.ICON_URL}${filename}`;
-            }
-
-            // 가입되지 않은 유저면, 회원가입 시키고 로그인 시킨다.
-
-            const NaverNewUser = await Users.create({
-              email: profile._json.response.email,
-              refreshtoken,
-              imageUrl,
-              nickname,
-              loginType: 'Naver',
-              loginCount: [today],
-            });
-
-            const accesstoken = await createAccessToken(NaverNewUser.userId);
-            done(null, [accesstoken, refreshtoken, nickname]); // 회원가입하고 로그인 인증 완료
           }
+          let nickname = profile._json.response.nickname;
+          if (!nickname) {
+            nickname = profile._json.response.email.split('@')[0];
+          }
+          let imageUrl = profile.profileImage;
+          const basicImage =
+            'https://ssl.pstatic.net/static/pwe/address/img_profile.png';
+          if (imageUrl === basicImage || !imageUrl) {
+            const filename = `icon${Math.floor(Math.random() * 5)}.png`;
+            imageUrl = `${process.env.ICON_URL}${filename}`;
+          }
+
+          // 가입되지 않은 유저면, 회원가입 시키고 로그인 시킨다.
+
+          const NaverNewUser = await Users.create({
+            email: profile._json.response.email,
+            refreshtoken,
+            imageUrl,
+            nickname,
+            loginType: 'Naver',
+            loginCount: [today],
+          });
+
+          const accesstoken = await createAccessToken(NaverNewUser.userId);
+          done(null, [accesstoken, refreshtoken, nickname]); // 회원가입하고 로그인 인증 완료
         } catch (error) {
           done(error);
         }

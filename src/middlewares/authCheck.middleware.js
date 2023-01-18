@@ -15,7 +15,11 @@ module.exports = async (req, res, next) => {
           raw: true,
           where: { refreshToken },
         });
-        res.locals.userId = user.userId;
+        if (user) {
+          res.locals.userId = user.userId;
+        } else {
+          res.locals.userId = null;
+        }
       }
     }
     next();

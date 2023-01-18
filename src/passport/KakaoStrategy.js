@@ -1,6 +1,5 @@
 const passport = require('passport');
 const Kakao = require('passport-kakao');
-const { ExistError } = require('../middlewares/exceptions/error.class');
 const { Users } = require('../models');
 const { createAccessToken, createRefreshToken } = require('../util/token');
 const formatDate = require('../util/formatDate');
@@ -47,45 +46,33 @@ module.exports = () => {
 
             const accesstoken = await createAccessToken(KakaoExUser.userId);
             done(null, [accesstoken, refreshtoken, KakaoExUser.nickname]);
-          } else if (!KakaoExUser) {
-            // 로컬 로그인과 이메일 중복체크
-            const LocalExUser = await Users.findOne({
-              raw: true,
-              where: {
-                email: url.email,
-              },
-            });
-            if (LocalExUser) {
-              throw new ExistError('이미 존재하는 이메일입니다.');
-            }
-
-            let { nickname } = url.profile;
-            if (!nickname) {
-              nickname = url.email.split('@')[0];
-            }
-
-            let imageUrl = url.profile.thumbnail_image_url;
-            const basicImage =
-              'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_110x110.jpg';
-            if (imageUrl === basicImage || !imageUrl) {
-              const filename = `icon${Math.floor(Math.random() * 5)}.png`;
-              imageUrl = `${process.env.ICON_URL}${filename}`;
-            }
-
-            // 가입되지 않은 유저면, 회원가입 시키고 로그인 시킨다.
-            const KakaoNewUser = await Users.create({
-              email: url.email,
-              refreshtoken,
-              imageUrl,
-              nickname,
-              loginType: 'Kakao',
-              loginCount: [today],
-            });
-
-            const accesstoken = await createAccessToken(KakaoNewUser.userId);
-
-            done(null, [accesstoken, refreshtoken, nickname]); // 회원가입하고 로그인 인증 완료
           }
+          let { nickname } = url.profile;
+          if (!nickname) {
+            nickname = url.email.split('@')[0];
+          }
+
+          let imageUrl = url.profile.thumbnail_image_url;
+          const basicImage =
+            'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_110x110.jpg';
+          if (imageUrl === basicImage || !imageUrl) {
+            const filename = `icon${Math.floor(Math.random() * 5)}.png`;
+            imageUrl = `${process.env.ICON_URL}${filename}`;
+          }
+
+          // 가입되지 않은 유저면, 회원가입 시키고 로그인 시킨다.
+          const KakaoNewUser = await Users.create({
+            email: url.email,
+            refreshtoken,
+            imageUrl,
+            nickname,
+            loginType: 'Kakao',
+            loginCount: [today],
+          });
+
+          const accesstoken = await createAccessToken(KakaoNewUser.userId);
+
+          done(null, [accesstoken, refreshtoken, nickname]); // 회원가입하고 로그인 인증 완료
         } catch (error) {
           done(error);
         }
