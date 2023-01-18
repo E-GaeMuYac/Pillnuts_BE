@@ -50,7 +50,8 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('해당하는 사용자가 없습니다.');
     }
-    return user.email;
+    const { email, imageUrl } = user;
+    return { email, imageUrl };
   };
 
   findPhoneNumber = async (email) => {
@@ -138,9 +139,9 @@ class UsersService {
       throw new InvalidParamsError('정보 수정에 실패하였습니다.');
     }
     if (filename) {
-      filename = Date.now() + encodeURIComponent(filename);
+      filename = Date.now() + filename;
 
-      const imageUrl = `${process.env.S3URL}/${filename}`;
+      const imageUrl = `${process.env.S3URL}/${encodeURIComponent(filename)}`;
 
       await this.usersRepository.updateUser(
         {
