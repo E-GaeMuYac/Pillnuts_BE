@@ -32,7 +32,6 @@
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^2.3.3",
     "node-cron": "^3.0.2",
-    "node-schedule": "^2.1.0",
     "passport": "^0.6.0",
     "passport-google-oauth2": "^0.2.0",
     "passport-kakao": "^1.0.1",
