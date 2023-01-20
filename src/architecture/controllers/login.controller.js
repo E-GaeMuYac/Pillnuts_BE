@@ -65,8 +65,8 @@ class LoginController {
     const refreshtoken = req.user[1];
     const nickname = req.user[2];
     res.redirect(
-      `http://localhost:3000/login/loading?accesstoken=${accesstoken}&refreshtoken=${refreshtoken}&nickname=${nickname}`
-    ); 
+      `https://pillnuts.vercel.app/login/loading?accesstoken=${accesstoken}&refreshtoken=${refreshtoken}&nickname=${nickname}`
+    );
     return;
   };
 }

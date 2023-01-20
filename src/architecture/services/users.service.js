@@ -35,7 +35,7 @@ class UsersService {
   duplicateCheck = async (email) => {
     const user = await this.usersRepository.findUser({
       raw: true,
-      where: { email },
+      where: { email, loginType: 'Local' },
     });
     if (user) {
       throw new ExistError('중복된 이메일입니다.');
@@ -50,7 +50,8 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('해당하는 사용자가 없습니다.');
     }
-    return user.email;
+    const { email, imageUrl } = user;
+    return { email, imageUrl };
   };
 
   findPhoneNumber = async (email) => {
@@ -140,7 +141,7 @@ class UsersService {
     if (filename) {
       filename = Date.now() + filename;
 
-      const imageUrl = `${process.env.S3URL}/${filename}`;
+      const imageUrl = `${process.env.S3URL}/${encodeURIComponent(filename)}`;
 
       await this.usersRepository.updateUser(
         {

@@ -57,7 +57,7 @@ class UsersController {
 
   findEmail = async (req, res, next) => {
     try {
-      const { phoneNumber } = req.body;
+      const { phoneNumber } = req.query;
       const email = await this.usersService.findEmail(phoneNumber);
 
       return res.status(200).json({ email });
@@ -68,7 +68,7 @@ class UsersController {
 
   findPhoneNumber = async (req, res, next) => {
     try {
-      const { email } = req.body;
+      const { email } = req.query;
       const phoneNumber = await this.usersService.findPhoneNumber(email);
 
       return res.status(200).json({ phoneNumber });

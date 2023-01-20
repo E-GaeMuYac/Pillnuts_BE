@@ -11,17 +11,18 @@ class ProductService {
 
   // api 등록하기
   updateProductsMain = async (start) => {
-    let {
-      data: { body: body },
-    } = await axios.get(process.env.MEDI_A_API_END_POINT, {
-      params: {
-        serviceKey: process.env.MEDI_API_KEY_DEC,
-        numOfRows: 1,
-        pageNo: 1,
-        type: 'json',
-      },
-    });
-    for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
+    // let {
+    //   data: { body: body },
+    // } = await axios.get(process.env.MEDI_A_API_END_POINT, {
+    //   params: {
+    //     serviceKey: process.env.MEDI_API_KEY_DEC,
+    //     numOfRows: 1,
+    //     pageNo: 1,
+    //     type: 'json',
+    //   },
+    // });
+    // for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
+    for (let p = start; p <= 514; p++) {
       let {
         data: { body: mainBody },
       } = await axios.get(process.env.MEDI_A_API_END_POINT, {
@@ -166,7 +167,7 @@ class ProductService {
               .trim()
               .split('(')[0]
               .split(' ')[0]
-              .replace(/[^0-9]/g, '');
+              .replace(/[^.|0-9]/g, '');
 
             let ingredient = await this.productsRepository.findOneIngredient(
               medicine.medicineId,
@@ -225,10 +226,19 @@ class ProductService {
         let productType = '';
         if (typeBody.items[rowCount].PRDUCT_TYPE !== null) {
           productType = typeBody.items[rowCount].PRDUCT_TYPE.split(']')[1];
+          if (productType.split('.').length) {
+            productType = productType.split('.');
+            for (let i = 0; i < productType.length; i++) {
+              if (i !== productType.length - 1) {
+                productType[i] = productType[i] + '제';
+              }
+            }
+          }
         }
+        console.log(productType.join('.'));
         await this.productsRepository.updateProductsType(
           typeBody.items[rowCount].ITEM_SEQ,
-          productType
+          productType.join('.')
         );
 
         console.log(`type update ${p}페이지의 ${rowCount}번쨰 저장중`);
@@ -306,20 +316,12 @@ class ProductService {
     const dibsProducts = await this.productsRepository.getDibsProducts(userId);
     if (!dibsProducts) return [];
     return dibsProducts.map((dibs) => {
-      dibs['Medicine.productType'] = dibs['Medicine.productType'].split('.');
-      if (dibs['Medicine.productType'].length > 1) {
-        for (let i = 0; i < dibs['Medicine.productType'].length; i++) {
-          if (i !== dibs['Medicine.productType'].length - 1) {
-            dibs['Medicine.productType'][i] += '제';
-          }
-        }
-      }
       return {
         medicineId: dibs['Medicine.medicineId'],
         itemName: dibs['Medicine.itemName'].split('(')[0],
         entpName: dibs['Medicine.entpName'],
         etcOtcCode: dibs['Medicine.etcOtcCode'],
-        productType: dibs['Medicine.productType'],
+        productType: dibs['Medicine.productType'].split('.'),
         itemImage: dibs['Medicine.itemImage'],
       };
     });
@@ -354,20 +356,12 @@ class ProductService {
     }
 
     const processingData = searchData.rows.map((d) => {
-      d.productType = d.productType.split('.');
-      if (d.productType.length > 1) {
-        for (let i = 0; i < d.productType.length; i++) {
-          if (i !== d.productType.length - 1) {
-            d.productType[i] += '제';
-          }
-        }
-      }
       return {
         medicineId: d.medicineId,
         itemName: d.itemName.split('(')[0],
         entpName: d.entpName,
         etcOtcCode: d.etcOtcCode,
-        productType: d.productType,
+        productType: d.productType.split('.'),
         itemImage: d.itemImage,
         dibs: Boolean(dibs.find((v) => v.medicineId === d.medicineId)),
       };
@@ -390,13 +384,6 @@ class ProductService {
 
     product.itemName = product.itemName.split('(')[0];
     product.productType = product.productType.split('.');
-    if (product.productType.length > 1) {
-      for (let i = 0; i < product.productType.length; i++) {
-        if (i !== product.productType.length - 1) {
-          product.productType[i] += '제';
-        }
-      }
-    }
 
     product.materialName = ingredients.map((i) => {
       if (i['Material.unit'] === '그램') {

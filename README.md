@@ -95,6 +95,7 @@
 | sequelize      |     MySQL ORM      |
 | sequelize--cli | MySQL ORM Console  |
 | passport       | User Authenticate  |
+| nodemailer       | 이메일 전송  |
 
 <br>
 
@@ -143,7 +144,8 @@
 
 ## 🧱 백엔드 아키텍처
 
-![architecture](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/531c79b9-8a5f-4c16-b7bb-4922f754bb2f/%E1%84%86%E1%85%AE%E1%84%8C%E1%85%A6.drawio_%281%29.drawio_%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230114%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230114T095007Z&X-Amz-Expires=86400&X-Amz-Signature=6094522c52053a37105aa6ebb949044949ca7afada335b6c6d09a222181b7e05&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22%25E1%2584%2586%25E1%2585%25AE%25E1%2584%258C%25E1%2585%25A6.drawio%2520%281%29.drawio%2520%281%29.png%22&x-id=GetObject)
+![architecture](![무제 drawio (1) drawio (1) drawio](https://user-images.githubusercontent.com/103705842/213369901-47ac19af-ac5e-40b8-99fa-d7a4a678e4f2.png)
+)
 
 <br>
 

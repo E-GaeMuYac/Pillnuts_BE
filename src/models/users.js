@@ -29,12 +29,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       email: {
         type: DataTypes.STRING,
-        unique: true,
         allowNull: false,
       },
       phoneNumber: {
         type: DataTypes.STRING,
-        unique: true,
         allowNull: true,
       },
       loginCount: {
@@ -56,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       imageUrl: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(1000),
         allowNull: true,
       },
       createdAt: {

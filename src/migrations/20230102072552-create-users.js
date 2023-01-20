@@ -15,12 +15,10 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
       },
       phoneNumber: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: true,
       },
       loginCount: {
@@ -42,7 +40,7 @@ module.exports = {
         allowNull: false,
       },
       imageUrl: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(1000),
         allowNull: true,
       },
       createdAt: {
