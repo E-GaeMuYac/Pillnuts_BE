@@ -36,13 +36,13 @@
     "passport-google-oauth2": "^0.2.0",
     "passport-kakao": "^1.0.1",
     "passport-naver-v2": "^2.0.8",
-    "sequelize": "^6.28.0",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^4.6.0"
+    "sequelize": "^6.28.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20",
     "prettier": "^2.8.1",
-    "sequelize-cli": "^6.5.2"
+    "sequelize-cli": "^6.5.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.0"
   }
 }
