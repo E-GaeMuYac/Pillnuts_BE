@@ -44,7 +44,7 @@ module.exports = () => {
             );
             const accesstoken = await createAccessToken(NaverExUser.userId);
             done(null, [accesstoken, refreshtoken, NaverExUser.nickname]);
-          }
+          } else {
           let nickname = profile._json.response.nickname;
           if (!nickname) {
             nickname = profile._json.response.email.split('@')[0];
@@ -69,7 +69,8 @@ module.exports = () => {
           });
 
           const accesstoken = await createAccessToken(NaverNewUser.userId);
-          done(null, [accesstoken, refreshtoken, nickname]); // 회원가입하고 로그인 인증 완료
+          done(null, [accesstoken, refreshtoken, nickname])
+        }; 
         } catch (error) {
           done(error);
         }
