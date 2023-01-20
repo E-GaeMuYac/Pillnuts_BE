@@ -95,7 +95,7 @@
 | sequelize      |     MySQL ORM      |
 | sequelize--cli | MySQL ORM Console  |
 | passport       | User Authenticate  |
-| nodemailer       | 이메일 전송  |
+| nodemailer     |    이메일 전송     |
 
 <br>
 
@@ -174,6 +174,7 @@
   - test : 테스트 코드, 리팩토링 테스트 코드 추가
   - chore : 빌드 업무 수정, 패키지 매니저 수정
   - merge: pull 받은 후 바로 푸시를 해야될 경우
+  - fire: 코드 정리
   - mig: migration
   - 제목은 50자 미만, 문장의 끝에 마침표 넣지 않음. 과거 시제 사용하지 않고, 명령어로 작성하도록 함.
   - 제목 외에 추가적으로 정보를 전달하고 싶을 경우 본문에 추가 정보 기입

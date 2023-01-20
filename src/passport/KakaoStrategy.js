@@ -46,7 +46,7 @@ module.exports = () => {
 
             const accesstoken = await createAccessToken(KakaoExUser.userId);
             done(null, [accesstoken, refreshtoken, KakaoExUser.nickname]);
-          }
+          } else { 
           let { nickname } = url.profile;
           if (!nickname) {
             nickname = url.email.split('@')[0];
@@ -72,7 +72,8 @@ module.exports = () => {
 
           const accesstoken = await createAccessToken(KakaoNewUser.userId);
 
-          done(null, [accesstoken, refreshtoken, nickname]); // 회원가입하고 로그인 인증 완료
+          done(null, [accesstoken, refreshtoken, nickname]) 
+        }; 
         } catch (error) {
           done(error);
         }
