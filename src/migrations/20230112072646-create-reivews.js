@@ -28,8 +28,8 @@ module.exports = {
             onDelete: 'cascade',
           },
           review: {
-            allowNull: true,
-            type: Sequelize.STRING,
+            allowNull: false,
+            type: Sequelize.STRING(1000),
           },
           imageUrl: {
             type: Sequelize.STRING(1000),

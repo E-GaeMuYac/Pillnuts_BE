@@ -40,8 +40,8 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'cascade',
       },
       review: {
-        allowNull: true,
-        type: DataTypes.STRING,
+        allowNull: false,
+        type: DataTypes.STRING(1000),
       },
       imageUrl: {
         type: DataTypes.STRING(1000),
