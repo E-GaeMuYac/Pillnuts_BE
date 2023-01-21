@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Users extends Model {
+  class Reviews extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,53 +9,39 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.SavedMedicines, {
-        as: 'SavedMedicines',
-        foreignKey: 'userId',
-      });
-      this.hasMany(models.Reviews, {
-        as: 'Reviews',
-        foreignKey: 'reviewId',
-      });
-    } 
+      this.belongsTo(models.Users, { foreignKey: 'userId' });
+      this.belongsTo(models.Medicines, { foreignKey: 'medicineId' });
+    }
   }
-  Users.init(
+  Reviews.init(
     {
-      userId: {
+      reviewId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      nickname: {
-        type: DataTypes.STRING,
+      userId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'userId',
+        },
+        onDelete: 'cascade',
       },
-      email: {
-        type: DataTypes.STRING,
+      medicineId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+          model: 'Medicines',
+          key: 'medicineId',
+        },
+        onDelete: 'cascade',
       },
-      phoneNumber: {
-        type: DataTypes.STRING,
+      review: {
         allowNull: true,
-      },
-      loginCount: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: [],
-      },
-      refreshtoken: {
         type: DataTypes.STRING,
-        unique: true,
-        allowNull: true,
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      loginType: {
-        type: DataTypes.STRING,
-        allowNull: false,
       },
       imageUrl: {
         type: DataTypes.STRING(1000),
@@ -74,8 +60,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Users',
+      modelName: 'Reviews',
     }
   );
-  return Users;
+  return Reviews;
 };
