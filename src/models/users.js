@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'SavedMedicines',
         foreignKey: 'userId',
       });
+      this.hasMany(models.Allergies, {
+        as: 'Allergies',
+        foreignKey: 'userId',
+      });
     }
   }
   Users.init(
