@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Materials extends Model {
+  class Allergies extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,35 +9,35 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.Ingredients, {
-        as: 'Ingredients',
-        foreignKey: 'materialId',
-      });
-      this.hasMany(models.Allergies, {
-        as: 'Allergies',
-        foreignKey: 'materialId',
-      });
+      this.belongsTo(models.Materials, { foreignKey: 'materialId' });
+      this.belongsTo(models.Users, { foreignKey: 'userId' });
     }
   }
-  Materials.init(
+  Allergies.init(
     {
-      materialId: {
+      allergyId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      name: {
+      userId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        type: DataTypes.STRING,
+        references: {
+          model: 'Users',
+          key: 'UserId',
+        },
+        onDelete: 'cascade',
       },
-      unit: {
+      materialId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        type: DataTypes.STRING,
-      },
-      content: {
-        allowNull: true,
-        type: DataTypes.STRING,
+        references: {
+          model: 'Materials',
+          key: 'materialId',
+        },
+        onDelete: 'cascade',
       },
       createdAt: {
         allowNull: false,
@@ -52,8 +52,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Materials',
+      modelName: 'Allergies',
     }
   );
-  return Materials;
+  return Allergies;
 };
