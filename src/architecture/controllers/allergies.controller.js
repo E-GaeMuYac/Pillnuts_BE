@@ -23,5 +23,17 @@ class AllergyController {
       next(error);
     }
   };
+
+  userAllergy = async (req, res, next) => {
+    try {
+      const { userId } = res.locals;
+
+      const data = await this.allergyService.userAllergy(userId);
+
+      res.status(200).json({ userId, data });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 module.exports = AllergyController;

@@ -7,5 +7,6 @@ const AllergyController = require('../architecture/controllers/allergies.control
 const allergyController = new AllergyController();
 
 router.get('/search', authMiddleware, allergyController.findAllMaterials);
+router.get('/user', authMiddleware, allergyController.userAllergy);
 
 module.exports = router;
