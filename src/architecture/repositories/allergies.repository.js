@@ -19,14 +19,12 @@ class AllergyRepository {
       raw: true,
       where: { userId },
       attributes: ['allergyId', 'materialId'],
-    });
-  };
-
-  findOneMaterials = async (materialId) => {
-    return Materials.findOne({
-      raw: true,
-      where: { materialId },
-      attributes: ['name', 'content'],
+      include: [
+        {
+          model: Materials,
+          attributes: ['name', 'content'],
+        },
+      ],
     });
   };
 }

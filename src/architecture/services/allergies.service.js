@@ -16,18 +16,15 @@ class AllergyService {
   userAllergy = async (userId) => {
     const data = await this.allergyRepository.userAllergy(userId);
 
-    return data.map(async (d) => {
-      const material = await this.allergyRepository.findOneMaterials(
-        d.materialId
-      );
+    return data.map((d) => {
       return {
         allergyId: d.allergyId,
         materialId: d.materialId,
-        name: material.name,
-        content: material.content,
+        name: d['Material.name'],
+        content: d['Material.content'],
       };
     });
   };
-}
+
 
 module.exports = AllergyService;
