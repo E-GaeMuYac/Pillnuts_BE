@@ -14,11 +14,10 @@ class AllergyService {
       page,
       pageSize
     );
-    console.log(data);
     const { rows } = data;
     if (rows.length === 0) return [];
     for (let i = 0; i < rows.length; i++) {
-      const allergy = await this.allergyRepository.findOneAllergy(
+      let allergy = await this.allergyRepository.findOneAllergy(
         userId,
         rows[i].materialId
       );
