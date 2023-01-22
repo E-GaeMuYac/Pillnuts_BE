@@ -11,18 +11,17 @@ class ProductService {
 
   // api 등록하기
   updateProductsMain = async (start) => {
-    // let {
-    //   data: { body: body },
-    // } = await axios.get(process.env.MEDI_A_API_END_POINT, {
-    //   params: {
-    //     serviceKey: process.env.MEDI_API_KEY_DEC,
-    //     numOfRows: 1,
-    //     pageNo: 1,
-    //     type: 'json',
-    //   },
-    // });
-    // for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
-    for (let p = start; p <= 514; p++) {
+    let {
+      data: { body: body },
+    } = await axios.get(process.env.MEDI_A_API_END_POINT, {
+      params: {
+        serviceKey: process.env.MEDI_API_KEY_DEC,
+        numOfRows: 1,
+        pageNo: 1,
+        type: 'json',
+      },
+    });
+    for (let p = start; p <= (body.totalCount / 100).toFixed(); p++) {
       let {
         data: { body: mainBody },
       } = await axios.get(process.env.MEDI_A_API_END_POINT, {
@@ -235,11 +234,11 @@ class ProductService {
             }
           }
         }
-        console.log(productType.join('.'));
-        await this.productsRepository.updateProductsType(
-          typeBody.items[rowCount].ITEM_SEQ,
-          productType.join('.')
-        );
+        if (productType)
+          await this.productsRepository.updateProductsType(
+            typeBody.items[rowCount].ITEM_SEQ,
+            productType.join('.')
+          );
 
         console.log(`type update ${p}페이지의 ${rowCount}번쨰 저장중`);
       }
@@ -385,6 +384,18 @@ class ProductService {
     product.itemName = product.itemName.split('(')[0];
     product.productType = product.productType.split('.');
 
+    for (let i = 0; i < ingredients.length; i++) {
+      let allergy = await this.productsRepository.findOneAllergy(
+        userId,
+        ingredients[i]['Material.materialId']
+      );
+      if (allergy) {
+        ingredients[i].allergy = true;
+      } else {
+        ingredients[i].allergy = false;
+      }
+    }
+
     product.materialName = ingredients.map((i) => {
       if (i['Material.unit'] === '그램') {
         i.volume = i.volume * 1000;
@@ -393,6 +404,7 @@ class ProductService {
         material: i['Material.name'],
         분량: i.volume,
         설명: i['Material.content'],
+        allergy: i.allergy,
       };
     });
 
