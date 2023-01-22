@@ -11,12 +11,18 @@ class AllergyController {
 
   findAllMaterials = async (req, res, next) => {
     try {
-      const { value } = req.query;
+      const { userId } = res.locals;
+      const { value, page, pageSize } = req.query;
 
       if (value === '' || !value)
         throw new InvalidParamsError('검색어를 확인해주세요.', 412);
 
-      const data = await this.allergyService.findAllMaterials(value);
+      const data = await this.allergyService.findAllMaterials(
+        value,
+        page,
+        pageSize,
+        userId
+      );
 
       res.status(200).json(data);
     } catch (error) {

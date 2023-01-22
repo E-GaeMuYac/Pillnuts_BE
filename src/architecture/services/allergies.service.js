@@ -7,10 +7,28 @@ const { Op } = require('sequelize');
 class AllergyService {
   allergyRepository = new AllergyRepository();
 
-  findAllMaterials = async (value) => {
+  findAllMaterials = async (value, page, pageSize, userId) => {
     const searchValue = ('%' + value + '%').replace(/\s|\b/gi, '');
-    const data = await this.allergyRepository.findAllMaterials(searchValue);
-    return data || [];
+    const data = await this.allergyRepository.findAllMaterials(
+      searchValue,
+      page,
+      pageSize
+    );
+    console.log(data);
+    const { rows } = data;
+    if (rows.length === 0) return [];
+    for (let i = 0; i < rows.length; i++) {
+      const allergy = await this.allergyRepository.findOneAllergy(
+        userId,
+        rows[i].materialId
+      );
+      if (allergy) {
+        rows[i].allergy = true;
+      } else {
+        rows[i].allergy = false;
+      }
+    }
+    return data;
   };
 
   userAllergy = async (userId) => {
@@ -22,6 +40,7 @@ class AllergyService {
         materialId: d.materialId,
         name: d['Material.name'],
         content: d['Material.content'],
+        allergy: true,
       };
     });
   };

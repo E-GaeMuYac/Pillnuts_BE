@@ -2,7 +2,7 @@ const { Materials, Allergies } = require('../../models');
 const { Op } = require('sequelize');
 
 class AllergyRepository {
-  findAllMaterials = async (searchValue) => {
+  findAllMaterials = async (searchValue, page, pageSize) => {
     return Materials.findAndCountAll({
       raw: true,
       where: {
@@ -11,6 +11,8 @@ class AllergyRepository {
         },
       },
       attributes: ['materialId', 'name', 'content'],
+      offset: (page - 1) * pageSize,
+      limit: Number(pageSize),
     });
   };
 
