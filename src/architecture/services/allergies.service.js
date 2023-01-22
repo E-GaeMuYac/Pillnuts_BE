@@ -26,5 +26,21 @@ class AllergyService {
     });
   };
 
+  updateAllergy = async (userId, materialId) => {
+    const material = await this.allergyRepository.findOneMaterial(materialId);
+    if (!material) throw new ValidationError('성분 정보가 없습니다.', 412);
+    const userAllergy = await this.allergyRepository.findOneAllergy(
+      userId,
+      materialId
+    );
+    if (!userAllergy) {
+      await this.allergyRepository.createAllergy(userId, materialId);
+      return '알러지 등록';
+    } else {
+      await this.allergyRepository.deleteAllergy(userId, materialId);
+      return '알러지 삭제';
+    }
+  };
+}
 
 module.exports = AllergyService;

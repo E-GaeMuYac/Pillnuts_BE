@@ -8,5 +8,6 @@ const allergyController = new AllergyController();
 
 router.get('/search', authMiddleware, allergyController.findAllMaterials);
 router.get('/user', authMiddleware, allergyController.userAllergy);
+router.put('/:materialId', authMiddleware, allergyController.updateAllergy);
 
 module.exports = router;
