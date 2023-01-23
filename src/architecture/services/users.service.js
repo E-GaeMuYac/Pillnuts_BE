@@ -107,10 +107,10 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('정보 조회에 실패하였습니다.');
     }
-    const { nickname, imageUrl, loginType } = user;
+    const { nickname, imageUrl, loginType, email } = user;
     const loginCount = user.loginCount.length;
 
-    return { nickname, loginCount, imageUrl, loginType };
+    return { nickname, loginCount, imageUrl, loginType, email };
   };
 
   updateNickname = async (nickname, userId) => {
