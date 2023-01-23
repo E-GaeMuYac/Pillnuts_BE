@@ -3,6 +3,7 @@ const {
   SavedMedicines,
   Materials,
   Ingredients,
+  Allergies,
 } = require('../../models');
 
 class ProductRepository {
@@ -206,9 +207,15 @@ class ProductRepository {
       include: [
         {
           model: Materials,
-          attributes: ['name', 'unit', 'content'],
+          attributes: ['materialId', 'name', 'unit', 'content'],
         },
       ],
+    });
+  };
+  findOneAllergy = async (userId, materialId) => {
+    return Allergies.findOne({
+      raw: true,
+      where: { userId, materialId },
     });
   };
 }
