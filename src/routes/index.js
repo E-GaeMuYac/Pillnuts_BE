@@ -6,7 +6,7 @@ router.use('/api/products', require('./products.route'));
 router.use('/api/users', require('./users.route'));
 router.use('/api/posts', require('./post.route'));
 
-// router.use('/api/reviews', require('./review.route'));
+router.use('/api/reviews', require('./reviews.route'));
 
 router.use('/api/allergies', require('./allergies.route'));
 
