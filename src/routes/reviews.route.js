@@ -5,7 +5,7 @@ const authMiddleware = require('../middlewares/authUser.middleware');
 const ReviewsController = require('../architecture/controllers/reviews.controller');
 const reviewsController = new ReviewsController();
 
-// 리뷰 작성
 router.post('/:medicineId', authMiddleware, reviewsController.createReview);
+// router.get('/', authMiddleware, reviewsController.findReview);
 
 module.exports = router;

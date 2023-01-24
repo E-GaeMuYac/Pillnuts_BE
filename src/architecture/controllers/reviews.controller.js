@@ -1,6 +1,6 @@
 const ReviewService = require('../services/reviews.service');
-const { InvalidParamsError, } = require('../../middlewares/exceptions/error.class');
-const {AuthenticationError } = require('../../middlewares/authUser.middleware');
+const { InvalidParamsError, AuthenticationError} = require('../../middlewares/exceptions/error.class');
+
 
 class ReviewController {
   reviewService = new ReviewService();
@@ -22,21 +22,18 @@ class ReviewController {
     }
   };
 
-  findReview = async (req, res, next) => {
-    try {
-      const { medicineId, page, pageSize } = req.query;
-      const {refreshtoken} = req.headers;
+//   findReview = async (req, res, next) => {
+//     try {
+//       const { medicineId} = req.query;
+//       const { userId } = res.locals;
 
-      if(!refreshtoken){
-        throw new AuthenticationError();
-      }
-      
-      await this.reviewsService.findReview(medicineId);
-      return res.status(200).json(medicineId);
-    } catch (error) {
-      next(error);
-    }
-  };
-}
+//    
+//       await this.reviewService.findReview(medicineId);
+//       return res.status(200).json(medicineId);
+//     } catch (error) {
+//       next(error);
+//     }
+//   };
+ }
 
 module.exports = ReviewController;
