@@ -6,8 +6,15 @@ class ReviewService {
   }
 
   createReview = async (medicineId, userId, review) => {
-    console.log(review)
     await this.reviewRepository.createReview(medicineId, userId, review);
+  };
+
+  findReview = async (medicineId) => {
+    const review = await this.reviewsRepository.findReview(medicineId);
+    if (!review) {
+      throw new Error('리뷰 조회에 실패하였습니다.');
+    }
+    return review;
   };
 }
 
