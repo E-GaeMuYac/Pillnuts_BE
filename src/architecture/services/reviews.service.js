@@ -13,7 +13,7 @@ class ReviewService {
     await this.reviewRepository.createReview(medicineId, userId, review);
   };
 
-  findReview = async (medicineId, page, pageSize, loginUserId, reviewId) => {
+  findReview = async (medicineId, page, pageSize, loginUserId) => {
     const reviews = await this.reviewRepository.findReview({
       raw: true,
       where: { medicineId },
@@ -31,6 +31,10 @@ class ReviewService {
       return {
         reviewId: review.reviewId,
         userId: review.userId,
+        // like:
+        // dislike:
+        // likeCount:
+        // dislikeCount:
         medicineId: review.medicineId,
         review: review.review,
         updatedAt: review.updatedAt,
@@ -42,27 +46,27 @@ class ReviewService {
   updateReview = async (reviewId, review, userId) => {
     const changeReview = await this.reviewRepository.findOneReview(reviewId);
 
-    if (changeReview == null || changeReview.length === 0) {
+    if (!changeReview) {
       throw new InvalidParamsError('리뷰를 찾을 수 없습니다.', 404);
     }
 
     if (userId !== changeReview.userId) {
       throw new InvalidParamsError('유저 권한이 없습니다.', 401);
     }
-    await this.reviewRepository.updateReview(review, reviewId);
-    return this.reviewRepository.findOneReview(reviewId);
+    await this.reviewRepository.updateReview(review, reviewId)
+    return this.reviewRepository.findOneReview(reviewId)
   };
 
   deleteReview = async (reviewId, userId) => {
     const delReview = await this.reviewRepository.findOneReview(reviewId);
 
-    if (delReview == null || delReview.length === 0) {
+    if (delReview == null) {
       throw new InvalidParamsError('리뷰를 찾을 수 없습니다.', 404);
     }
-    if (delReview.userId !== userId || userId == undefined) {
+    if (userId !== delReview.userId) {
       throw new InvalidParamsError('유저 권한이 없습니다.', 401);
     }
-    return this.reviewRepository.deleteReview(reviewId);
+    await this.reviewRepository.deleteReview(reviewId);
   };
 }
 

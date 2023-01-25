@@ -10,7 +10,7 @@ class ReviewRepository {
   };
 
   findOneReview = async (reviewId) => {
-    const review = await Reviews.findOne({
+    return Reviews.findOne({
       where: { reviewId },
       attributes: ['reviewId', 'userId', 'review', 'updatedAt'],
       include: {
@@ -19,7 +19,6 @@ class ReviewRepository {
       },
       raw: true,
     });
-    return review;
   };
 
   updateReview = async (review, reviewId) => {
