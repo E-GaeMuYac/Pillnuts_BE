@@ -51,10 +51,10 @@ class ReviewController {
       const { review } = req.body;
 
       if (!review) {
-        throw new ValidationError('댓글을 작성해주세요.', 412);
+        throw new ValidationError('리뷰를 작성해주세요.', 412);
       }
       await this.reviewService.updateReview(reviewId, review, userId);
-      return res.status(200).json({ message: '댓글 수정완료' });
+      return res.status(200).json({ message: '리뷰 수정 완료' });
     } catch (error) {
       next(error);
     }
@@ -65,7 +65,7 @@ class ReviewController {
       const { userId } = res.locals;
 
       await this.reviewService.deleteReview(reviewId, userId);
-      return res.status(200).json({ message: '댓글을 삭제하였습니다.' });
+      return res.status(200).json({ message: '리뷰를 삭제하였습니다.' });
     } catch (error) {
       next(error);
     }

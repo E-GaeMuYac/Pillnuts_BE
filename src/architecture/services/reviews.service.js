@@ -43,7 +43,7 @@ class ReviewService {
     const changeReview = await this.reviewRepository.findOneReview(reviewId);
 
     if (changeReview == null || changeReview.length === 0) {
-      throw new InvalidParamsError('댓글을 찾을 수 없습니다.', 404);
+      throw new InvalidParamsError('리뷰를 찾을 수 없습니다.', 404);
     }
 
     if (userId !== changeReview.userId) {
@@ -57,7 +57,7 @@ class ReviewService {
     const delReview = await this.reviewRepository.findOneReview(reviewId);
 console.log(delReview)
     if (delReview == null || delReview.length === 0) {
-      throw new InvalidParamsError('댓글을 찾을 수 없습니다.', 404);
+      throw new InvalidParamsError('리뷰를 찾을 수 없습니다.', 404);
     }
     if (delReview.userId !== userId || userId == undefined) {
       throw new InvalidParamsError('유저 권한이 없습니다.', 401);
