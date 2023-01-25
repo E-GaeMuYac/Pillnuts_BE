@@ -1,8 +1,8 @@
 const ReviewService = require('../services/reviews.service');
 const {
   InvalidParamsError,
-  AuthenticationError,
 } = require('../../middlewares/exceptions/error.class');
+const { ValidationError } = require('sequelize');
 
 class ReviewController {
   reviewService = new ReviewService();
@@ -24,18 +24,52 @@ class ReviewController {
     }
   };
 
-  //   findReview = async (req, res, next) => {
-  //     try {
-  //       const { medicineId} = req.query;
-  //       const { userId } = res.locals;
+  findReview = async (req, res, next) => {
+    try {
+      let { medicineId, page, pageSize } = req.query;
+      const loginUserId = res.locals.userId;
 
-  //
-  //       await this.reviewService.findReview(medicineId);
-  //       return res.status(200).json(medicineId);
-  //     } catch (error) {
-  //       next(error);
-  //     }
-  //   };
+      if (!page || page <= 0) page = 1;
+      if (!pageSize || pageSize <= 0) pageSize = 20;
+
+      const reviews = await this.reviewService.findReview(
+        medicineId,
+        page,
+        pageSize,
+        loginUserId
+      );
+      return res.status(200).json(reviews);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateReview = async (req, res, next) => {
+    try {
+      const { reviewId } = req.params;
+      const { userId } = res.locals;
+      const { review } = req.body;
+
+      if (!review) {
+        throw new ValidationError('댓글을 작성해주세요.', 412);
+      }
+      await this.reviewService.updateReview(reviewId, review, userId);
+      return res.status(200).json({ message: '댓글 수정완료' });
+    } catch (error) {
+      next(error);
+    }
+  };
+  deleteReview = async (req, res, next) => {
+    try {
+      let { reviewId } = req.params;
+      const { userId } = res.locals;
+
+      await this.reviewService.deleteReview(reviewId, userId);
+      return res.status(200).json({ message: '댓글을 삭제하였습니다.' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = ReviewController;

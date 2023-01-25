@@ -5,6 +5,7 @@ module.exports = async (req, res, next) => {
   try {
     const refreshToken = req.headers.refreshtoken;
     if (!refreshToken) {
+      
       res.locals.userId = null;
     } else {
       const isRefreshTokenValidate = validateRefreshToken(refreshToken);
@@ -17,7 +18,7 @@ module.exports = async (req, res, next) => {
         });
         if (user) {
           res.locals.userId = user.userId;
-        } else {
+        } else { 
           res.locals.userId = null;
         }
       }
