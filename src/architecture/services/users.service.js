@@ -17,6 +17,13 @@ class UsersService {
   }
 
   signUp = async (email, password, nickname, phoneNumber) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { email, loginType: 'Local' },
+    });
+    if (user) {
+      throw new ExistError('중복된 이메일입니다.');
+    }
     password = hash(password);
 
     const filename = `icon${Math.floor(Math.random() * 5)}.png`;
@@ -107,10 +114,11 @@ class UsersService {
     if (!user) {
       throw new InvalidParamsError('정보 조회에 실패하였습니다.');
     }
+
     const { nickname, imageUrl, loginType, email } = user;
     const loginCount = user.loginCount.length;
 
-    return { nickname, loginCount, imageUrl, loginType, email };
+    return { nickname, loginCount, imageUrl, loginType, email, userId };
   };
 
   updateNickname = async (nickname, userId) => {
