@@ -55,7 +55,7 @@ class ReviewService {
 
   deleteReview = async (reviewId, userId) => {
     const delReview = await this.reviewRepository.findOneReview(reviewId);
-console.log(delReview)
+
     if (delReview == null || delReview.length === 0) {
       throw new InvalidParamsError('리뷰를 찾을 수 없습니다.', 404);
     }
