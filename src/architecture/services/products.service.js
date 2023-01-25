@@ -188,7 +188,6 @@ class ProductService {
             }
           }
         }
-        console.log(`main update ${p}페이지의 ${rowCount}번쨰 저장중`);
       }
     }
     return;
@@ -239,8 +238,6 @@ class ProductService {
             typeBody.items[rowCount].ITEM_SEQ,
             productType.join('.')
           );
-
-        console.log(`type update ${p}페이지의 ${rowCount}번쨰 저장중`);
       }
     }
     return;
@@ -278,7 +275,6 @@ class ProductService {
             itemImage
           );
         }
-        console.log(`image update ${p}페이지의 ${rowCount}번쨰 저장중`);
       }
     }
     return;

@@ -181,7 +181,6 @@ module.exports = async (req, res, next) => {
             }
           }
         }
-        console.log(`main update ${p}페이지의 ${rowCount}번쨰 저장중`);
       }
     }
   } catch (error) {
@@ -234,8 +233,6 @@ module.exports = async (req, res, next) => {
           { productType },
           { where: { itemSeq: typeBody.items[rowCount].ITEM_SEQ } }
         );
-
-        console.log(`type update ${p}페이지의 ${rowCount}번째 저장중`);
       }
     }
   } catch (error) {
@@ -284,7 +281,6 @@ module.exports = async (req, res, next) => {
             { where: { itemSeq: imageBody.items[rowCount].ITEM_SEQ } }
           );
         }
-        console.log(`image update ${p}페이지의 ${rowCount}번째 저장중`);
       }
     }
   } catch (error) {
