@@ -6,6 +6,7 @@ const {
 class ReviewController {
   reviewService = new ReviewService();
 
+  // 리뷰 작성
   createReview = async (req, res, next) => {
     try {
       const { medicineId } = req.params;
@@ -23,6 +24,7 @@ class ReviewController {
     }
   };
 
+  // 리뷰 조회
   findReview = async (req, res, next) => {
     try {
       let { medicineId, page, pageSize } = req.query;
@@ -43,6 +45,7 @@ class ReviewController {
     }
   };
 
+  // 리뷰 수정
   updateReview = async (req, res, next) => {
     try {
       const { reviewId } = req.params;
@@ -62,6 +65,8 @@ class ReviewController {
       next(error);
     }
   };
+
+  // 리뷰 삭제
   deleteReview = async (req, res, next) => {
     try {
       const { reviewId } = req.params;

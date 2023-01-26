@@ -1,10 +1,12 @@
 const { Reviews, Users, Likes, Dislikes } = require('../../models');
 
 class ReviewRepository {
+  // 리뷰 작성
   createReview = async (medicineId, userId, review) => {
     await Reviews.create({ medicineId, userId, review });
   };
 
+  // 리뷰 조회
   findReview = async (data) => {
     return Reviews.findAll(data);
   };
@@ -13,11 +15,45 @@ class ReviewRepository {
     return Reviews.findOne({
       raw: true,
       where: { reviewId },
-      attributes: ['reviewId', 'userId', 'review', 'updatedAt'],
-      include: {
-        model: Users,
-        attributes: ['nickname'],
-      },
+      include: [
+        {
+          model: Users,
+          attributes: ['nickname'],
+        },
+        {
+          model: Likes,
+          as: 'Likes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+        {
+          model: Dislikes,
+          as: 'Dislikes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+      ],
+      attributes: [
+        'reviewId',
+        'userId',
+        'medicineId',
+        'review',
+        'updatedAt',
+        [
+          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
+          'likeCount',
+        ],
+        [
+          Dislikes.sequelize.fn(
+            'count',
+            Dislikes.sequelize.col('Dislikes.reviewId')
+          ),
+          'dislikeCount',
+        ],
+      ],
+      group: ['reviewId'],
     });
   };
 
@@ -35,10 +71,12 @@ class ReviewRepository {
     });
   };
 
+  // 리뷰 수정
   updateReview = async (review, reviewId) => {
     return Reviews.update({ review }, { where: { reviewId } });
   };
 
+  // 리뷰 삭제
   deleteReview = async (reviewId) => {
     return Reviews.destroy({ where: { reviewId } });
   };
