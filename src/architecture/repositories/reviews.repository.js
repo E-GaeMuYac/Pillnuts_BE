@@ -1,4 +1,4 @@
-const { Reviews, Users } = require('../../models');
+const { Reviews, Users, Likes, Dislikes } = require('../../models');
 
 class ReviewRepository {
   createReview = async (medicineId, userId, review) => {
@@ -11,13 +11,27 @@ class ReviewRepository {
 
   findOneReview = async (reviewId) => {
     return Reviews.findOne({
+      raw: true,
       where: { reviewId },
       attributes: ['reviewId', 'userId', 'review', 'updatedAt'],
       include: {
         model: Users,
         attributes: ['nickname'],
       },
+    });
+  };
+
+  findLike = async (reviewId, userId) => {
+    return Likes.findOne({
       raw: true,
+      where: { reviewId, userId },
+    });
+  };
+
+  findDislike = async (reviewId, userId) => {
+    return Dislikes.findOne({
+      raw: true,
+      where: { reviewId, userId },
     });
   };
 

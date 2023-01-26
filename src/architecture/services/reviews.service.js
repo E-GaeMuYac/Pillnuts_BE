@@ -1,5 +1,5 @@
 const ReviewRepository = require('../repositories/reviews.repository');
-const { Users } = require('../../models');
+const { Users, Likes, Dislikes } = require('../../models');
 const {
   InvalidParamsError,
 } = require('../../middlewares/exceptions/error.class');
@@ -22,25 +22,86 @@ class ReviewService {
           model: Users,
           attributes: ['nickname'],
         },
+        {
+          model: Likes,
+          as: 'Likes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+        {
+          model: Dislikes,
+          as: 'Dislikes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
       ],
-
+      attributes: [
+        'reviewId',
+        'userId',
+        'medicineId',
+        'review',
+        'updatedAt',
+        [
+          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
+          'likeCount',
+        ],
+        [
+          Dislikes.sequelize.fn(
+            'count',
+            Dislikes.sequelize.col('Dislikes.reviewId')
+          ),
+          'dislikeCount',
+        ],
+      ],
+      group: ['reviewId'],
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
     });
-    return reviews.map((review) => {
-      return {
-        reviewId: review.reviewId,
-        userId: review.userId,
-        // like:
-        // dislike:
-        // likeCount:
-        // dislikeCount:
-        medicineId: review.medicineId,
-        review: review.review,
-        updatedAt: review.updatedAt,
-        nickname: review['User.nickname'],
-      };
-    });
+
+    return await Promise.all(
+      reviews.map(async (review) => {
+        let like = await this.reviewRepository.findLike(
+          review.reviewId,
+          loginUserId
+        );
+
+        let dislike = await this.reviewRepository.findDislike(
+          review.reviewId,
+          loginUserId
+        );
+        let likeValue = false;
+        let dislikeValue = false;
+        if (like) {
+          likeValue = true;
+        }
+        if (dislike) {
+          dislikeValue = true;
+        }
+        let likeCount = await this.reviewRepository.findLike(
+          review.reviewId,
+          loginUserId
+        );
+        let dislikeCount = await this.reviewRepository.findDislike(
+          review.reviewId,
+          loginUserId
+        );
+
+        return {
+          reviewId: review.reviewId,
+          userId: review.userId,
+          like: likeValue,
+          dislike: dislikeValue,
+          likeCount: review.likeCount,
+          dislikeCount: review.dislikeCount,
+          medicineId: review.medicineId,
+          review: review.review,
+          updatedAt: review.updatedAt,
+          nickname: review['User.nickname'],
+        };
+      })
+    );
   };
 
   updateReview = async (reviewId, review, userId) => {
@@ -53,8 +114,8 @@ class ReviewService {
     if (userId !== changeReview.userId) {
       throw new InvalidParamsError('유저 권한이 없습니다.', 401);
     }
-    await this.reviewRepository.updateReview(review, reviewId)
-    return this.reviewRepository.findOneReview(reviewId)
+    await this.reviewRepository.updateReview(review, reviewId);
+    return this.reviewRepository.findOneReview(reviewId);
   };
 
   deleteReview = async (reviewId, userId) => {
