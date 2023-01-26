@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Likes extends Model {
+  class Dislikes extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Reviews, { foreignKey: 'reviewId' });
     }
   }
-  Likes.init(
+  Dislikes.init(
     {
-      likeId: {
+      dislikeId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -52,8 +52,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Likes',
+      modelName: 'Dislikes',
     }
   );
-  return Likes;
+  return Dislikes;
 };
