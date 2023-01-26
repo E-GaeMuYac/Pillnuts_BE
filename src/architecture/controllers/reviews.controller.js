@@ -2,7 +2,6 @@ const ReviewService = require('../services/reviews.service');
 const {
   InvalidParamsError,
 } = require('../../middlewares/exceptions/error.class');
-const { ValidationError } = require('sequelize');
 
 class ReviewController {
   reviewService = new ReviewService();
@@ -65,7 +64,7 @@ class ReviewController {
   };
   deleteReview = async (req, res, next) => {
     try {
-      let { reviewId } = req.params;
+      const { reviewId } = req.params;
       const { userId } = res.locals;
 
       await this.reviewService.deleteReview(reviewId, userId);
