@@ -171,6 +171,87 @@ class ReviewService {
     }
     await this.reviewRepository.deleteReview(reviewId);
   };
+
+  // 마이페이지에서 리뷰 조회
+  findMyReview = async (userId, page, pageSize) => {
+    const reviews = await this.reviewRepository.findMyReview({
+      raw: true,
+      where: { userId },
+      include: [
+        {
+          model: Likes,
+          as: 'Likes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+        {
+          model: Dislikes,
+          as: 'Dislikes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+      ],
+      attributes: [
+        'reviewId',
+        'userId',
+        'medicineId',
+        'review',
+        'updatedAt',
+        [
+          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
+          'likeCount',
+        ],
+        [
+          Dislikes.sequelize.fn(
+            'count',
+            Dislikes.sequelize.col('Dislikes.reviewId')
+          ),
+          'dislikeCount',
+        ],
+      ],
+      group: ['reviewId'],
+      offset: (page - 1) * pageSize,
+      limit: Number(pageSize),
+    });
+    console.log(reviews);
+
+    return await Promise.all(
+      reviews.map(async (review) => {
+        let like = await this.reviewRepository.findLike(
+          review.reviewId,
+          userId
+        );
+        console.log(like);
+        let dislike = await this.reviewRepository.findDislike(
+          review.reviewId,
+          userId
+        );
+        let likeValue = false;
+        let dislikeValue = false;
+        if (like) {
+          likeValue = true;
+        }
+        if (dislike) {
+          dislikeValue = true;
+        }
+
+        return {
+          reviewId: review.reviewId,
+          userId: review.userId,
+          like: likeValue,
+          dislike: dislikeValue,
+          likeCount: review.likeCount,
+          dislikeCount: review.dislikeCount,
+          medicineId: review.medicineId,
+          review: review.review,
+          updatedAt: review.updatedAt,
+          nickname: review['User.nickname'],
+        };
+      })
+    );
+  };
 }
 
 module.exports = ReviewService;

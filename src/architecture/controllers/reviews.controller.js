@@ -78,6 +78,27 @@ class ReviewController {
       next(error);
     }
   };
+
+  // 마이페이지에서 리뷰 조회
+  findMyReview = async (req, res, next) => {
+    try {
+      let { page, pageSize } = req.query;
+      console.log(req.query);
+      const { userId } = res.locals;
+
+      if (!page || page <= 0) page = 1;
+      if (!pageSize || pageSize <= 0) pageSize = 20;
+
+      const reviews = await this.reviewService.findMyReview(
+        userId,
+        page,
+        pageSize
+      );
+      return res.status(200).json(reviews);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = ReviewController;

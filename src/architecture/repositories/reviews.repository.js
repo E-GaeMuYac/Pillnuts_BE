@@ -80,6 +80,70 @@ class ReviewRepository {
   deleteReview = async (reviewId) => {
     return Reviews.destroy({ where: { reviewId } });
   };
+
+  // 마이페이지에서 리뷰 조회
+  findMyReview = async (data) => {
+    return Reviews.findAll(data);
+  };
+
+  findOneReview = async (reviewId) => {
+    return Reviews.findOne({
+      raw: true,
+      where: { reviewId },
+      include: [
+        {
+          model: Users,
+          attributes: ['nickname'],
+        },
+        {
+          model: Likes,
+          as: 'Likes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+        {
+          model: Dislikes,
+          as: 'Dislikes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+      ],
+      attributes: [
+        'reviewId',
+        'medicineId',
+        'review',
+        'updatedAt',
+        [
+          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
+          'likeCount',
+        ],
+        [
+          Dislikes.sequelize.fn(
+            'count',
+            Dislikes.sequelize.col('Dislikes.reviewId')
+          ),
+          'dislikeCount',
+        ],
+      ],
+      group: ['reviewId'],
+    });
+  };
+
+  findLike = async (reviewId, userId) => {
+    return Likes.findOne({
+      raw: true,
+      where: { reviewId, userId },
+    });
+  };
+
+  findDislike = async (reviewId, userId) => {
+    return Dislikes.findOne({
+      raw: true,
+      where: { reviewId, userId },
+    });
+  };
 }
 
 module.exports = ReviewRepository;
