@@ -4,7 +4,6 @@ const authMiddleware = require('../middlewares/authUser.middleware');
 
 const ReviewsController = require('../architecture/controllers/reviews.controller');
 const authCheckMiddleware = require('../middlewares/authCheck.middleware');
-const ReviewController = require('../architecture/controllers/reviews.controller');
 const reviewsController = new ReviewsController();
 
 router.post('/:medicineId', authMiddleware, reviewsController.createReview);
