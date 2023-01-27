@@ -36,7 +36,6 @@ class AllergyController {
 
       const data = await this.allergyService.userAllergy(userId);
 
-      console.log('data : ', data);
       res.status(200).json({ userId, data });
     } catch (error) {
       next(error);
