@@ -108,18 +108,20 @@ class ReviewService {
 
   // 리뷰 수정
   updateReview = async (reviewId, review, userId) => {
-    const changeReview = await this.reviewRepository.findOneReview(reviewId, userId);
-console.log(changeReview)
+    const changeReview = await this.reviewRepository.findOneReview(
+      reviewId,
+      userId
+    );
+
     if (!changeReview) {
       throw new InvalidParamsError('리뷰를 찾을 수 없습니다.', 404);
     }
-console.log(userId, changeReview.userId)
+
     if (userId !== changeReview.userId) {
       throw new InvalidParamsError('유저 권한이 없습니다.', 401);
     }
     await this.reviewRepository.updateReview(review, reviewId);
     return this.reviewRepository.findOneReview(reviewId);
- 
   };
 
   // 리뷰 삭제
