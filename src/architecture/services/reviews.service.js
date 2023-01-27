@@ -81,14 +81,14 @@ class ReviewService {
         if (dislike) {
           dislikeValue = true;
         }
-        let likeCount = await this.reviewRepository.findLike(
-          review.reviewId,
-          loginUserId
-        );
-        let dislikeCount = await this.reviewRepository.findDislike(
-          review.reviewId,
-          loginUserId
-        );
+        // let likeCount = await this.reviewRepository.findLike(
+        //   review.reviewId,
+        //   loginUserId
+        // );
+        // let dislikeCount = await this.reviewRepository.findDislike(
+        //   review.reviewId,
+        //   loginUserId
+        // );
 
         return {
           reviewId: review.reviewId,
@@ -188,7 +188,7 @@ class ReviewService {
           review.reviewId,
           userId
         );
-        console.log(like);
+
         let dislike = await this.reviewRepository.findDislike(
           review.reviewId,
           userId
