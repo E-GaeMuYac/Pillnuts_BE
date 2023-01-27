@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { Reviews, Users, Likes, Dislikes } = require('../../models');
 
 class ReviewRepository {
@@ -7,8 +8,54 @@ class ReviewRepository {
   };
 
   // 리뷰 조회
-  findReview = async (data) => {
-    return Reviews.findAll(data);
+  findReview = async (medicineId, page, pageSize) => {
+
+    return Reviews.findAndCountAll({
+      raw: true,
+      where: { medicineId },
+      include: [
+        {
+          model: Users,
+          attributes: ['nickname'],
+          required: true,
+        },
+        {
+          model: Likes,
+          as: 'Likes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+        {
+          model: Dislikes,
+          as: 'Dislikes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+      ],
+      attributes: [
+        'reviewId',
+        'userId',
+        'medicineId',
+        'review',
+        'updatedAt',
+        [
+          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
+          'likeCount',
+        ],
+        [
+          Dislikes.sequelize.fn(
+            'count',
+            Dislikes.sequelize.col('Dislikes.reviewId')
+          ),
+          'dislikeCount',
+        ],
+      ],
+      group: ['reviewId'],
+      offset: (page - 1) * pageSize,
+      limit: Number(pageSize),
+    });
   };
 
   findOneReview = async (reviewId) => {
@@ -82,11 +129,51 @@ class ReviewRepository {
   };
 
   // 마이페이지에서 리뷰 조회
-  findMyReview = async (data) => {
-    return Reviews.findAll(data);
+  findMyReview = async (userId, page, pageSize) => {
+    return Reviews.findAndCountAll({
+      raw: true,
+      where: { userId },
+      include: [
+        {
+          model: Likes,
+          as: 'Likes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+        {
+          model: Dislikes,
+          as: 'Dislikes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+      ],
+      attributes: [
+        'reviewId',
+        'userId',
+        'medicineId',
+        'review',
+        'updatedAt',
+        [
+          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
+          'likeCount',
+        ],
+        [
+          Dislikes.sequelize.fn(
+            'count',
+            Dislikes.sequelize.col('Dislikes.reviewId')
+          ),
+          'dislikeCount',
+        ],
+      ],
+      group: ['reviewId'],
+      offset: (page - 1) * pageSize,
+      limit: Number(pageSize),
+    });
   };
 
-  findOneReview = async (reviewId) => {
+  findOneMyReview = async (reviewId) => {
     return Reviews.findOne({
       raw: true,
       where: { reviewId },
@@ -131,17 +218,51 @@ class ReviewRepository {
     });
   };
 
-  findLike = async (reviewId, userId) => {
+  // 리뷰 (도움 돼요)
+  checkReviewLike = async (reviewId, userId) => {
     return Likes.findOne({
-      raw: true,
-      where: { reviewId, userId },
+      where: {
+        [Op.and]: [{ reviewId }, { userId }],
+      },
     });
   };
 
-  findDislike = async (reviewId, userId) => {
+  createLike = async (reviewId, userId) => {
+    return Likes.create({
+      reviewId,
+      userId,
+    });
+  };
+
+  deleteLike = async (reviewId, userId) => {
+    return Likes.destroy({
+      where: {
+        [Op.and]: [{ reviewId }, { userId }],
+      },
+    });
+  };
+
+  // 리뷰 (도움 안돼요)
+  checkReviewDislike = async (reviewId, userId) => {
     return Dislikes.findOne({
-      raw: true,
-      where: { reviewId, userId },
+      where: {
+        [Op.and]: [{ reviewId }, { userId }],
+      },
+    });
+  };
+
+  createDislike = async (reviewId, userId) => {
+    return Dislikes.create({
+      reviewId,
+      userId,
+    });
+  };
+
+  deleteDislike = async (reviewId, userId) => {
+    return Dislikes.destroy({
+      where: {
+        [Op.and]: [{ reviewId }, { userId }],
+      },
     });
   };
 }

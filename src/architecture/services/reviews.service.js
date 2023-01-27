@@ -1,5 +1,4 @@
 const ReviewRepository = require('../repositories/reviews.repository');
-const { Users, Likes, Dislikes } = require('../../models');
 const {
   InvalidParamsError,
 } = require('../../middlewares/exceptions/error.class');
@@ -16,54 +15,16 @@ class ReviewService {
 
   // 리뷰 조회
   findReview = async (medicineId, page, pageSize, loginUserId) => {
-    const reviews = await this.reviewRepository.findReview({
-      raw: true,
-      where: { medicineId },
-      include: [
-        {
-          model: Users,
-          attributes: ['nickname'],
-        },
-        {
-          model: Likes,
-          as: 'Likes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-        {
-          model: Dislikes,
-          as: 'Dislikes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-      ],
-      attributes: [
-        'reviewId',
-        'userId',
-        'medicineId',
-        'review',
-        'updatedAt',
-        [
-          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
-          'likeCount',
-        ],
-        [
-          Dislikes.sequelize.fn(
-            'count',
-            Dislikes.sequelize.col('Dislikes.reviewId')
-          ),
-          'dislikeCount',
-        ],
-      ],
-      group: ['reviewId'],
-      offset: (page - 1) * pageSize,
-      limit: Number(pageSize),
-    });
+    const reviews = await this.reviewRepository.findReview(
+      medicineId,
+      page,
+      pageSize,
+      loginUserId
+    );
 
-    return await Promise.all(
-      reviews.map(async (review) => {
+    const totalReview = reviews.count.length;
+    const reviewList = await Promise.all(
+      reviews.rows.map(async (review) => {
         let like = await this.reviewRepository.findLike(
           review.reviewId,
           loginUserId
@@ -81,15 +42,6 @@ class ReviewService {
         if (dislike) {
           dislikeValue = true;
         }
-        // let likeCount = await this.reviewRepository.findLike(
-        //   review.reviewId,
-        //   loginUserId
-        // );
-        // let dislikeCount = await this.reviewRepository.findDislike(
-        //   review.reviewId,
-        //   loginUserId
-        // );
-
         return {
           reviewId: review.reviewId,
           userId: review.userId,
@@ -104,6 +56,7 @@ class ReviewService {
         };
       })
     );
+    return { totalReview, reviewList };
   };
 
   // 리뷰 수정
@@ -138,53 +91,18 @@ class ReviewService {
   };
 
   // 마이페이지에서 리뷰 조회
-  findMyReview = async (userId, page, pageSize) => {
-    const reviews = await this.reviewRepository.findMyReview({
-      raw: true,
-      where: { userId },
-      include: [
-        {
-          model: Likes,
-          as: 'Likes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-        {
-          model: Dislikes,
-          as: 'Dislikes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-      ],
-      attributes: [
-        'reviewId',
-        'userId',
-        'medicineId',
-        'review',
-        'updatedAt',
-        [
-          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
-          'likeCount',
-        ],
-        [
-          Dislikes.sequelize.fn(
-            'count',
-            Dislikes.sequelize.col('Dislikes.reviewId')
-          ),
-          'dislikeCount',
-        ],
-      ],
-      group: ['reviewId'],
-      offset: (page - 1) * pageSize,
-      limit: Number(pageSize),
-    });
-    console.log(reviews);
 
-    return await Promise.all(
-      reviews.map(async (review) => {
-        let like = await this.reviewRepository.findLike(
+  findMyReview = async (userId, page, pageSize) => {
+    const reviews = await this.reviewRepository.findMyReview(
+      userId,
+      page,
+      pageSize
+    );
+
+    const totalReview = reviews.count.length;
+    const reviewList = await Promise.all(
+      reviews.rows.map(async (review) => {
+        let like = await this.reviewRepository.checkReviewLike(
           review.reviewId,
           userId
         );
@@ -216,6 +134,37 @@ class ReviewService {
         };
       })
     );
+    return { totalReview, reviewList };
+  };
+
+  // 리뷰 (도움 돼요)
+  checkReviewLike = async (reviewId, userId) => {
+    const isLike = await this.reviewRepository.checkReviewLike(
+      reviewId,
+      userId
+    );
+
+    if (!isLike) {
+      await this.reviewRepository.deleteDislike(reviewId, userId);
+      return this.reviewRepository.createLike(reviewId, userId);
+    } else {
+      await this.reviewRepository.deleteLike(reviewId, userId);
+    }
+  };
+
+  // 리뷰 (도움 안돼요)
+  checkReviewDislike = async (reviewId, userId) => {
+    const isDislike = await this.reviewRepository.checkReviewDislike(
+      reviewId,
+      userId
+    );
+
+    if (!isDislike) {
+      await this.reviewRepository.deleteLike(reviewId, userId);
+      return this.reviewRepository.createDislike(reviewId, userId);
+    } else {
+      await this.reviewRepository.deleteDislike(reviewId, userId);
+    }
   };
 }
 

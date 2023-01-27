@@ -11,4 +11,9 @@ router.get('/', authCheckMiddleware, reviewsController.findReview);
 router.put('/:reviewId', authMiddleware, reviewsController.updateReview);
 router.delete('/:reviewId', authMiddleware, reviewsController.deleteReview);
 
+router.get('/myreview', authMiddleware, reviewsController.findMyReview);
+
+router.put('/:reviewId/like', authMiddleware, reviewsController.checkReviewLike);
+router.put('/:reviewId/dislike', authMiddleware, reviewsController.checkReviewDislike);
+
 module.exports = router;
