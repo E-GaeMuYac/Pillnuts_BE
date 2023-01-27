@@ -108,55 +108,18 @@ class ReviewService {
 
   // 리뷰 수정
   updateReview = async (reviewId, review, userId) => {
-    const changeReview = await this.reviewRepository.findOneReview(
-      reviewId,
-      userId
-    );
-
+    const changeReview = await this.reviewRepository.findOneReview(reviewId, userId);
+console.log(changeReview)
     if (!changeReview) {
       throw new InvalidParamsError('리뷰를 찾을 수 없습니다.', 404);
     }
-
+console.log(userId, changeReview.userId)
     if (userId !== changeReview.userId) {
       throw new InvalidParamsError('유저 권한이 없습니다.', 401);
     }
     await this.reviewRepository.updateReview(review, reviewId);
-    const reviews = await this.reviewRepository.findOneReview(reviewId, userId);
-    console.log(reviews.userId);
-    let like = await this.reviewRepository.findLike(reviews.reviewId, userId);
-
-    let dislike = await this.reviewRepository.findDislike(
-      reviews.reviewId,
-      userId
-    );
-    let likeValue = false;
-    let dislikeValue = false;
-    if (like) {
-      likeValue = true;
-    }
-    if (dislike) {
-      dislikeValue = true;
-    }
-    let likeCount = await this.reviewRepository.findLike(
-      reviews.reviewId,
-      userId
-    );
-    let dislikeCount = await this.reviewRepository.findDislike(
-      reviews.reviewId,
-      userId
-    );
-    return {
-      reviewId: reviews.reviewId,
-      userId: reviews.userId,
-      like: likeValue,
-      dislike: dislikeValue,
-      likeCount: reviews.likeCount,
-      dislikeCount: reviews.dislikeCount,
-      medicineId: reviews.medicineId,
-      review: reviews.review,
-      updatedAt: reviews.updatedAt,
-      nickname: reviews['User.nickname'],
-    };
+    return this.reviewRepository.findOneReview(reviewId);
+ 
   };
 
   // 리뷰 삭제
