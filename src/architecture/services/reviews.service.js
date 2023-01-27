@@ -145,8 +145,8 @@ class ReviewService {
     );
 
     if (!isLike) {
-      await this.reviewRepository.createLike(reviewId, userId);
       await this.reviewRepository.deleteDislike(reviewId, userId);
+      return this.reviewRepository.createLike(reviewId, userId);
     } else {
       await this.reviewRepository.deleteLike(reviewId, userId);
     }

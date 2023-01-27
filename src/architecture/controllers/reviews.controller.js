@@ -107,8 +107,8 @@ class ReviewController {
 
       const isLike = await this.reviewService.checkReviewLike(reviewId, userId);
 
-      if (isLike) {
-        return res.status(200).json({ message: '리뷰에 도움 돼요 취소' });
+      if (!isLike) {
+        return res.status(201).json({ message: '리뷰에 도움 돼요 취소' });
       }
 
       res.status(201).json({
