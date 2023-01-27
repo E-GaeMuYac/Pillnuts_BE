@@ -42,7 +42,6 @@ class ReviewService {
         if (dislike) {
           dislikeValue = true;
         }
-
         return {
           reviewId: review.reviewId,
           userId: review.userId,
@@ -108,7 +107,7 @@ class ReviewService {
           userId
         );
 
-        let dislike = await this.reviewRepository.checkReviewDislike(
+        let dislike = await this.reviewRepository.findDislike(
           review.reviewId,
           userId
         );
