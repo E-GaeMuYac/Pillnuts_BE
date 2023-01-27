@@ -102,7 +102,7 @@ class ReviewService {
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
-        let like = await this.reviewRepository.checkReviewLike(
+        let like = await this.reviewRepository.findLike(
           review.reviewId,
           userId
         );
