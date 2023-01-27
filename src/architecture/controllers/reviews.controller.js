@@ -94,6 +94,57 @@ class ReviewController {
       next(error);
     }
   };
+
+  // 리뷰 (도움 돼요 누르기)
+  checkReviewLike = async (req, res, next) => {
+    try {
+      const { reviewId } = req.params;
+      const { userId } = res.locals;
+
+      if (!reviewId) {
+        throw new InvalidParamsError('요청한 형식이 올바르지 않습니다.', 400);
+      }
+
+      const isLike = await this.reviewService.checkReviewLike(reviewId, userId);
+
+      if (!isLike) {
+        return res.status(201).json({ message: '리뷰에 도움 돼요 취소' });
+      }
+
+      res.status(201).json({
+        message: '리뷰에 도움 돼요 성공',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // 리뷰 (도움 안돼요 누르기)
+  checkReviewDislike = async (req, res, next) => {
+    try {
+      const { reviewId } = req.params;
+      const { userId } = res.locals;
+
+      if (!reviewId) {
+        throw new InvalidParamsError('요청한 형식이 올바르지 않습니다.', 400);
+      }
+
+      const isDislike = await this.reviewService.checkReviewDislike(
+        reviewId,
+        userId
+      );
+
+      if (!isDislike) {
+        return res.status(201).json({ message: '리뷰에 도움 안돼요 취소' });
+      }
+
+      res.status(201).json({
+        message: '리뷰에 도움 안돼요 성공',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = ReviewController;
