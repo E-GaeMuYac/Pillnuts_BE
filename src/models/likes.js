@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Reviews extends Model {
+  class Likes extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -10,24 +10,25 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.Users, { foreignKey: 'userId' });
-      this.belongsTo(models.Medicines, { foreignKey: 'medicineId' });
-      this.hasMany(models.Likes, {
-        as: 'Likes',
-        foreignKey: 'reviewId',
-      });
-      this.hasMany(models.Dislikes, {
-        as: 'Dislikes',
-        foreignKey: 'reviewId',
-      });
+      this.belongsTo(models.Reviews, { foreignKey: 'reviewId' });
     }
   }
-  Reviews.init(
+  Likes.init(
     {
-      reviewId: {
+      likeId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
+      },
+      reviewId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Reviews',
+          key: 'reviewId',
+        },
+        onDelete: 'cascade',
       },
       userId: {
         type: DataTypes.INTEGER,
@@ -37,19 +38,6 @@ module.exports = (sequelize, DataTypes) => {
           key: 'userId',
         },
         onDelete: 'cascade',
-      },
-      medicineId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Medicines',
-          key: 'medicineId',
-        },
-        onDelete: 'cascade',
-      },
-      review: {
-        allowNull: false,
-        type: DataTypes.STRING(1000),
       },
       createdAt: {
         allowNull: false,
@@ -64,8 +52,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Reviews',
+      modelName: 'Likes',
     }
   );
-  return Reviews;
+  return Likes;
 };

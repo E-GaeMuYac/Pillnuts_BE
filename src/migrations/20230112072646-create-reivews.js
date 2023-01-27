@@ -31,10 +31,6 @@ module.exports = {
             allowNull: false,
             type: Sequelize.STRING(1000),
           },
-          imageUrl: {
-            type: Sequelize.STRING(1000),
-            allowNull: true,
-          },
           createdAt: {
             allowNull: false,
             type: Sequelize.DATE,
