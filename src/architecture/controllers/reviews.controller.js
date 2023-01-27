@@ -55,12 +55,8 @@ class ReviewController {
       if (!review) {
         throw new ValidationError('리뷰를 작성해주세요.', 412);
       }
-      await this.reviewService.updateReview(
-        reviewId,
-        review,
-        userId
-      );
-      return res.status(200).json({message: '리뷰 수정이 완료되었습니다.'});
+      await this.reviewService.updateReview(reviewId, review, userId);
+      return res.status(200).json({ message: '리뷰 수정이 완료되었습니다.' });
     } catch (error) {
       next(error);
     }
@@ -83,7 +79,6 @@ class ReviewController {
   findMyReview = async (req, res, next) => {
     try {
       let { page, pageSize } = req.query;
-      console.log(req.query);
       const { userId } = res.locals;
 
       if (!page || page <= 0) page = 1;
