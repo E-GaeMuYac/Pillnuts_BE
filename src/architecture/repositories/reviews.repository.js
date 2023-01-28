@@ -9,7 +9,6 @@ class ReviewRepository {
 
   // 리뷰 조회
   findReview = async (medicineId, page, pageSize) => {
-
     return Reviews.findAndCountAll({
       raw: true,
       where: { medicineId },
