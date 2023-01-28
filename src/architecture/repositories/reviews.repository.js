@@ -53,7 +53,7 @@ class ReviewRepository {
         ],
       ],
       group: ['reviewId'],
-      order: [['createdAt', 'DESC']],
+      order: [['updatedAt', 'DESC']],
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
     });
@@ -141,7 +141,7 @@ class ReviewRepository {
         ],
       ],
       group: ['reviewId'],
-      order: [['createdAt', 'DESC']],
+      order: [['updatedAt', 'DESC']],
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
     });
