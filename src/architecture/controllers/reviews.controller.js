@@ -27,7 +27,7 @@ class ReviewController {
   // 리뷰 조회
   findReview = async (req, res, next) => {
     try {
-      let { medicineId, page, pageSize } = req.query;
+      let { medicineId, page, pageSize, tag } = req.query;
       const loginUserId = res.locals.userId;
 
       if (!page || page <= 0) page = 1;
@@ -37,6 +37,7 @@ class ReviewController {
         medicineId,
         page,
         pageSize,
+        tag,
         loginUserId
       );
       return res.status(200).json(reviews);
