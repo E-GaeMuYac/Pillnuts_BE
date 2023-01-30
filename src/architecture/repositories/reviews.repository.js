@@ -8,7 +8,6 @@ class ReviewRepository {
   };
 
   // 리뷰 조회
-
   findReview = async (page, pageSize, data) => {
     return Reviews.findAndCountAll({
       raw: true,
@@ -16,7 +15,7 @@ class ReviewRepository {
       include: [
         {
           model: Users,
-          attributes: ['nickname'],
+          attributes: ['nickname', 'imageUrl'],
           required: true,
         },
         {
