@@ -8,7 +8,7 @@ class ReviewRepository {
   };
 
   // 리뷰 조회
-  findReview = async (page, pageSize, data) => {
+  findReview = async (page, pageSize, data, order) => {
     return Reviews.findAndCountAll({
       raw: true,
       where: data,
@@ -52,7 +52,7 @@ class ReviewRepository {
         ],
       ],
       group: ['reviewId'],
-      order: [['updatedAt', 'DESC']],
+      order: order,
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
     });
