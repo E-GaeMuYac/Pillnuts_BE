@@ -15,16 +15,22 @@ class ReviewService {
   };
 
   // 리뷰 조회
-  findReview = async (medicineId, page, pageSize, tag, loginUserId) => {
+  findReview = async (medicineId, page, pageSize, tag, order, loginUserId) => {
     let data = { medicineId, review: { [Op.like]: `%${tag}%` } };
     if (!tag) {
       data = { medicineId };
     }
+    if (order === 'updatedAt') {
+      order = [['updatedAt', 'DESC']]
+    } else if (order === 'likeCount') {
+      order = [['likeCount', 'DESC']]
+    };
     
     const reviews = await this.reviewRepository.findReview(
       page,
       pageSize,
-      data
+      data,
+      order,
     );
 
     const totalReview = reviews.count.length;
