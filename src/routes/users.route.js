@@ -8,6 +8,16 @@ const usersController = new UsersController();
 router.post('/signup', loginMiddleware, usersController.signUp);
 router.get('/signup', usersController.duplicateCheck);
 router.get('/find/email', loginMiddleware, usersController.findEmail);
+router.post(
+  '/authentication/email',
+  loginMiddleware,
+  usersController.authenticationEmail
+);
+router.post(
+  '/authentication/phone',
+  loginMiddleware,
+  usersController.authenticationPhone
+);
 router.get(
   '/find/phoneNumber',
   loginMiddleware,

@@ -1,5 +1,7 @@
 const UsersRepository = require('../repositories/users.repository');
 const { Users } = require('../../models/index.js');
+const axios = require('axios');
+const { createAuthToken } = require('../../util/token');
 
 const createUrl = require('../../util/presignedUrl');
 const hash = require('../../util/encryption');
@@ -48,6 +50,41 @@ class UsersService {
       throw new ExistError('중복된 이메일입니다.');
     }
   };
+
+  authenticationEmail = async (email) => {
+    const token = await createAuthToken();
+    const { data } = await axios.post(
+      process.env.GATEWAY_EMAIL,
+      {
+        email,
+      },
+      {
+        headers: {
+          'authorization_Token': `Bearer ${token}`,
+          'x-api-key': process.env.X_API_KEY_EMAIL,
+        },
+      }
+    );
+    return data;
+  };
+
+  authenticationPhone = async (phoneNumber) => {
+    const token = await createAuthToken();
+    const { data } = await axios.post(
+      process.env.GATEWAY_PHONE,
+      {
+        phoneNumber,
+      },
+      {
+        headers: {
+          'authorization_Token': `Bearer ${token}`,
+          'x-api-key': process.env.X_API_KEY_PHONE,
+        },
+      }
+    );
+    return data;
+  };
+
 
   findEmail = async (phoneNumber) => {
     const user = await this.usersRepository.findUser({

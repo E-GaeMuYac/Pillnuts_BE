@@ -55,6 +55,42 @@ class UsersController {
     }
   };
 
+  authenticationEmail = async (req, res, next) => {
+    try {
+      const { email } = req.body;
+      const result = Joi.string().email().required().validate(email);
+
+      if (result.error) {
+        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+      }
+      const code = await this.usersService.authenticationEmail(email);
+      return res.status(201).json(code);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
+
+  authenticationPhone = async (req, res, next) => {
+    try {
+      const { phoneNumber } = req.body;
+      const result = Joi.string()
+        .length(11)
+        .pattern(/^[0-9]+$/)
+        .required()
+        .validate(phoneNumber);
+
+      if (result.error) {
+        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+      }
+      const code = await this.usersService.authenticationPhone(phoneNumber);
+      return res.status(201).json(code);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
+
   findEmail = async (req, res, next) => {
     try {
       const { phoneNumber } = req.query;
