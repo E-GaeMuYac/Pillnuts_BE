@@ -26,7 +26,7 @@ class ReviewService {
       pageSize,
       data
     );
-    console.log(reviews)
+
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
