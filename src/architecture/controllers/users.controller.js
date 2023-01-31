@@ -96,7 +96,7 @@ class UsersController {
       const { phoneNumber } = req.query;
       const email = await this.usersService.findEmail(phoneNumber);
 
-      return res.status(200).json({ email });
+      return res.status(200).json(email);
     } catch (error) {
       next(error);
     }

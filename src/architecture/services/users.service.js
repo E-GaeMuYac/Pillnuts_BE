@@ -87,15 +87,22 @@ class UsersService {
 
 
   findEmail = async (phoneNumber) => {
-    const user = await this.usersRepository.findUser({
+    const users = await this.usersRepository.findUsers({
       raw: true,
       where: { phoneNumber, loginType: 'Local' },
     });
-    if (!user) {
+    
+    if (!users) {
       throw new InvalidParamsError('해당하는 사용자가 없습니다.');
     }
-    const { email, imageUrl } = user;
-    return { email, imageUrl };
+
+    return users.map((user) => {
+       return {
+        email : user.email,
+        imageUrl : user.imageUrl
+      }
+    })
+    
   };
 
   findPhoneNumber = async (email) => {

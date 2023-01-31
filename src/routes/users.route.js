@@ -9,6 +9,11 @@ const usersController = new UsersController();
 router.post('/signup', loginMiddleware, usersController.signUp);
 router.get('/signup', usersController.duplicateCheck);
 router.get('/find/email', loginMiddleware, usersController.findEmail);
+router.get(
+  '/find/phoneNumber',
+  loginMiddleware,
+  usersController.findPhoneNumber
+);
 router.post(
   '/authentication/email',
   limiter,
@@ -20,11 +25,6 @@ router.post(
   limiter,
   loginMiddleware,
   usersController.authenticationPhone
-);
-router.get(
-  '/find/phoneNumber',
-  loginMiddleware,
-  usersController.findPhoneNumber
 );
 router.put('/find/password', loginMiddleware, usersController.findPassword);
 router.put('/logout', authMiddleware, usersController.logout);
