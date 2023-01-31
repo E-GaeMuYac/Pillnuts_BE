@@ -21,16 +21,16 @@ class ReviewService {
       data = { medicineId };
     }
     if (order === 'updatedAt') {
-      order = [['updatedAt', 'DESC']]
+      order = [['updatedAt', 'DESC']];
     } else if (order === 'likeCount') {
-      order = [['likeCount', 'DESC']]
-    };
-    
+      order = [['likeCount', 'DESC']];
+    }
+
     const reviews = await this.reviewRepository.findReview(
       page,
       pageSize,
       data,
-      order,
+      order
     );
 
     const totalReview = reviews.count.length;
@@ -61,6 +61,7 @@ class ReviewService {
           likeCount: review.likeCount,
           dislikeCount: review.dislikeCount,
           medicineId: review.medicineId,
+          report: review.report,
           review: review.review,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
@@ -109,7 +110,7 @@ class ReviewService {
       page,
       pageSize
     );
-   
+
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
@@ -150,10 +151,8 @@ class ReviewService {
           itemImage: review['Medicine.itemImage'],
         };
       })
-      
     );
     return { totalReview, reviewList };
-    
   };
 
   // 리뷰 (도움 돼요)
@@ -183,6 +182,20 @@ class ReviewService {
       return this.reviewRepository.createDislike(reviewId, userId);
     } else {
       await this.reviewRepository.deleteDislike(reviewId, userId);
+    }
+  };
+
+  // 리뷰 (신고하기)
+  checkReviewReport = async (reviewId, userId) => {
+    const isReported = await this.reviewRepository.checkReviewReport(reviewId);
+    if (isReported.report === null) {
+      let report = `${userId}`;
+      await this.reviewRepository.createReport(reviewId, report);
+    } else if (isReported.report.split(',').indexOf(`${userId}`) === -1) {
+      let report = `${isReported.report},${userId}`;
+      await this.reviewRepository.createReport(reviewId, report);
+    } else {
+      return '이미 신고한 리뷰입니다';
     }
   };
 }

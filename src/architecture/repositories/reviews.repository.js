@@ -38,6 +38,7 @@ class ReviewRepository {
         'userId',
         'medicineId',
         'review',
+        'report',
         'updatedAt',
         [
           Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
@@ -199,6 +200,19 @@ class ReviewRepository {
         [Op.and]: [{ reviewId }, { userId }],
       },
     });
+  };
+
+  // 리뷰 (신고하기)
+  checkReviewReport = async (reviewId) => {
+    return Reviews.findOne({
+      where: {
+        reviewId,
+      },
+    });
+  };
+
+  createReport = async (reviewId, report) => {
+    return Reviews.update({ report }, { where: {reviewId} });
   };
 }
 
