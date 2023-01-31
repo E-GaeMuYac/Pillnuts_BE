@@ -18,10 +18,6 @@ class UsersRepository {
     return this.usersModel.findOne(data);
   };
 
-  findUsers = async (data) => {
-    return this.usersModel.findAll(data);
-  };
-
   deleteToken = async (userId) => {
     await this.usersModel.update(
       { refreshtoken: null },
