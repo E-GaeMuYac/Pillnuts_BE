@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(1000),
       },
       report: {
-        allowNull: false,
+        allowNull: true,
         type: DataTypes.STRING,
       },
       createdAt: {
