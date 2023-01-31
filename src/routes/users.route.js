@@ -7,8 +7,7 @@ const { limiter } = require('../middlewares/rateLimit.middleware');
 const usersController = new UsersController();
 
 router.post('/signup', loginMiddleware, usersController.signUp);
-router.get('/signup/email', usersController.duplicateCheckEmail);
-router.get('/signup/phone', usersController.duplicateCheckPhone);
+router.get('/signup', usersController.duplicateCheck);
 router.get('/find/email', loginMiddleware, usersController.findEmail);
 router.get(
   '/find/phoneNumber',
@@ -17,6 +16,7 @@ router.get(
 );
 router.post(
   '/authentication/email',
+  limiter,
   loginMiddleware,
   usersController.authenticationEmail
 );

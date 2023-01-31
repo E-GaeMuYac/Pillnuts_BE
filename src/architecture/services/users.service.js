@@ -41,23 +41,13 @@ class UsersService {
     );
   };
 
-  duplicateCheckEmail = async (email) => {
+  duplicateCheck = async (email) => {
     const user = await this.usersRepository.findUser({
       raw: true,
       where: { email, loginType: 'Local' },
     });
     if (user) {
-      throw new ExistError('중복인 유저가 있습니다.');
-    }
-  };
-
-  duplicateCheckPhone = async (phoneNumber) => {
-    const user = await this.usersRepository.findUser({
-      raw: true,
-      where: { phoneNumber, loginType: 'Local' },
-    });
-    if (user) {
-      throw new ExistError('중복인 유저가 있습니다.');
+      throw new ExistError('중복된 이메일입니다.');
     }
   };
 
@@ -97,15 +87,22 @@ class UsersService {
 
 
   findEmail = async (phoneNumber) => {
-    const user = await this.usersRepository.findUser({
+    const users = await this.usersRepository.findUsers({
       raw: true,
       where: { phoneNumber, loginType: 'Local' },
     });
-    if (!user) {
+    
+    if (!users) {
       throw new InvalidParamsError('해당하는 사용자가 없습니다.');
     }
-    const { email, imageUrl } = user;
-    return { email, imageUrl };
+
+    return users.map((user) => {
+       return {
+        email : user.email,
+        imageUrl : user.imageUrl
+      }
+    })
+    
   };
 
   findPhoneNumber = async (email) => {

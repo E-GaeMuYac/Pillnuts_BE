@@ -38,7 +38,7 @@ class UsersController {
     }
   };
 
-  duplicateCheckEmail = async (req, res, next) => {
+  duplicateCheck = async (req, res, next) => {
     try {
       const { email } = req.query;
       const result = Joi.string().email().required().validate(email);
@@ -47,30 +47,9 @@ class UsersController {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
 
-      await this.usersService.duplicateCheckEmail(email);
+      await this.usersService.duplicateCheck(email);
 
       return res.status(200).json({ message: '사용가능한 이메일입니다.' });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  duplicateCheckPhone = async (req, res, next) => {
-    try {
-      const { phoneNumber } = req.query;
-      const result = Joi.string()
-        .length(11)
-        .pattern(/^[0-9]+$/)
-        .required()
-        .validate(phoneNumber);
-
-      if (result.error) {
-        throw new ValidationError('데이터 형식이 잘못되었습니다.');
-      }
-
-      await this.usersService.duplicateCheckPhone(phoneNumber);
-
-      return res.status(200).json({ message: '사용가능한 휴대폰번호입니다.' });
     } catch (error) {
       next(error);
     }
@@ -117,7 +96,7 @@ class UsersController {
       const { phoneNumber } = req.query;
       const email = await this.usersService.findEmail(phoneNumber);
 
-      return res.status(200).json({ email });
+      return res.status(200).json(email);
     } catch (error) {
       next(error);
     }
