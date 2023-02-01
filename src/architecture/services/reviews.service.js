@@ -187,14 +187,15 @@ class ReviewService {
 
   // 리뷰 (신고하기)
   checkReviewReport = async (reviewId, userId) => {
-    const isReported = await this.reviewRepository.checkReviewReport(reviewId);
-    if (isReported.report === null) {
-      let report = `${userId}`;
+    const isReported = await this.reviewRepository.findOneReview(reviewId);
+    let report = isReported.report.split(',')
+    if (!report) {
       await this.reviewRepository.createReport(reviewId, report);
     } else if (isReported.report.split(',').indexOf(`${userId}`) === -1) {
       let report = `${isReported.report},${userId}`;
       await this.reviewRepository.createReport(reviewId, report);
-    } else {
+    } else { 
+      
       return '이미 신고한 리뷰입니다';
     }
   };
