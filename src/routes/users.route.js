@@ -23,6 +23,7 @@ router.post(
 router.post(
   '/authentication/phone',
   limiter,
+  loginMiddleware,
   usersController.authenticationPhone
 );
 router.put('/find/password', loginMiddleware, usersController.findPassword);
