@@ -7,7 +7,6 @@ const passport = require('passport');
 const passportConfig = require('./passport/index');
 const ErrorHandler = require('./middlewares/error.handler.middleware');
 
-
 require('dotenv').config();
 
 const corsOption = {
