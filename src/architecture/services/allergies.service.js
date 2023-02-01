@@ -8,7 +8,9 @@ class AllergyService {
   allergyRepository = new AllergyRepository();
 
   findAllMaterials = async (value, page, pageSize, userId) => {
-    const searchValue = ('%' + value + '%').replace(/\s|\b/gi, '');
+    const searchValue = ('%' + value + '%')
+      .replace(' ', '%')
+      .replace(/\s|\b/gi, '');
     const data = await this.allergyRepository.findAllMaterials(
       searchValue,
       page,

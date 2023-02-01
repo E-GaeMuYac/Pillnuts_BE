@@ -17,7 +17,7 @@ module.exports = async (req, res, next) => {
 
     // RefreshToken이 만료일 경우,
     if (!isRefreshTokenValidate) {
-      throw new AuthenticationError('로그인이 필요합니다.', 401);
+      throw new AuthenticationError('로그인이 유효하지 않습니다.', 401);
     }
 
     // AccessToken을 확인 했을 때 만료일 경우,
@@ -28,7 +28,7 @@ module.exports = async (req, res, next) => {
         attribute: ['userId'],
       });
       if (!user) {
-        throw new AuthenticationError('로그인이 유효하지 않습니다.', 401);
+        throw new AuthenticationError('로그아웃 된 유저입니다.', 401);
       }
 
       // 새로운 Access token을 발급해준다.
