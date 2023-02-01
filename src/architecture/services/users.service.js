@@ -92,6 +92,7 @@ class UsersService {
         },
       }
     );
+    
     return data;
   };
 

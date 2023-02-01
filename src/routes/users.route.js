@@ -17,7 +17,6 @@ router.get(
 );
 router.post(
   '/authentication/email',
-  limiter,
   loginMiddleware,
   usersController.authenticationEmail
 );

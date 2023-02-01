@@ -3,8 +3,8 @@ const limit = require('express-rate-limit');
 exports.limiter = limit({
   windowMs: 60000 * 3,
   max: 1,
+  delayMs: 60000,
   keyGenerator: (req, res) => {
-    console.log(req.ip, '//', req.clientIp); // 확인용 콘솔입니다.
     return req.ip;
   },
   handler(req, res) {
