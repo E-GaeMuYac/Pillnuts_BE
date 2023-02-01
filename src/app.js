@@ -10,7 +10,7 @@ const ErrorHandler = require('./middlewares/error.handler.middleware');
 require('dotenv').config();
 
 const corsOption = {
-  origin: true,
+  origin: 'https://pillnuts.store/',
   credentials: true,
   withCredential: true,
   optionsSuccessStatus: 200,
