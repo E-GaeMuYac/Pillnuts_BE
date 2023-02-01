@@ -324,7 +324,9 @@ class ProductService {
 
   // 제품 목록 조회 (검색)
   findMedicines = async (type, value, page, pageSize, userId) => {
-    const searchValue = ('%' + value + '%').replace(/\s|\b/gi, '');
+    const searchValue = ('%' + value + '%')
+      .replace(' ', '%')
+      .replace(/\s|\b/gi, '');
     let data;
     let dibs = [];
 
