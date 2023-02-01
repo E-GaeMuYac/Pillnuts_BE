@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Reviews, Users, Likes, Dislikes } = require('../../models');
+const { Reviews, Users, Likes, Dislikes, Medicines } = require('../../models');
 
 class ReviewRepository {
   // 리뷰 작성
@@ -8,15 +8,14 @@ class ReviewRepository {
   };
 
   // 리뷰 조회
-  findReview = async (medicineId, page, pageSize) => {
-
+  findReview = async (page, pageSize, data, order) => {
     return Reviews.findAndCountAll({
       raw: true,
-      where: { medicineId },
+      where: data,
       include: [
         {
           model: Users,
-          attributes: ['nickname'],
+          attributes: ['nickname', 'imageUrl'],
           required: true,
         },
         {
@@ -53,6 +52,7 @@ class ReviewRepository {
         ],
       ],
       group: ['reviewId'],
+      order: order,
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
     });
@@ -62,45 +62,6 @@ class ReviewRepository {
     return Reviews.findOne({
       raw: true,
       where: { reviewId },
-      include: [
-        {
-          model: Users,
-          attributes: ['nickname'],
-        },
-        {
-          model: Likes,
-          as: 'Likes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-        {
-          model: Dislikes,
-          as: 'Dislikes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-      ],
-      attributes: [
-        'reviewId',
-        'userId',
-        'medicineId',
-        'review',
-        'updatedAt',
-        [
-          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
-          'likeCount',
-        ],
-        [
-          Dislikes.sequelize.fn(
-            'count',
-            Dislikes.sequelize.col('Dislikes.reviewId')
-          ),
-          'dislikeCount',
-        ],
-      ],
-      group: ['reviewId'],
     });
   };
 
@@ -135,6 +96,17 @@ class ReviewRepository {
       where: { userId },
       include: [
         {
+          model: Medicines,
+          attributes: [
+            'medicineId',
+            'itemName',
+            'entpName',
+            'etcOtcCode',
+            'productType',
+            'itemImage',
+          ],
+        },
+        {
           model: Likes,
           as: 'Likes',
           attributes: [],
@@ -168,6 +140,7 @@ class ReviewRepository {
         ],
       ],
       group: ['reviewId'],
+      order: [['updatedAt', 'DESC']],
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
     });
@@ -177,44 +150,6 @@ class ReviewRepository {
     return Reviews.findOne({
       raw: true,
       where: { reviewId },
-      include: [
-        {
-          model: Users,
-          attributes: ['nickname'],
-        },
-        {
-          model: Likes,
-          as: 'Likes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-        {
-          model: Dislikes,
-          as: 'Dislikes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-      ],
-      attributes: [
-        'reviewId',
-        'medicineId',
-        'review',
-        'updatedAt',
-        [
-          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
-          'likeCount',
-        ],
-        [
-          Dislikes.sequelize.fn(
-            'count',
-            Dislikes.sequelize.col('Dislikes.reviewId')
-          ),
-          'dislikeCount',
-        ],
-      ],
-      group: ['reviewId'],
     });
   };
 

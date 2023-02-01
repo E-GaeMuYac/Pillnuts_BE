@@ -20,5 +20,4 @@ router.get('/naver/callback', loginMiddleware, loginController.naverCallback);
 router.get('/kakao', loginMiddleware, loginController.kakao);
 router.get('/kakao/callback', loginMiddleware, loginController.kakaoCallback);
 
-
 module.exports = router;

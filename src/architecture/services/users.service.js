@@ -1,5 +1,7 @@
 const UsersRepository = require('../repositories/users.repository');
 const { Users } = require('../../models/index.js');
+const axios = require('axios');
+const { createAuthToken } = require('../../util/token');
 
 const createUrl = require('../../util/presignedUrl');
 const hash = require('../../util/encryption');
@@ -39,15 +41,61 @@ class UsersService {
     );
   };
 
-  duplicateCheck = async (email) => {
+  duplicateCheckEmail = async (email) => {
     const user = await this.usersRepository.findUser({
       raw: true,
       where: { email, loginType: 'Local' },
     });
     if (user) {
-      throw new ExistError('중복된 이메일입니다.');
+      throw new ExistError('중복인 유저가 있습니다.');
     }
   };
+
+  duplicateCheckPhone = async (phoneNumber) => {
+    const user = await this.usersRepository.findUser({
+      raw: true,
+      where: { phoneNumber, loginType: 'Local' },
+    });
+    if (user) {
+      throw new ExistError('중복인 유저가 있습니다.');
+    }
+  };
+
+  authenticationEmail = async (email) => {
+    const token = await createAuthToken();
+    const { data } = await axios.post(
+      process.env.GATEWAY_EMAIL,
+      {
+        email,
+      },
+      {
+        headers: {
+          'authorization_Token': `Bearer ${token}`,
+          'x-api-key': process.env.X_API_KEY_EMAIL,
+        },
+      }
+    );
+    return data;
+  };
+
+  authenticationPhone = async (phoneNumber) => {
+    const token = await createAuthToken();
+    const { data } = await axios.post(
+      process.env.GATEWAY_PHONE,
+      {
+        phoneNumber,
+      },
+      {
+        headers: {
+          'authorization_Token': `Bearer ${token}`,
+          'x-api-key': process.env.X_API_KEY_PHONE,
+        },
+      }
+    );
+    
+    return data;
+  };
+
 
   findEmail = async (phoneNumber) => {
     const user = await this.usersRepository.findUser({

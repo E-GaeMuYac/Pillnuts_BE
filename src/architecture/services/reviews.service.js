@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const ReviewRepository = require('../repositories/reviews.repository');
 const {
   InvalidParamsError,
@@ -14,12 +15,22 @@ class ReviewService {
   };
 
   // 리뷰 조회
-  findReview = async (medicineId, page, pageSize, loginUserId) => {
+  findReview = async (medicineId, page, pageSize, tag, order, loginUserId) => {
+    let data = { medicineId, review: { [Op.like]: `%${tag}%` } };
+    if (!tag) {
+      data = { medicineId };
+    }
+    if (order === 'updatedAt') {
+      order = [['updatedAt', 'DESC']]
+    } else if (order === 'likeCount') {
+      order = [['likeCount', 'DESC']]
+    };
+    
     const reviews = await this.reviewRepository.findReview(
-      medicineId,
       page,
       pageSize,
-      loginUserId
+      data,
+      order,
     );
 
     const totalReview = reviews.count.length;
@@ -53,6 +64,7 @@ class ReviewService {
           review: review.review,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
+          userImage: review['User.imageUrl'],
         };
       })
     );
@@ -91,18 +103,17 @@ class ReviewService {
   };
 
   // 마이페이지에서 리뷰 조회
-
   findMyReview = async (userId, page, pageSize) => {
     const reviews = await this.reviewRepository.findMyReview(
       userId,
       page,
       pageSize
     );
-
+   
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
-        let like = await this.reviewRepository.checkReviewLike(
+        let like = await this.reviewRepository.findLike(
           review.reviewId,
           userId
         );
@@ -131,10 +142,18 @@ class ReviewService {
           review: review.review,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
+          medicineId: review['Medicine.medicineId'],
+          itemName: review['Medicine.itemName'].split('(')[0],
+          entpName: review['Medicine.entpName'],
+          etcOtcCode: review['Medicine.etcOtcCode'],
+          productType: review['Medicine.productType'].split('.'),
+          itemImage: review['Medicine.itemImage'],
         };
       })
+      
     );
     return { totalReview, reviewList };
+    
   };
 
   // 리뷰 (도움 돼요)
