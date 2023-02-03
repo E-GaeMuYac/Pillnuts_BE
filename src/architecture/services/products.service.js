@@ -44,6 +44,7 @@ class ProductService {
           UD_DOC_DATA: udDoc,
           NB_DOC_DATA: nbDoc,
           INGR_NAME: ingredients,
+          ITEM_ENG_NAME: itemEngName,
         } = mainBody.items[rowCount];
 
         // 총량
@@ -59,7 +60,7 @@ class ProductService {
             if (x === ingredients.split('|').length - 1) {
               ingrName += ingredients.split('|')[x].split(']')[1];
             } else {
-              ingrName += ingredients.split('|')[x].split(']')[1] + ',';
+              ingrName += ingredients.split('|')[x].split(']')[1] + ', ';
             }
           }
         } else {
@@ -73,27 +74,43 @@ class ProductService {
         if (eeDoc === null) {
           eeDocData = eeDoc;
         } else {
-          for (let i = 0; i < eeDoc.split('<').length; i++) {
-            if (check.test(eeDoc.split('<')[i])) {
+          for (let i = 0; i < eeDoc.split('>').length; i++) {
+            if (check.test(eeDoc.split('>')[i])) {
               eeDocData +=
                 eeDoc
-                  .split('<')
-                  [i].replace(/[^(|)|,|.| |0-9|가-힣]/g, '')
+                  .split('>')
+                  [i].replace('-', '~')
+                  .replace(
+                    /type="EE"|title|ARTICLE|PARAGRAPH|tagName="p"|marginLeft|CDATA|DOC|type="NB"|SECTION|sub|amp|nbsp|x2024>/g,
+                    ''
+                  )
+                  .replace(
+                    /[^(|)|,|.|mgclL|●|:|%| |~|a-z|A-Z|0-9|가-힣|/]/g,
+                    ''
+                  )
                   .trim() + '\n';
             }
           }
           eeDocData = eeDocData.substring(5);
         }
 
-        // 용법용량
+        // 용법용량;
         let udDocData = '';
         if (udDoc !== null) {
-          for (let i = 0; i < udDoc.split('<').length; i++) {
-            if (check.test(udDoc.split('<')[i])) {
+          for (let i = 0; i < udDoc.split('>').length; i++) {
+            if (check.test(udDoc.split('>')[i])) {
               udDocData +=
                 udDoc
-                  .split('<')
-                  [i].replace(/[^(|)|,|.| |0-9|가-힣]/g, '')
+                  .split('>')
+                  [i].replace('-', '~')
+                  .replace(
+                    /type="EE"|title|ARTICLE|PARAGRAPH|tagName="p"|marginLeft|CDATA|DOC|type="NB"|SECTION|sub|amp|nbsp|x2024>/g,
+                    ''
+                  )
+                  .replace(
+                    /[^(|)|,|.|mgclL|●|:|%| |~|a-z|A-Z|0-9|가-힣|/]/g,
+                    ''
+                  )
                   .trim() + '\n';
             }
           }
@@ -110,7 +127,15 @@ class ProductService {
               nbDocData +=
                 nbDoc
                   .split('<')
-                  [i].replace(/[^(|)|,|.| |0-9|가-힣]/g, '')
+                  [i].replace('-', '~')
+                  .replace(
+                    /type="EE"|title|ARTICLE|PARAGRAPH|tagName="p"|marginLeft|CDATA|DOC|type="NB"|SECTION|sub|amp|nbsp|x2024|p>/g,
+                    ''
+                  )
+                  .replace(
+                    /[^(|)|,|.|mgclL|●|:|%| |~|a-z|A-Z|0-9|가-힣|/]/g,
+                    ''
+                  )
                   .trim() + '\n';
             }
           }
@@ -123,6 +148,7 @@ class ProductService {
           medicine = await this.productsRepository.createProductsMain(
             itemSeq, //등록 번호
             itemName, //등록 명
+            itemEngName, //영문명
             entpName, //제조사
             etcOtcCode, //약국 구매 가능 여부
             ingrName, //첨가물
@@ -324,6 +350,7 @@ class ProductService {
 
   // 제품 목록 조회 (검색)
   findMedicines = async (type, value, page, pageSize, userId) => {
+    console.log(value);
     const searchValue = ('%' + value + '%')
       .replace(' ', '%')
       .replace(/\s|\b/gi, '');
@@ -331,9 +358,15 @@ class ProductService {
     let dibs = [];
 
     if (type === 'itemName') {
+      console.log(searchValue);
       data = {
-        itemName: {
-          [Op.like]: searchValue,
+        [Op.or]: {
+          itemName: {
+            [Op.like]: searchValue,
+          },
+          itemEngName: {
+            [Op.like]: searchValue,
+          },
         },
       };
     } else if (type === 'productType') {
@@ -356,6 +389,7 @@ class ProductService {
       return {
         medicineId: d.medicineId,
         itemName: d.itemName.split('(')[0],
+        itemEngName: d.itemEngName.split('(')[0],
         entpName: d.entpName,
         etcOtcCode: d.etcOtcCode,
         productType: d.productType.split('.'),
