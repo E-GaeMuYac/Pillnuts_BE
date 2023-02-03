@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      itemEngName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       entpName: {
         type: DataTypes.STRING,
         allowNull: false,
