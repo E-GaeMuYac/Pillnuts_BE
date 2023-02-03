@@ -36,12 +36,12 @@ class ReviewService {
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
-        let like = await this.reviewRepository.findLike(
+        const like = await this.reviewRepository.findLike(
           review.reviewId,
           loginUserId
         );
 
-        let dislike = await this.reviewRepository.findDislike(
+        const dislike = await this.reviewRepository.findDislike(
           review.reviewId,
           loginUserId
         );
@@ -163,22 +163,27 @@ class ReviewService {
     );
 
     if (!isLike) {
+      console.log(1)
       await this.reviewRepository.deleteDislike(reviewId, userId);
       return this.reviewRepository.createLike(reviewId, userId);
     } else {
       await this.reviewRepository.deleteLike(reviewId, userId);
     }
+    
   };
 
   // 리뷰 (도움 안돼요)
   checkReviewDislike = async (reviewId, userId) => {
+   
     const isDislike = await this.reviewRepository.checkReviewDislike(
       reviewId,
       userId
     );
 
     if (!isDislike) {
-      await this.reviewRepository.deleteLike(reviewId, userId);
+      console.log(2)
+      const a = await this.reviewRepository.deleteLike(reviewId, userId);
+ console.log(a)
       return this.reviewRepository.createDislike(reviewId, userId);
     } else {
       await this.reviewRepository.deleteDislike(reviewId, userId);
