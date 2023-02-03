@@ -145,7 +145,8 @@
 
 ## 🧱 백엔드 아키텍처
 
-![architecture]![무제 drawio (2)](https://user-images.githubusercontent.com/103705842/216629566-0cd4a97d-b4b5-449e-b792-e75fc5492b30.png)
+![architecture]!![무제 drawio (3)](https://user-images.githubusercontent.com/103705842/216631695-5e382bf4-c2bd-4ae9-8ac9-da8db3739a10.png)
+
 
 
 
