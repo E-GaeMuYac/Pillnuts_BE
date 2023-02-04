@@ -10,22 +10,20 @@ router.post('/signup', loginMiddleware, usersController.signUp);
 router.get('/signup/email', usersController.duplicateCheckEmail);
 router.get('/signup/phone', usersController.duplicateCheckPhone);
 router.get('/find/email', loginMiddleware, usersController.findEmail);
+
 router.get(
   '/find/phoneNumber',
   loginMiddleware,
   usersController.findPhoneNumber
 );
-router.post(
-  '/authentication/email',
-  loginMiddleware,
-  usersController.authenticationEmail
-);
+
 router.post(
   '/authentication/phone',
   limiter,
   loginMiddleware,
   usersController.authenticationPhone
 );
+
 router.put('/find/password', loginMiddleware, usersController.findPassword);
 router.put('/logout', authMiddleware, usersController.logout);
 router.get('/find', authMiddleware, usersController.findUser);
