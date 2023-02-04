@@ -164,6 +164,7 @@ class ReviewController {
         userId
       );
       res.status(status).json({ message });
+
     } catch (error) {
       next(error);
     }
