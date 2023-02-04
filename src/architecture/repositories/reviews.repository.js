@@ -17,7 +17,14 @@ class ReviewRepository {
         attributes: ['nickname', 'imageUrl'],
         required: true,
       },
-      attributes: ['reviewId', 'userId', 'medicineId', 'review', 'updatedAt'],
+      attributes: [
+        'reviewId',
+        'userId',
+        'medicineId',
+        'review',
+        'report',
+        'updatedAt',
+      ],
       order: order,
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
@@ -72,7 +79,14 @@ class ReviewRepository {
           'itemImage',
         ],
       },
-      attributes: ['reviewId', 'userId', 'medicineId', 'review', 'updatedAt'],
+      attributes: [
+        'reviewId',
+        'userId',
+        'medicineId',
+        'review',
+        'report',
+        'updatedAt',
+      ],
       order: [['updatedAt', 'DESC']],
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
@@ -132,6 +146,19 @@ class ReviewRepository {
         [Op.and]: [{ reviewId }, { userId }],
       },
     });
+  };
+
+  // 리뷰 (신고하기)
+  checkReviewReport = async (reviewId) => {
+    return Reviews.findOne({
+      where: {
+        reviewId,
+      },
+    });
+  };
+
+  createReport = async (reviewId, report) => {
+    return Reviews.update({ report }, { where: { reviewId } });
   };
 }
 
