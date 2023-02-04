@@ -126,11 +126,9 @@ class ReviewService {
         });
 
         let likeValue =
-          like.findIndex((l) => l.userId == loginUserId) == -1 ? false : true;
+          like.findIndex((l) => l.userId == userId) == -1 ? false : true;
         let dislikeValue =
-          dislike.findIndex((l) => l.userId == loginUserId) == -1
-            ? false
-            : true;
+          dislike.findIndex((l) => l.userId == userId) == -1 ? false : true;
 
         let report = [];
 
