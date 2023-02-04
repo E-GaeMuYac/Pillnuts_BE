@@ -73,39 +73,8 @@ class ReviewRepository {
             'itemImage',
           ],
         },
-        {
-          model: Likes,
-          as: 'Likes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-        {
-          model: Dislikes,
-          as: 'Dislikes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
       ],
-      attributes: [
-        'reviewId',
-        'userId',
-        'medicineId',
-        'review',
-        'updatedAt',
-        [
-          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
-          'likeCount',
-        ],
-        [
-          Dislikes.sequelize.fn(
-            'count',
-            Dislikes.sequelize.col('Dislikes.reviewId')
-          ),
-          'dislikeCount',
-        ],
-      ],
+      attributes: ['reviewId', 'userId', 'medicineId', 'review', 'updatedAt'],
       group: ['reviewId'],
       order: [['updatedAt', 'DESC']],
       offset: (page - 1) * pageSize,
