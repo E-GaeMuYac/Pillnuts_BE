@@ -88,12 +88,13 @@
 | cors           |  교차 리소스 공유  |
 | dotenv         |   환경변수 관리    |
 | express        |        서버        |
+| express-rate-limit       |        Rate limit       |
 | joi            |  입력데이터 검출   |
 | jsonwebtoken   |    서명 암호화     |
 | mysql          |       MySQL        |
 | node-cron      | 스케쥴 업무 자동화 |
 | sequelize      |     MySQL ORM      |
-| sequelize--cli | MySQL ORM Console  |
+| sequelize-cli | MySQL ORM Console  |
 | passport       | User Authenticate  |
 | nodemailer     |    이메일 전송     |
 
@@ -144,8 +145,10 @@
 
 ## 🧱 백엔드 아키텍처
 
-![architecture](![무제 drawio (1) drawio (1) drawio](https://user-images.githubusercontent.com/103705842/213369901-47ac19af-ac5e-40b8-99fa-d7a4a678e4f2.png)
-)
+![architecture]!![무제 drawio (3)](https://user-images.githubusercontent.com/103705842/216631695-5e382bf4-c2bd-4ae9-8ac9-da8db3739a10.png)
+
+
+
 
 <br>
 
