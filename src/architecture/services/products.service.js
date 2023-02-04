@@ -350,7 +350,6 @@ class ProductService {
 
   // 제품 목록 조회 (검색)
   findMedicines = async (type, value, page, pageSize, userId) => {
-    console.log(value);
     const searchValue = ('%' + value + '%')
       .replace(' ', '%')
       .replace(/\s|\b/gi, '');
@@ -358,7 +357,6 @@ class ProductService {
     let dibs = [];
 
     if (type === 'itemName') {
-      console.log(searchValue);
       data = {
         [Op.or]: {
           itemName: {
