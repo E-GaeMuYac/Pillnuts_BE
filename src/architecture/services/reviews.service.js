@@ -113,29 +113,26 @@ class ReviewService {
       reviews.rows.map(async (review) => {
         let like = await this.reviewRepository.findLike({
           reviewId: review.reviewId,
-          userId,
         });
 
         let dislike = await this.reviewRepository.findDislike({
           reviewId: review.reviewId,
-          userId,
         });
-        let likeValue = false;
-        let dislikeValue = false;
-        if (like) {
-          likeValue = true;
-        }
-        if (dislike) {
-          dislikeValue = true;
-        }
+
+        let likeValue =
+          like.findIndex((l) => l.userId == loginUserId) == -1 ? false : true;
+        let dislikeValue =
+          dislike.findIndex((l) => l.userId == loginUserId) == -1
+            ? false
+            : true;
 
         return {
           reviewId: review.reviewId,
           userId: review.userId,
           like: likeValue,
           dislike: dislikeValue,
-          likeCount: review.likeCount,
-          dislikeCount: review.dislikeCount,
+          likeCount: like.length,
+          dislikeCount: dislike.length,
           medicineId: review.medicineId,
           review: review.review,
           updatedAt: review.updatedAt,

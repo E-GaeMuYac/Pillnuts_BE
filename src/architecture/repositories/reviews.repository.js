@@ -61,52 +61,18 @@ class ReviewRepository {
     return Reviews.findAndCountAll({
       raw: true,
       where: { userId },
-      include: [
-        {
-          model: Medicines,
-          attributes: [
-            'medicineId',
-            'itemName',
-            'entpName',
-            'etcOtcCode',
-            'productType',
-            'itemImage',
-          ],
-        },
-        {
-          model: Likes,
-          as: 'Likes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-        {
-          model: Dislikes,
-          as: 'Dislikes',
-          attributes: [],
-          duplicating: false,
-          required: false,
-        },
-      ],
-      attributes: [
-        'reviewId',
-        'userId',
-        'medicineId',
-        'review',
-        'updatedAt',
-        [
-          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
-          'likeCount',
+      include: {
+        model: Medicines,
+        attributes: [
+          'medicineId',
+          'itemName',
+          'entpName',
+          'etcOtcCode',
+          'productType',
+          'itemImage',
         ],
-        [
-          Dislikes.sequelize.fn(
-            'count',
-            Dislikes.sequelize.col('Dislikes.reviewId')
-          ),
-          'dislikeCount',
-        ],
-      ],
-      group: ['reviewId'],
+      },
+      attributes: ['reviewId', 'userId', 'medicineId', 'review', 'updatedAt'],
       order: [['updatedAt', 'DESC']],
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
