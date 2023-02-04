@@ -31,7 +31,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING(1000),
       },
-      tag: {
+      report: {
         allowNull: true,
         type: Sequelize.STRING,
       },

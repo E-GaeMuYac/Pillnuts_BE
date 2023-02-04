@@ -147,6 +147,30 @@ class ReviewController {
       next(error);
     }
   };
+
+  // 리뷰 (신고하기)
+  checkReviewReport = async (req, res, next) => {
+    try {
+      const { reviewId } = req.params;
+      const { userId } = res.locals;
+
+      if (!reviewId) {
+        throw new InvalidParamsError('요청한 형식이 올바르지 않습니다.', 400);
+      }
+
+      const isReported = await this.reviewService.checkReviewReport(
+        reviewId,
+        userId
+      );
+      if (!isReported) {
+        res.status(201).json({ message: '신고하기 성공' });
+      } else {
+        res.status(200).json({ message: isReported });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = ReviewController;
