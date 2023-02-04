@@ -11,6 +11,7 @@ class ProductRepository {
   createProductsMain = async (
     itemSeq, //등록 번호
     itemName, //등록 명
+    itemEngName,
     entpName, //제조사
     etcOtcCode, //약국 구매 가능 여부
     ingrName, //첨가물
@@ -23,6 +24,7 @@ class ProductRepository {
     return Medicines.create({
       itemSeq,
       itemName,
+      itemEngName,
       entpName,
       etcOtcCode,
       ingrName,
@@ -128,6 +130,7 @@ class ProductRepository {
       attributes: [
         'medicineId',
         'itemName',
+        'itemEngName',
         'entpName',
         'etcOtcCode',
         'productType',
