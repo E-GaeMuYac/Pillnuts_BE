@@ -21,46 +21,50 @@ class ReviewService {
       data = { medicineId };
     }
     if (order === 'updatedAt') {
-      order = [['updatedAt', 'DESC']]
+      order = [['updatedAt', 'DESC']];
     } else if (order === 'likeCount') {
-      order = [['likeCount', 'DESC']]
-    };
-    
+      order = [['likeCount', 'DESC']];
+    }
+
     const reviews = await this.reviewRepository.findReview(
       page,
       pageSize,
       data,
-      order,
+      order
     );
 
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
-        let like = await this.reviewRepository.findLike(
-          review.reviewId,
-          loginUserId
-        );
+        let like = await this.reviewRepository.findLike({
+          reviewId: review.reviewId,
+        });
 
-        let dislike = await this.reviewRepository.findDislike(
-          review.reviewId,
-          loginUserId
-        );
-        let likeValue = false;
-        let dislikeValue = false;
-        if (like) {
-          likeValue = true;
-        }
-        if (dislike) {
-          dislikeValue = true;
-        }
+        let dislike = await this.reviewRepository.findDislike({
+          reviewId: review.reviewId,
+        });
+
+        let likeValue =
+          like.findIndex((l) => l.userId == loginUserId) == -1 ? false : true;
+        let dislikeValue =
+          dislike.findIndex((l) => l.userId == loginUserId) == -1
+            ? false
+            : true;
+
+        let report = [];
+
+        if (review.report && review.report.length > 1)
+          report = review.report.split(',');
+
         return {
           reviewId: review.reviewId,
           userId: review.userId,
           like: likeValue,
           dislike: dislikeValue,
-          likeCount: review.likeCount,
-          dislikeCount: review.dislikeCount,
+          likeCount: like.length,
+          dislikeCount: dislike.length,
           medicineId: review.medicineId,
+          report: report,
           review: review.review,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
@@ -109,37 +113,40 @@ class ReviewService {
       page,
       pageSize
     );
-   
+
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
-        let like = await this.reviewRepository.findLike(
-          review.reviewId,
-          userId
-        );
+        let like = await this.reviewRepository.findLike({
+          reviewId: review.reviewId,
+        });
 
-        let dislike = await this.reviewRepository.findDislike(
-          review.reviewId,
-          userId
-        );
-        let likeValue = false;
-        let dislikeValue = false;
-        if (like) {
-          likeValue = true;
-        }
-        if (dislike) {
-          dislikeValue = true;
-        }
+        let dislike = await this.reviewRepository.findDislike({
+          reviewId: review.reviewId,
+        });
+
+        let likeValue =
+          like.findIndex((l) => l.userId == loginUserId) == -1 ? false : true;
+        let dislikeValue =
+          dislike.findIndex((l) => l.userId == loginUserId) == -1
+            ? false
+            : true;
+
+        let report = [];
+
+        if (review.report && review.report.length > 1)
+          report = review.report.split(',');
 
         return {
           reviewId: review.reviewId,
           userId: review.userId,
           like: likeValue,
           dislike: dislikeValue,
-          likeCount: review.likeCount,
-          dislikeCount: review.dislikeCount,
+          likeCount: like.length,
+          dislikeCount: dislike.length,
           medicineId: review.medicineId,
           review: review.review,
+          report: report,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
           medicineId: review['Medicine.medicineId'],
@@ -150,10 +157,8 @@ class ReviewService {
           itemImage: review['Medicine.itemImage'],
         };
       })
-      
     );
     return { totalReview, reviewList };
-    
   };
 
   // 리뷰 (도움 돼요)
@@ -179,10 +184,27 @@ class ReviewService {
     );
 
     if (!isDislike) {
-      await this.reviewRepository.deleteLike(reviewId, userId);
+      const a = await this.reviewRepository.deleteLike(reviewId, userId);
       return this.reviewRepository.createDislike(reviewId, userId);
     } else {
       await this.reviewRepository.deleteDislike(reviewId, userId);
+    }
+  };
+
+  // 리뷰 (신고하기)
+  checkReviewReport = async (reviewId, userId) => {
+    const isReported = await this.reviewRepository.findOneReview(reviewId);
+    let report = isReported.report;
+    if (!report) {
+      report = userId;
+      await this.reviewRepository.createReport(reviewId, report);
+      return { status: 201, message: '신고하기 성공' };
+    } else if (isReported.report.split(',').indexOf(`${userId}`) === -1) {
+      report += ',' + userId;
+      await this.reviewRepository.createReport(reviewId, report);
+      return { status: 201, message: '신고하기 성공' };
+    } else {
+      return { status: 200, message: '이미 신고한 리뷰입니다' };
     }
   };
 }
