@@ -1,0 +1,69 @@
+{
+  "config": {
+    "target": "https://api.geniuskim.shop",
+    "phases": [
+      {
+        "duration": 60,
+        "arrivalRate": 10,
+        "name": "Warm up"
+      },
+      {
+        "duration": 120,
+        "arrivalRate": 10,
+        "rampTo": 150,
+        "name": "Ramp up load"
+      }
+    ],
+    "defaults": {
+      "headers": {
+        "User-Agent": "Artillery"
+      }
+    },
+    "payload": [
+      {
+        "path": "./user.csv",
+        "fields": ["email", "password", "refreshtoken"]
+      },
+      {
+        "path": "./medicineId.csv",
+        "fields": ["medicineId"]
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "flow": [
+        {
+          "get": {
+            "url": "/api/products/{{medicineId}}"
+          }
+        },
+        {
+          "post": {
+            "url": "/api/users/login/normal",
+            "json": {
+              "email": "mandoo20@gmail.com",
+              "password": "a12341234"
+            }
+          }
+        },
+        {
+          "put": {
+            "headers": {
+              "refreshtoken": "{{refreshtoken}}"
+            },
+            "url": "/api/products/{{medicineId}}/dibs"
+          }
+        },
+        {
+          "get": {
+            "headers": {
+              "refreshtoken": "{{refreshtoken}}"
+            },
+            "url": "/api/products/compare?compareA={{medicineId}}&compareB={{medicineId}}"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 module.exports = (error, req, res, next) => {
-  console.error(error);
   if (error.name.includes('Sequelize')) {
     return res.status(500).json({ errorMessage: 'Internal Server Error' });
+  } else {
+    res.status(error.status || 400).json({ errorMessage: error.message });
   }
-  res.status(error.status || 400).json({ errorMessage: error.message });
 };

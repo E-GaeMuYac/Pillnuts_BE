@@ -138,6 +138,7 @@ class ReviewService {
           dislikeCount: review.dislikeCount,
           medicineId: review.medicineId,
           review: review.review,
+          report: report,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
           medicineId: review['Medicine.medicineId'],
