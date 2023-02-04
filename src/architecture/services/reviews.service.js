@@ -51,6 +51,11 @@ class ReviewService {
             ? false
             : true;
 
+        let report = [];
+
+        if (review.report && review.report.length > 1)
+          report = review.report.split(',');
+
         return {
           reviewId: review.reviewId,
           userId: review.userId,
@@ -59,7 +64,7 @@ class ReviewService {
           likeCount: like.length,
           dislikeCount: dislike.length,
           medicineId: review.medicineId,
-          report: review.report,
+          report: report,
           review: review.review,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
@@ -127,6 +132,11 @@ class ReviewService {
             ? false
             : true;
 
+        let report = [];
+
+        if (review.report && review.report.length > 1)
+          report = review.report.split(',');
+
         return {
           reviewId: review.reviewId,
           userId: review.userId,
@@ -136,6 +146,7 @@ class ReviewService {
           dislikeCount: dislike.length,
           medicineId: review.medicineId,
           review: review.review,
+          report: report,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
           medicineId: review['Medicine.medicineId'],
@@ -183,14 +194,17 @@ class ReviewService {
   // 리뷰 (신고하기)
   checkReviewReport = async (reviewId, userId) => {
     const isReported = await this.reviewRepository.findOneReview(reviewId);
-    let report = isReported.report.split(',');
+    let report = isReported.report;
     if (!report) {
+      report = userId;
       await this.reviewRepository.createReport(reviewId, report);
+      return { status: 201, message: '신고하기 성공' };
     } else if (isReported.report.split(',').indexOf(`${userId}`) === -1) {
-      let report = `${isReported.report},${userId}`;
+      report += ',' + userId;
       await this.reviewRepository.createReport(reviewId, report);
+      return { status: 201, message: '신고하기 성공' };
     } else {
-      return '이미 신고한 리뷰입니다';
+      return { status: 200, message: '이미 신고한 리뷰입니다' };
     }
   };
 }

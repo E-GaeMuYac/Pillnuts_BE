@@ -1,6 +1,7 @@
 const ReviewService = require('../services/reviews.service');
 const {
   InvalidParamsError,
+  ValidationError,
 } = require('../../middlewares/exceptions/error.class');
 
 class ReviewController {
@@ -158,15 +159,11 @@ class ReviewController {
         throw new InvalidParamsError('요청한 형식이 올바르지 않습니다.', 400);
       }
 
-      const isReported = await this.reviewService.checkReviewReport(
+      const { status, message } = await this.reviewService.checkReviewReport(
         reviewId,
         userId
       );
-      if (!isReported) {
-        res.status(201).json({ message: '신고하기 성공' });
-      } else {
-        res.status(200).json({ message: isReported });
-      }
+      res.status(status).json({ message });
     } catch (error) {
       next(error);
     }
