@@ -36,6 +36,7 @@ class ReviewService {
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
+<<<<<<< HEAD
         let like = await this.reviewRepository.findLike({
           reviewId: review.reviewId,
         });
@@ -51,6 +52,25 @@ class ReviewService {
             ? false
             : true;
 
+=======
+        const like = await this.reviewRepository.findLike(
+          review.reviewId,
+          loginUserId
+        );
+
+        const dislike = await this.reviewRepository.findDislike(
+          review.reviewId,
+          loginUserId
+        );
+        let likeValue = false;
+        let dislikeValue = false;
+        if (like) {
+          likeValue = true;
+        }
+        if (dislike) {
+          dislikeValue = true;
+        }
+>>>>>>> fec47c2c44b7f375e8106ce122b75fddbb1d4315
         return {
           reviewId: review.reviewId,
           userId: review.userId,
@@ -59,6 +79,7 @@ class ReviewService {
           likeCount: like.length,
           dislikeCount: dislike.length,
           medicineId: review.medicineId,
+          report: review.report,
           review: review.review,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
@@ -160,25 +181,45 @@ class ReviewService {
     );
 
     if (!isLike) {
+      console.log(1)
       await this.reviewRepository.deleteDislike(reviewId, userId);
       return this.reviewRepository.createLike(reviewId, userId);
     } else {
       await this.reviewRepository.deleteLike(reviewId, userId);
     }
+    
   };
 
   // 리뷰 (도움 안돼요)
   checkReviewDislike = async (reviewId, userId) => {
+   
     const isDislike = await this.reviewRepository.checkReviewDislike(
       reviewId,
       userId
     );
 
     if (!isDislike) {
-      await this.reviewRepository.deleteLike(reviewId, userId);
+      console.log(2)
+      const a = await this.reviewRepository.deleteLike(reviewId, userId);
+ console.log(a)
       return this.reviewRepository.createDislike(reviewId, userId);
     } else {
       await this.reviewRepository.deleteDislike(reviewId, userId);
+    }
+  };
+
+  // 리뷰 (신고하기)
+  checkReviewReport = async (reviewId, userId) => {
+    const isReported = await this.reviewRepository.findOneReview(reviewId);
+    let report = isReported.report.split(',')
+    if (!report) {
+      await this.reviewRepository.createReport(reviewId, report);
+    } else if (isReported.report.split(',').indexOf(`${userId}`) === -1) {
+      let report = `${isReported.report},${userId}`;
+      await this.reviewRepository.createReport(reviewId, report);
+    } else { 
+      
+      return '이미 신고한 리뷰입니다';
     }
   };
 }

@@ -167,6 +167,19 @@ class ReviewRepository {
       },
     });
   };
+
+  // 리뷰 (신고하기)
+  checkReviewReport = async (reviewId) => {
+    return Reviews.findOne({
+      where: {
+        reviewId,
+      },
+    });
+  };
+
+  createReport = async (reviewId, report) => {
+    return Reviews.update({ report }, { where: { reviewId } });
+  };
 }
 
 module.exports = ReviewRepository;

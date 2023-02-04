@@ -384,10 +384,13 @@ class ProductService {
     }
 
     const processingData = searchData.rows.map((d) => {
+      if (d.itemEngName !== null) {
+        d.itemEngName = d.itemEngName.split('(')[0];
+      }
       return {
         medicineId: d.medicineId,
         itemName: d.itemName.split('(')[0],
-        itemEngName: d.itemEngName.split('(')[0],
+        itemEngName: d.itemEngName,
         entpName: d.entpName,
         etcOtcCode: d.etcOtcCode,
         productType: d.productType.split('.'),
