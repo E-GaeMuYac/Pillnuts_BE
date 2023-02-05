@@ -12,11 +12,20 @@ class ReviewRepository {
     return Reviews.findAndCountAll({
       raw: true,
       where: data,
-      include: {
-        model: Users,
-        attributes: ['nickname', 'imageUrl'],
-        required: true,
-      },
+      include: [
+        {
+          model: Users,
+          attributes: ['nickname', 'imageUrl'],
+          required: true,
+        },
+        {
+          model: Likes,
+          as: 'Likes',
+          attributes: [],
+          duplicating: false,
+          required: false,
+        },
+      ],
       attributes: [
         'reviewId',
         'userId',
@@ -24,6 +33,10 @@ class ReviewRepository {
         'review',
         'report',
         'updatedAt',
+        [
+          Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
+          'likeCount',
+        ],
       ],
       group: ['reviewId'],
       order: order,
