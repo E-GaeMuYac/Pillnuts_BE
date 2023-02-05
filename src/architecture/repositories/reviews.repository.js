@@ -101,7 +101,7 @@ class ReviewRepository {
         'report',
         'updatedAt',
       ],
-      group: ['userId'],
+      group: ['reviewId'],
       order: [['updatedAt', 'DESC']],
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
