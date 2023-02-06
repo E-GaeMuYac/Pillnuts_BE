@@ -9,17 +9,17 @@
 
 ### 2. [팀 구성](#-팀-구성)
 
-### 3. [기술 스텍](#-기술스택-why)
+### 3. [기술 스텍](#-기술스택)
 
-### 4. [라이브러리](#-라이브러리-why)
+### 4. [라이브러리](#-라이브러리)
 
 ### 5. [주요 기능](#️-주요-기능)
 
 ### 6. [아키텍쳐](#-백엔드-아키텍처)
 
-### 7. [최종 성과](#최종-성과)
+### 7. [최종 성과](#-최종-성과)
 
-### 8. [트러블 슈팅](#트러블-슈팅)
+### 8. [트러블 슈팅](#-트러블-슈팅)
 
 <hr>
 <br>
@@ -34,7 +34,7 @@
 
 ## 🗓 프로젝트 기간
 
-- 2022년 12월 30일 ~ 현재 진행중
+- 2022년 12월 30일 ~ 2023년 2월 10일
 
 <br>
 
@@ -96,7 +96,6 @@
 | sequelize      |     MySQL ORM      |
 | sequelize-cli | MySQL ORM Console  |
 | passport       | User Authenticate  |
-| nodemailer     |    이메일 전송     |
 
 <br>
 
@@ -106,7 +105,7 @@
 
 - 영문 소문자, 숫자를 이용하여 아이디와 비밀번호를 설정할 수 있다.
 - 네이버, 구글, 카카오를 통해 소셜 로그인을 할 수 있다.
-- 이메일과 문자로 본인인증을 할 수 있다.
+- 문자로 본인인증을 할 수 있다.
 
 ### 검색
 
@@ -139,22 +138,42 @@
 - 유저가 찜한 의약품을 모아서 보여준다.
 - 회원탈퇴를 할 수 있다.
 
+### 알레르기 등록
+
+- 유저가 가진 알레르기를 등록하여 해당 알레르기 성분이 든 약품을 피할 수 있다.
+- 알레르기 검색 시 자동완성기능이 적용되어있다.
+- 알레르기 등록 시 해당 성분이 포함된 약품을 조회할 때 위험표시를 해준다.
+
+### 챗봇
+
+- 유저에 따라 채팅방 생성이 가능하다.
+- 로그인을 하지않아도 채팅이 가능하며, 전에 했던 채팅을 불러옵니다.
+- 키워드를 입력 시 해당하는 정보를 답변으로 준다.
+- “채팅”을 입력 후 상담 연결하기 버튼을 누르면 관리자와 실시간 상담이 가능하다.
+- 실시간 상담 요청이 있을 시 슬랙으로 알림이 간다.
+
 <hr>
 
 <br>
 
 ## 🧱 백엔드 아키텍처
+<img width="1050" alt="스크린샷 2023-02-06 오후 3 43 50" src="https://user-images.githubusercontent.com/103705842/216901433-8b8a3368-7573-49f4-bc24-523a87a87a3d.png">
 
-![architecture]!![무제 drawio (3)](https://user-images.githubusercontent.com/103705842/216631695-5e382bf4-c2bd-4ae9-8ac9-da8db3739a10.png)
-
-
+![무제 drawio (3) drawio](https://user-images.githubusercontent.com/103705842/216901775-5e8b2402-4c92-44f3-a667-017572da849d.png)
 
 
 <br>
 
-## 🐜 DB ERD
+## 🗄️ DB ERD
+<img width="1050" alt="스크린샷 2023-02-05 오전 3 00 18" src="https://user-images.githubusercontent.com/103705842/216901474-a1494c6e-15e3-4c79-9d3a-6878d2c965a7.png">
 
-![ERD](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/b0f197cf-083d-4475-b295-24722669d9f2/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230114%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230114T100812Z&X-Amz-Expires=86400&X-Amz-Signature=f4e0066412c528f469451b8eb27728ffff74a85926c9be918803cc4cf920c746&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+## 🎬 최종 성과
+
+추후에 추가
+
+## 🌠 트러블 슈팅
+
+추후에 추가
 
 <br>
 
