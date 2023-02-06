@@ -36,32 +36,35 @@ class ReviewService {
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
-        const like = await this.reviewRepository.findLike(
-          review.reviewId,
-          loginUserId
-        );
+        let like = await this.reviewRepository.findLike({
+          reviewId: review.reviewId,
+        });
 
-        const dislike = await this.reviewRepository.findDislike(
-          review.reviewId,
-          loginUserId
-        );
-        let likeValue = false;
-        let dislikeValue = false;
-        if (like) {
-          likeValue = true;
-        }
-        if (dislike) {
-          dislikeValue = true;
-        }
+        let dislike = await this.reviewRepository.findDislike({
+          reviewId: review.reviewId,
+        });
+
+        let likeValue =
+          like.findIndex((l) => l.userId == loginUserId) == -1 ? false : true;
+        let dislikeValue =
+          dislike.findIndex((l) => l.userId == loginUserId) == -1
+            ? false
+            : true;
+
+        let report = [];
+
+        if (review.report && review.report.length > 1)
+          report = review.report.split(',');
+
         return {
           reviewId: review.reviewId,
           userId: review.userId,
           like: likeValue,
           dislike: dislikeValue,
-          likeCount: review.likeCount,
-          dislikeCount: review.dislikeCount,
+          likeCount: like.length,
+          dislikeCount: dislike.length,
           medicineId: review.medicineId,
-          report: review.report,
+          report: report,
           review: review.review,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
@@ -114,33 +117,36 @@ class ReviewService {
     const totalReview = reviews.count.length;
     const reviewList = await Promise.all(
       reviews.rows.map(async (review) => {
-        let like = await this.reviewRepository.findLike(
-          review.reviewId,
-          userId
-        );
+        let like = await this.reviewRepository.findLike({
+          reviewId: review.reviewId,
+        });
 
-        let dislike = await this.reviewRepository.findDislike(
-          review.reviewId,
-          userId
-        );
-        let likeValue = false;
-        let dislikeValue = false;
-        if (like) {
-          likeValue = true;
-        }
-        if (dislike) {
-          dislikeValue = true;
-        }
+        let dislike = await this.reviewRepository.findDislike({
+          reviewId: review.reviewId,
+        });
+
+        let likeValue =
+          like.findIndex((l) => l.userId == loginUserId) == -1 ? false : true;
+        let dislikeValue =
+          dislike.findIndex((l) => l.userId == loginUserId) == -1
+            ? false
+            : true;
+
+        let report = [];
+
+        if (review.report && review.report.length > 1)
+          report = review.report.split(',');
 
         return {
           reviewId: review.reviewId,
           userId: review.userId,
           like: likeValue,
           dislike: dislikeValue,
-          likeCount: review.likeCount,
-          dislikeCount: review.dislikeCount,
+          likeCount: like.length,
+          dislikeCount: dislike.length,
           medicineId: review.medicineId,
           review: review.review,
+          report: report,
           updatedAt: review.updatedAt,
           nickname: review['User.nickname'],
           medicineId: review['Medicine.medicineId'],
@@ -163,27 +169,22 @@ class ReviewService {
     );
 
     if (!isLike) {
-      console.log(1)
       await this.reviewRepository.deleteDislike(reviewId, userId);
       return this.reviewRepository.createLike(reviewId, userId);
     } else {
       await this.reviewRepository.deleteLike(reviewId, userId);
     }
-    
   };
 
   // 리뷰 (도움 안돼요)
   checkReviewDislike = async (reviewId, userId) => {
-   
     const isDislike = await this.reviewRepository.checkReviewDislike(
       reviewId,
       userId
     );
 
     if (!isDislike) {
-      console.log(2)
       const a = await this.reviewRepository.deleteLike(reviewId, userId);
- console.log(a)
       return this.reviewRepository.createDislike(reviewId, userId);
     } else {
       await this.reviewRepository.deleteDislike(reviewId, userId);
@@ -193,15 +194,17 @@ class ReviewService {
   // 리뷰 (신고하기)
   checkReviewReport = async (reviewId, userId) => {
     const isReported = await this.reviewRepository.findOneReview(reviewId);
-    let report = isReported.report.split(',')
+    let report = isReported.report;
     if (!report) {
+      report = userId;
       await this.reviewRepository.createReport(reviewId, report);
+      return { status: 201, message: '신고하기 성공' };
     } else if (isReported.report.split(',').indexOf(`${userId}`) === -1) {
-      let report = `${isReported.report},${userId}`;
+      report += ',' + userId;
       await this.reviewRepository.createReport(reviewId, report);
-    } else { 
-      
-      return '이미 신고한 리뷰입니다';
+      return { status: 201, message: '신고하기 성공' };
+    } else {
+      return { status: 200, message: '이미 신고한 리뷰입니다' };
     }
   };
 }

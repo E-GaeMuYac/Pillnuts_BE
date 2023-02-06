@@ -61,23 +61,6 @@ class UsersService {
     }
   };
 
-  authenticationEmail = async (email) => {
-    const token = await createAuthToken();
-    const { data } = await axios.post(
-      process.env.GATEWAY_EMAIL,
-      {
-        email,
-      },
-      {
-        headers: {
-          'authorization_Token': `Bearer ${token}`,
-          'x-api-key': process.env.X_API_KEY_EMAIL,
-        },
-      }
-    );
-    return data;
-  };
-
   authenticationPhone = async (phoneNumber) => {
     const token = await createAuthToken();
     const { data } = await axios.post(

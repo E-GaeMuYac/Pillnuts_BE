@@ -18,6 +18,10 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
       },
+      itemEngName: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: true,
+      },
       entpName: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
