@@ -66,7 +66,7 @@ class ReviewService {
           medicineId: review.medicineId,
           report: report,
           review: review.review,
-          updatedAt: review.updatedAt,
+          createdAt: review.createdAt,
           nickname: review['User.nickname'],
           userImage: review['User.imageUrl'],
         };
@@ -145,7 +145,7 @@ class ReviewService {
           medicineId: review.medicineId,
           review: review.review,
           report: report,
-          updatedAt: review.updatedAt,
+          createdAt: review.createdAt,
           nickname: review['User.nickname'],
           medicineId: review['Medicine.medicineId'],
           itemName: review['Medicine.itemName'].split('(')[0],
