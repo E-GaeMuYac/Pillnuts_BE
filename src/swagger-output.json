@@ -22,10 +22,6 @@
               "properties": {
                 "email": { "type": "string" },
                 "password": { "type": "string" }
-              },
-              "example": {
-                "email": "pillnuts123@gmail.com",
-                "password": "A12341234"
               }
             }
           }
