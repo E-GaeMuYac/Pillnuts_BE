@@ -32,7 +32,7 @@ class ReviewRepository {
         'medicineId',
         'review',
         'report',
-        'updatedAt',
+        'createdAt',
         [
           Likes.sequelize.fn('count', Likes.sequelize.col('Likes.reviewId')),
           'likeCount',
