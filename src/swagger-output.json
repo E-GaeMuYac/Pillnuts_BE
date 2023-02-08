@@ -28,11 +28,6 @@
                 "password": "A12341234"
               }
             }
-          },
-          {
-            "name": "refreshtoken",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -245,13 +240,6 @@
                 "confirm": { "type": "string" },
                 "nickname": { "type": "string" },
                 "phoneNumber": { "type": "string" }
-              },
-              "example": {
-                "email": "pillnuts123@gmail.com",
-                "nickname": "필너츠",
-                "password": "A12341234",
-                "confirm": "A12341234",
-                "phoneNumber": "01011112222"
               }
             }
           }
@@ -345,9 +333,6 @@
               "type": "object",
               "properties": {
                 "phoneNumber": { "type": "string" }
-              },
-              "example": {
-                "phoneNumber": "01011112222"
               }
             }
           },
@@ -382,10 +367,6 @@
               "properties": {
                 "email": { "type": "string" },
                 "password": { "type": "string" }
-              },
-              "example": {
-                "email": "pillnuts@gmail.com",
-                "password": "A12341233"
               }
             }
           }
@@ -452,9 +433,6 @@
               "type": "object",
               "properties": {
                 "nickname": { "type": "string" }
-              },
-              "example": {
-                "nickname": "필너츠 짱"
               }
             }
           },
@@ -568,9 +546,6 @@
               "type": "object",
               "properties": {
                 "review": { "type": "string" }
-              },
-              "example": {
-                "review": "리뷰입니다"
               }
             }
           },
@@ -649,9 +624,6 @@
               "type": "object",
               "properties": {
                 "review": { "type": "string" }
-              },
-              "example": {
-                "review": "리뷰 수정입니다"
               }
             }
           },
