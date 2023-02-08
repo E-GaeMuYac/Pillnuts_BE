@@ -259,7 +259,7 @@
     
     4. Scale-Out이 되었을 땐 배포를 피해야하기에 Cloud Watch Alarm - SNS - Lambda - discord WebHook을 통해 오토스케일링이 실행될 때 디스코드로 해당 로그가 전송됨
     
-    5. 혹시 모를 경우를 대비해 클러스터에서 용량 공급자를 설정해 Scale-Out이 되었음에도 불구하고 CPU 샤용량이 부족해지면 미리 Task를 계산하고 EC2를 Scale-Out을 하여 실행되면 계혹된 Task를 바로 배치
+    5. 혹시 모를 경우를 대비해 클러스터에서 용량 공급자를 설정해 Scale-Out이 되었음에도 불구하고 CPU 샤용량이 부족해지면 미리 Task를 계산하고 EC2를 Scale-Out을 하여 실행되면 계획된 Task를 바로 배치
    
     
   #### 환경변수
