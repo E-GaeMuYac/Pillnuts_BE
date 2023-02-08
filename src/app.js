@@ -40,7 +40,6 @@ app.use('/', routes);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(ErrorHandler);
 
-
 app.listen(process.env.PORT, () => {
   console.log(process.env.PORT, '포트로 서버가 열렸습니다.');
 });
