@@ -1,7 +1,7 @@
 # 🥜PILLNUTS - Backend🥜
 
 <hr>
-<img width="1050" src="https://www.notion.so/BE-561178a70ec4410c8ce4c90ec8f932bd#f48f32a9a9e649e5973c29493759480c">
+<img width="1050" src="https://blogfiles.pstatic.net/MjAyMzAyMDhfMzAg/MDAxNjc1ODE5MjQyODU3.xO8AWBq1jfjIGabWTvpxU-TrpZdHTiuoYaUKzSN766Ug.6k5fza_yeckWUmEtehT_C_JacEZ9LG6eSiEZgWe3aE8g.PNG.sa02019/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2023-02-08_%EC%98%A4%EC%A0%84_10.16.48.png">
 <br>
 
 ## 🗂️ 목차
