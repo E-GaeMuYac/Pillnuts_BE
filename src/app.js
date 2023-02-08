@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const app = express();
+const helmet = require('helmet');
 const routes = require('./routes');
 const cors = require('cors');
 const passport = require('passport');
@@ -27,6 +28,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
   })
 );
+app.use(helmet());
 // express-session이 router 위에 와야함
 app.use(passport.initialize()); // 요청 객체에 passport 설정을 심음
 app.use(passport.session()); // req.session 객체에 passport 정보를 추가 저장
