@@ -99,10 +99,10 @@ class ReviewRepository {
         'medicineId',
         'review',
         'report',
-        'updatedAt',
+        'createdAt',
       ],
       group: ['reviewId'],
-      order: [['updatedAt', 'DESC']],
+      order: [['createdAt', 'DESC']],
       offset: (page - 1) * pageSize,
       limit: Number(pageSize),
     });
