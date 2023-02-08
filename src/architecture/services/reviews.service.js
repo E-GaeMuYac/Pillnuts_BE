@@ -20,8 +20,8 @@ class ReviewService {
     if (!tag) {
       data = { medicineId };
     }
-    if (order === 'updatedAt') {
-      order = [['updatedAt', 'DESC']];
+    if (order === 'createdAt') {
+      order = [['createdAt', 'DESC']];
     } else if (order === 'likeCount') {
       order = [['likeCount', 'DESC']];
     }
