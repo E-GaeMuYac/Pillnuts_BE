@@ -20,8 +20,8 @@ class ReviewService {
     if (!tag) {
       data = { medicineId };
     }
-    if (order === 'updatedAt') {
-      order = [['updatedAt', 'DESC']];
+    if (order === 'createdAt') {
+      order = [['createdAt', 'DESC']];
     } else if (order === 'likeCount') {
       order = [['likeCount', 'DESC']];
     }
@@ -66,7 +66,7 @@ class ReviewService {
           medicineId: review.medicineId,
           report: report,
           review: review.review,
-          updatedAt: review.updatedAt,
+          createdAt: review.createdAt,
           nickname: review['User.nickname'],
           userImage: review['User.imageUrl'],
         };
@@ -145,7 +145,7 @@ class ReviewService {
           medicineId: review.medicineId,
           review: review.review,
           report: report,
-          updatedAt: review.updatedAt,
+          createdAt: review.createdAt,
           nickname: review['User.nickname'],
           medicineId: review['Medicine.medicineId'],
           itemName: review['Medicine.itemName'].split('(')[0],
