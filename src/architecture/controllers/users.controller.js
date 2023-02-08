@@ -3,6 +3,7 @@ const Joi = require('joi');
 
 const {
   ValidationError,
+  AuthenticationError,
 } = require('../../middlewares/exceptions/error.class.js');
 
 class UsersController {
@@ -22,15 +23,19 @@ class UsersController {
           .required()
           .pattern(new RegExp(/^(?=.*[A-Za-z])(?=.*[0-9]).{8,15}$/)),
         confirm: Joi.string().required().valid(Joi.ref('password')),
+        certification: Joi.boolean().required(),
       });
 
       const result = schema.validate(req.body);
-
       if (result.error) {
         throw new ValidationError('데이터 형식이 잘못되었습니다.');
       }
 
-      const { email, password, nickname, phoneNumber } = req.body;
+      const { email, password, nickname, phoneNumber, certification } =
+        req.body;
+      if (!certification) {
+        throw new AuthenticationError('휴대폰 인증이 필요합니다');
+      }
       await this.usersService.signUp(email, password, nickname, phoneNumber);
       return res.status(201).json({ message: '회원가입에 성공하였습니다' });
     } catch (error) {
