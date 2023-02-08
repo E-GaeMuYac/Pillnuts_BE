@@ -496,9 +496,6 @@
               "type": "object",
               "properties": {
                 "password": { "type": "string" }
-              },
-              "example": {
-                "password": "A12341234"
               }
             }
           },
