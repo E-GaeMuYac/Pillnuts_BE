@@ -4,6 +4,17 @@
 <img width="1050" src="https://blogfiles.pstatic.net/MjAyMzAyMDhfMzAg/MDAxNjc1ODE5MjQyODU3.xO8AWBq1jfjIGabWTvpxU-TrpZdHTiuoYaUKzSN766Ug.6k5fza_yeckWUmEtehT_C_JacEZ9LG6eSiEZgWe3aE8g.PNG.sa02019/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2023-02-08_%EC%98%A4%EC%A0%84_10.16.48.png">
 <br>
 
+### [💊 Pillnuts 바로가기](https://pillnuts.store)
+
+#### [🖥️ Pillnuts FE Github](https://github.com/E-GaeMuYac/FE)
+
+#### [💻 Pillnuts WebServer Github](https://github.com/E-GaeMuYac/BE)
+
+#### [💬 Pillnuts ChatServer Github](https://github.com/E-GaeMuYac/socket_BE)
+
+#### [⛵️ Pillnuts Lambda Github](https://github.com/E-GaeMuYac/Lambda_BE)
+<br/>
+
 ## 🗂️ 목차
 
 ### 1. [프로젝트 소개](#-프로젝트-소개)
@@ -79,7 +90,8 @@
 | Node.js        | 자바스크립트 런타임 |
 | Express        |    웹 프레임워크    |
 | MySQL          |        MySQL        |
-| Docker         |       Docker        |
+| MongoDB          |        NoSQL        |
+| Docker         |       컨테이너 관리        |
 | Grafana        |   시각화 대시보드   |
 | Github actions |   WebServer CI/CD   |
 | Code pipeline  |  ChatServer CI/CD   |
@@ -93,7 +105,7 @@
 
 | 라이브러리         |        설명        |
 | ------------------ | :----------------: |
-| axios              |  비밀번호 암호화   |
+| axios              |  HTTP 비동기 통신   |
 | bcrypt             |  비밀번호 암호화   |
 | cors               |  교차 리소스 공유  |
 | dotenv             |   환경변수 관리    |
@@ -238,7 +250,7 @@ CI/CD 구축 후 테스트 중 ECS 서비스 이벤트 창에서 **사용가능�
 
   2. 위 문제를 해결하기위해 컨테이너의 CPU, Memory를 너무 낮게 잡으면 EC2의 사양을 제대로 다 사용하지 못 하는 상황
 
-  3. SeverLess인 ECS Fargate를 쓰면 따로 서버관리가 필요하지않기에 해결가능한 문제지만 비용이 비싸 운영비를 넘어가는 상황 발생
+  3. SeverLess인 ECS Fargate를 쓰면 따로 서버관리가 필요하지않기에 해결가능한 문제지만 비용이 비교적 비쌈
 
 - **어떻게 해결했는가?**
 
@@ -251,6 +263,7 @@ CI/CD 구축 후 테스트 중 ECS 서비스 이벤트 창에서 **사용가능�
   4. Scale-Out이 되었을 땐 배포를 피해야하기에 Cloud Watch Alarm - SNS - Lambda - discord WebHook을 통해 오토스케일링이 실행될 때 디스코드로 해당 로그가 전송됨
 
   5. 혹시 모를 경우를 대비해 클러스터에서 용량 공급자를 설정해 Scale-Out이 되었음에도 불구하고 CPU 샤용량이 부족해지면 미리 Task를 계산하고 EC2를 Scale-Out을 하여 실행되면 계획된 Task를 바로 배치
+     
      <img width="273" alt="스크린샷 2023-02-08 오후 9 26 30" src="https://user-images.githubusercontent.com/103705842/217529467-1ae6f85d-16dc-44a3-932e-98bcc3bcc2a8.png">
 
 #### 환경변수
@@ -318,7 +331,7 @@ CI/CD 구축 후 테스트 중 ECS 서비스 이벤트 창에서 **사용가능�
 
 - **어떤 문제점을 겪었는가?**
 
-  관리자와 유저가 1대1로 상담을 해주는 시스이며, 관리자는 유저가 상담 요청하는 것을 수동으로 확인해야 즉각적인 상담이 가능하기에 비효율적임
+  관리자와 유저가 1대1로 상담을 해주는 시스템이며, 관리자는 유저가 상담 요청하는 것을 수동으로 확인해야 즉각적인 상담이 가능하기에 비효율적임
 
 - **왜 이런 문제가 발생했는가?**
 
