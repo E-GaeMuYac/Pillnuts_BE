@@ -8,7 +8,7 @@ const passport = require('passport');
 const passportConfig = require('./passport/index');
 const ErrorHandler = require('./middlewares/error.handler.middleware');
 const swaggerUi = require('swagger-ui-express');
-const swaggerFile = require('./swagger-output.json');
+const swaggerFile = require('../swagger-output.json');
 
 require('dotenv').config();
 
