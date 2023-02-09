@@ -83,7 +83,8 @@
 | Grafana        |   시각화 대시보드   |
 | Github actions |   WebServer CI/CD   |
 | Code pipeline  |  ChatServer CI/CD   |
-| swagger        |      API 문서화       |
+| swagger        |     API 문서화      |
+
 <br>
 
 ## 📖 라이브러리
@@ -250,7 +251,7 @@ CI/CD 구축 후 테스트 중 ECS 서비스 이벤트 창에서 **사용가능�
   4. Scale-Out이 되었을 땐 배포를 피해야하기에 Cloud Watch Alarm - SNS - Lambda - discord WebHook을 통해 오토스케일링이 실행될 때 디스코드로 해당 로그가 전송됨
 
   5. 혹시 모를 경우를 대비해 클러스터에서 용량 공급자를 설정해 Scale-Out이 되었음에도 불구하고 CPU 샤용량이 부족해지면 미리 Task를 계산하고 EC2를 Scale-Out을 하여 실행되면 계획된 Task를 바로 배치
-<img width="273" alt="스크린샷 2023-02-08 오후 9 26 30" src="https://user-images.githubusercontent.com/103705842/217529467-1ae6f85d-16dc-44a3-932e-98bcc3bcc2a8.png">
+     <img width="273" alt="스크린샷 2023-02-08 오후 9 26 30" src="https://user-images.githubusercontent.com/103705842/217529467-1ae6f85d-16dc-44a3-932e-98bcc3bcc2a8.png">
 
 #### 환경변수
 
@@ -337,13 +338,13 @@ CI/CD 구축 후 테스트 중 ECS 서비스 이벤트 창에서 **사용가능�
 
 - **왜 이런 문제가 발생했는가?**
 
-  Access Token과 Refresh Token 둘 다 사용하고 있는데, 사실상 Access Token의 기능역할을 하지 못하는 것 같아 문제가 발생
+  Access Token과 Refresh Token 둘 다 사용하고 있는데, 사실상 Access Token의 역할을 제대로 하는 것 같지 않아 문제가 발생
 
 - **어떻게 해결했는가?**
 
-  Token을 하나만 사용할 경우, 제 3자에게 탈취 당했을 시에 보안에 취약하다. 유효기간이 짧은 token일 경우, 그만큼 사용자는 로그인을 자주 해서 새로운 token을 발급 받아야 하기 때문에 불편하고 그만큼 DB에서 정보를 계속해서 불러와야 하기 때문에 서버에 부하가 많다. 또한 유효기간을 늘린다면 Token이 탈취 당했을 경우, 보안에 더 취약해지게 된다.
-  결국 Refresh Token을 사용해야 할 경우, Access Token의 유효기간을 짧고, 자주 재발급 하도록 만들어 보안을 강화하면서 사용자에게 잦은 로그아웃을 경험시켜주지 않도록 해줄 수 있기 때문에 Refresh Token을 사용하는 방법으로 해결
-<br>
+  Token을 하나만 사용할 경우, 제 3자에게 탈취 당했을 시에 보안에 취약하다. 유효기간이 짧은 Token일 경우, 그만큼 사용자는 로그인을 자주 해서 새로운 Token을 발급 받아야 하기 때문에 불편하고 로그인을 시도할 때마다 DB에 있는 정보를 계속해서 불러와야 하기 때문에 이는 서버에 부하가 가게 된다. 반대로 Token의 유효기간을 늘린다면 Token이 탈취 당했을 경우, JWT는 발급한 후 삭제가 불가능하기 때문에 Token을 획득한 사람은 누구나 Token의 긴 유효기간동안 권한 접근이 가능해 이는 보안에 더욱 취약해지게 된다.
+  그러므로 Refresh Token의 유효기간을 길게, Access Token의 유효기간을 짧게 설정하고, Access Token이 만료될 때마다 재발급해줌으로써 보안을 더욱 강화할 수 있고, 사용자의 불편함도 줄일 수 있다고 판단하여 Access Token과 Refresh Token 둘 다 사용하는 방법으로 해결
+  <br>
 
 <br>
 
