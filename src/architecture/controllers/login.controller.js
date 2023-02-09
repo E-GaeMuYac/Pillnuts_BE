@@ -1,28 +1,29 @@
 const passport = require('passport');
 const { ValidationError } = require('../../middlewares/exceptions/error.class');
 require('dotenv').config();
+const Validation = require('../../util/joi');
 const Joi = require('joi');
 
 const LoginService = require('../services/login.service');
 
 class LoginController {
   loginService = new LoginService();
+  validation = new Validation();
 
   Login = async (req, res, next) => {
     try {
       const { email, password } = req.body; // 1. email, password를 바디값에 넣어준다.
 
       // 1-1. 이메일 형태가 맞지 않을 경우 -> validationError(412)를 띄운다.
-      const schema = Joi.object().keys({
-        email: Joi.string().email().required(),
-        password: Joi.string()
-          .required()
-          .pattern(new RegExp(/^(?=.*[A-Za-z])(?=.*[0-9]).{8,15}$/)),
-      });
-      const result = schema.validate(req.body);
+      const result = Joi.object()
+        .keys({
+          email: this.validation.getEmailJoi(),
+          password: this.validation.getPasswordJoi(),
+        })
+        .validate(req.body);
 
       if (result.error) {
-        throw new ValidationError('데이터 형식이 잘못되었습니다.', 412);
+        throw new ValidationError(result.error.details[0].message);
       }
 
       const { accesstoken, refreshtoken, existUser } =

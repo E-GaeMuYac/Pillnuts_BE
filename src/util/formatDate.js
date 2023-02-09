@@ -1,11 +1,8 @@
 const formatDate = (date) => {
   let d = date,
-    month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
+    month = String(d.getMonth() + 1).padStart(2, 0),
+    day = String(d.getDate()).padStart(2, 0),
     year = d.getFullYear();
-
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
 
   return [year, month, day].join('-');
 };
