@@ -20,6 +20,7 @@ class UsersController {
           nickname: this.validation.getNicknameJoi(),
           password: this.validation.getPasswordJoi(),
           confirm: this.validation.getConfirmJoi(),
+          certification: this.validation.getCertificationJoi(),
         })
         .validate(req.body);
       // console.log(result.error.details[0].message);
