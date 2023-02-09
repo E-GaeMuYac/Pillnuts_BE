@@ -28,11 +28,8 @@ class UsersController {
         throw new ValidationError(result.error.details[0].message);
       }
 
-      const { email, password, nickname, phoneNumber, certification } =
-        req.body;
-      if (!certification) {
-        throw new AuthenticationError('휴대폰 인증이 필요합니다');
-      }
+      const { email, password, nickname, phoneNumber } = req.body;
+
       await this.usersService.signUp(email, password, nickname, phoneNumber);
       return res.status(201).json({ message: '회원가입에 성공하였습니다' });
     } catch (error) {
