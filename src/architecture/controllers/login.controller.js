@@ -12,9 +12,8 @@ class LoginController {
 
   Login = async (req, res, next) => {
     try {
-      const { email, password } = req.body; // 1. email, password를 바디값에 넣어준다.
+      const { email, password } = req.body;
 
-      // 1-1. 이메일 형태가 맞지 않을 경우 -> validationError(412)를 띄운다.
       const result = Joi.object()
         .keys({
           email: this.validation.getEmailJoi(),
@@ -27,7 +26,7 @@ class LoginController {
       }
 
       const { accesstoken, refreshtoken, existUser } =
-        await this.loginService.existUser(email, password); // 2. Users에 ExistUser의 email이 있는지 찾아본다.
+        await this.loginService.existUser(email, password);
 
       return res.header({ accesstoken, refreshtoken }).status(201).json({
         nickname: existUser.nickname,
