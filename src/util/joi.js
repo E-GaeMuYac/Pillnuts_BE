@@ -43,4 +43,11 @@ module.exports = class Validation {
       'any.only': '비밀번호와 일치하지않습니다.',
     });
   };
+  getCertificationJoi = () => {
+    return Joi.boolean().invalid(false).required().messages({
+      'any.required': '휴대폰 인증을 해주세요.',
+      'boolean.base': 'boolean값으로 와야합니다',
+      'any.invalid': '휴대폰 인증을 해주세요',
+    });
+  };
 };
