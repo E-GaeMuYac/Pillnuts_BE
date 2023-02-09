@@ -860,7 +860,7 @@
     "/allergies/{materialId}": {
       "put": {
         "tags": ["Allergies API"],
-        "description": "",
+        "description": "알러지 등록/삭제",
         "parameters": [
           {
             "name": "materialId",
