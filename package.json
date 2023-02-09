@@ -8,7 +8,8 @@
     "dev": "nodemon src/app.js",
     "db:create": "npx sequelize db:create --config ./src/config/config.js",
     "db:migrate": "npx sequelize db:migrate --config ./src/config/config.js --migrations-path ./src/migrations --models-path ./src/models",
-    "db:drop": "npx sequelize db:drop --config ./src/config/config.js"
+    "db:drop": "npx sequelize db:drop --config ./src/config/config.js",
+    "start-gendoc": "node ./src/swagger.js"
   },
   "repository": {
     "type": "git",
@@ -44,7 +45,7 @@
     "nodemon": "^2.0.20",
     "prettier": "^2.8.1",
     "sequelize-cli": "^6.5.2",
-    "swagger-jsdoc": "^6.2.8",
+    "swagger-autogen": "^2.23.0",
     "swagger-ui-express": "^4.6.0"
   }
 }
