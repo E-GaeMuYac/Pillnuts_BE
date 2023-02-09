@@ -1,6 +1,6 @@
 const UsersService = require('../services/users.service');
 const Joi = require('joi');
-
+const Validation = require('../../util/joi');
 const {
   ValidationError,
   AuthenticationError,
@@ -9,26 +9,22 @@ const {
 class UsersController {
   constructor() {
     this.usersService = new UsersService();
+    this.validation = new Validation();
   }
   signUp = async (req, res, next) => {
     try {
-      const schema = Joi.object().keys({
-        email: Joi.string().email().required(),
-        phoneNumber: Joi.string()
-          .length(11)
-          .pattern(/^[0-9]+$/)
-          .required(),
-        nickname: Joi.string().required(),
-        password: Joi.string()
-          .required()
-          .pattern(new RegExp(/^(?=.*[A-Za-z])(?=.*[0-9]).{8,15}$/)),
-        confirm: Joi.string().required().valid(Joi.ref('password')),
-        certification: Joi.boolean().required(),
-      });
-
-      const result = schema.validate(req.body);
+      const result = Joi.object()
+        .keys({
+          email: this.validation.getEmailJoi(),
+          phoneNumber: this.validation.getPhoneNumberJoi(),
+          nickname: this.validation.getNicknameJoi(),
+          password: this.validation.getPasswordJoi(),
+          confirm: this.validation.getConfirmJoi(),
+        })
+        .validate(req.body);
+      // console.log(result.error.details[0].message);
       if (result.error) {
-        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+        throw new ValidationError(result.error.details[0].message);
       }
 
       const { email, password, nickname, phoneNumber, certification } =
@@ -46,10 +42,14 @@ class UsersController {
   duplicateCheckEmail = async (req, res, next) => {
     try {
       const { email } = req.query;
-      const result = Joi.string().email().required().validate(email);
+      const result = Joi.object()
+        .keys({
+          email: this.validation.getEmailJoi(),
+        })
+        .validate(req.query);
 
       if (result.error) {
-        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+        throw new ValidationError(result.error.details[0].message);
       }
 
       await this.usersService.duplicateCheckEmail(email);
@@ -62,15 +62,16 @@ class UsersController {
 
   duplicateCheckPhone = async (req, res, next) => {
     try {
+      console.log(req.query);
       const { phoneNumber } = req.query;
-      const result = Joi.string()
-        .length(11)
-        .pattern(/^[0-9]+$/)
-        .required()
-        .validate(phoneNumber);
+      const result = Joi.object()
+        .keys({
+          phoneNumber: this.validation.getPhoneNumberJoi(),
+        })
+        .validate(req.query);
 
       if (result.error) {
-        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+        throw new ValidationError(result.error.details[0].message);
       }
 
       await this.usersService.duplicateCheckPhone(phoneNumber);
@@ -84,14 +85,14 @@ class UsersController {
   authenticationPhone = async (req, res, next) => {
     try {
       const { phoneNumber } = req.body;
-      const result = Joi.string()
-        .length(11)
-        .pattern(/^[0-9]+$/)
-        .required()
-        .validate(phoneNumber);
+      const result = Joi.object()
+        .keys({
+          phoneNumber: this.validation.getPhoneNumberJoi(),
+        })
+        .validate(req.body);
 
       if (result.error) {
-        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+        throw new ValidationError(result.error.details[0].message);
       }
       const code = await this.usersService.authenticationPhone(phoneNumber);
       return res.status(201).json(code);
@@ -126,12 +127,15 @@ class UsersController {
   findPassword = async (req, res, next) => {
     try {
       const { email, password } = req.body;
-      const result = Joi.string()
-        .required()
-        .pattern(new RegExp(/^(?=.*[A-Za-z])(?=.*[0-9]).{8,15}$/))
-        .validate(password);
+      const result = Joi.object()
+        .keys({
+          email: this.validation.getEmailJoi(),
+          password: this.validation.getPasswordJoi(),
+        })
+        .validate(req.body);
+
       if (result.error) {
-        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+        throw new ValidationError(result.error.details[0].message);
       }
 
       await this.usersService.findPassword(email, password);
@@ -170,9 +174,14 @@ class UsersController {
     try {
       const { userId } = res.locals;
       const { nickname } = req.body;
-      const result = Joi.string().required().validate(nickname);
+      const result = Joi.object()
+        .keys({
+          phoneNumber: this.validation.getNicknameJoi(),
+        })
+        .validate(req.body);
+
       if (result.error) {
-        throw new ValidationError('데이터 형식이 잘못되었습니다.');
+        throw new ValidationError(result.error.details[0].message);
       }
       await this.usersService.updateNickname(nickname, userId);
 
