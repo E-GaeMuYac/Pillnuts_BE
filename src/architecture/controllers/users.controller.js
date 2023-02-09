@@ -176,7 +176,7 @@ class UsersController {
       const { nickname } = req.body;
       const result = Joi.object()
         .keys({
-          phoneNumber: this.validation.getNicknameJoi(),
+          nickname: this.validation.getNicknameJoi(),
         })
         .validate(req.body);
 
