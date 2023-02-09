@@ -7,6 +7,8 @@ const cors = require('cors');
 const passport = require('passport');
 const passportConfig = require('./passport/index');
 const ErrorHandler = require('./middlewares/error.handler.middleware');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger-output.json');
 
 require('dotenv').config();
 
@@ -35,6 +37,7 @@ app.use(passport.session()); // req.session 객체에 passport 정보를 추가 
 // passport.session()이 실행되면, 세션쿠키 정보를 바탕으로 해서 passport/index.js의 deserializeUser()가 실행하게 됨
 
 app.use('/', routes);
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(ErrorHandler);
 
 app.listen(process.env.PORT, () => {
