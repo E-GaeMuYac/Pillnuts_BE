@@ -2,6 +2,7 @@ const UsersRepository = require('../repositories/users.repository');
 const { Users } = require('../../models/index.js');
 const axios = require('axios');
 const { createAuthToken } = require('../../util/token');
+const { Op } = require('sequelize');
 
 const createUrl = require('../../util/presignedUrl');
 const hash = require('../../util/encryption');
@@ -21,10 +22,10 @@ class UsersService {
   signUp = async (email, password, nickname, phoneNumber) => {
     const user = await this.usersRepository.findUser({
       raw: true,
-      where: { email, loginType: 'Local' },
+      where: {[Op.or] : [ {email}, {phoneNumber}], loginType: 'Local' },
     });
     if (user) {
-      throw new ExistError('중복된 이메일입니다.');
+      throw new ExistError('중복된 유저가 존재합니다.');
     }
     password = hash(password);
 
