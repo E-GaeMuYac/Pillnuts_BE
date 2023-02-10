@@ -13,7 +13,7 @@ const swaggerFile = require('../swagger-output.json');
 require('dotenv').config();
 
 const corsOption = {
-  origin: ['https://www.pillnuts.store', 'http://localhost:3000'],
+  origin: true,
   credentials: true,
   withCredential: true,
   optionsSuccessStatus: 200,
