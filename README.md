@@ -95,7 +95,6 @@
 | Grafana        |   시각화 대시보드   |
 | Github actions |   WebServer CI/CD   |
 | Code pipeline  |  ChatServer CI/CD   |
-| swagger        |     API 문서화      |
 
 <br>
 
@@ -118,6 +117,7 @@
 | passport           | User Authenticate  |
 | sequelize          |     MySQL ORM      |
 | sequelize-cli      | MySQL ORM Console  |
+| swagger            |    API 문서화        |
 
 ### 💬 채팅서버
 
