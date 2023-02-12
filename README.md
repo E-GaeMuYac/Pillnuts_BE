@@ -321,7 +321,7 @@ CI/CD 구축 후 테스트 중 ECS 서비스 이벤트 창에서 **사용가능�
 
 - **어떻게 해결했는가?**
 
-`Express-Rate-Limit` 라이브러리를 사용해 IP 당 요청을 제한, AWS API Gateway의 설정을 통해 메소드 제한, `API KEY` 설정을 통해 총 사용량 제한, `API KEY`를 보안적인 이유로 사용하는 것을 추천하지않기에 따로 `Lambda Authorizer` 설정을 통해 요청 시 JWT 토큰을 생성해 같이 헤더에 담아 API Gateway로 요청을 보내고 유효하면 allow, 유효하지않으면 deny를 반환해 에러를 띄우는 방식으로 구성하였다.
+ `Express-Rate-Limit` 라이브러리를 사용해 IP 당 요청을 제한, AWS API Gateway의 설정을 통해 메소드 제한, `API KEY` 설정을 통해 총 사용량 제한, `API KEY`를 보안적인 이유로 사용하는 것     을 추천하지않기에 따로 `Lambda Authorizer` 설정을 통해 요청 시 JWT 토큰을 생성해 같이 헤더에 담아 API Gateway로 요청을 보내고 유효하면 allow, 유효하지않으면 deny를 반환해 에러를 띄우는     방식으로 구성하였다.
 
 ### 4. 로깅 & 모니터링 문제
 
