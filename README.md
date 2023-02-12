@@ -225,7 +225,11 @@
 
 ## 🎬 최종 성과
 
-추후에 추가
+<img width="724" alt="스크린샷 2023-02-13 오전 12 43 19" src="https://user-images.githubusercontent.com/103705842/218321121-3fbcd72e-5c7c-48af-92b9-b9c76e4a042b.png">
+
+<img width="724" alt="스크린샷 2023-02-13 오전 12 44 19" src="https://user-images.githubusercontent.com/103705842/218321186-6fcc98a1-d54b-49ea-a7f5-b3a335566f12.png">
+
+
 
 ## 🌠 트러블 슈팅
 
