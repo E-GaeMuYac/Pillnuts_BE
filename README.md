@@ -225,7 +225,11 @@
 
 ## 🎬 최종 성과
 
-추후에 추가
+<img width="724" alt="스크린샷 2023-02-13 오전 12 43 19" src="https://user-images.githubusercontent.com/103705842/218321121-3fbcd72e-5c7c-48af-92b9-b9c76e4a042b.png">
+
+<img width="724" alt="스크린샷 2023-02-13 오전 12 44 19" src="https://user-images.githubusercontent.com/103705842/218321186-6fcc98a1-d54b-49ea-a7f5-b3a335566f12.png">
+
+
 
 ## 🌠 트러블 슈팅
 
@@ -257,7 +261,7 @@ CI/CD 구축 후 테스트 중 ECS 서비스 이벤트 창에서 **사용가능�
 
   2. 위 문제를 해결하기위해 컨테이너의 CPU, Memory를 너무 낮게 잡으면 EC2의 사양을 제대로 다 사용하지 못 하는 상황
 
-  3. SeverLess인 ECS Fargate를 쓰면 따로 서버관리가 필요하지않기에 해결가능한 문제지만 비용이 비교적 비쌈
+  3. Serverless인 ECS Fargate를 쓰면 따로 서버관리가 필요하지않기에 해결가능한 문제지만 비용이 비교적 비쌈
 
 - **어떻게 해결했는가?**
 
